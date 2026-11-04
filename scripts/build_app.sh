@@ -56,6 +56,8 @@ cat << 'EOF' > "${CONTENTS_DIR}/Info.plist"
 </plist>
 EOF
 
+codesign --force --sign - "${APP_DIR}"
+
 echo "==> Build and package completed successfully!"
 echo "App created at: ${APP_DIR}"
 echo "Architecture: $(lipo -archs "${MACOS_DIR}/T3CodeBar")"
