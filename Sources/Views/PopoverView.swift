@@ -4,8 +4,11 @@ public struct PopoverView: View {
     @ObservedObject var monitor: ThreadMonitor
     @State private var contentHeight: CGFloat = 0
 
-    public init(monitor: ThreadMonitor) {
+    private let onHeightChange: (CGFloat) -> Void
+
+    public init(monitor: ThreadMonitor, onHeightChange: @escaping (CGFloat) -> Void = { _ in }) {
         self.monitor = monitor
+        self.onHeightChange = onHeightChange
     }
 
     private var effectiveHeight: CGFloat {
@@ -73,6 +76,7 @@ public struct PopoverView: View {
         .onPreferenceChange(ContentHeightPreferenceKey.self) { height in
             if height > 0 {
                 contentHeight = height
+                onHeightChange(effectiveHeight)
             }
         }
         .frame(width: 320)
