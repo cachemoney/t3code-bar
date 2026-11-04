@@ -1,0 +1,22 @@
+name: Swift checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: swift --version
+      - name: Tests
+        run: swift test
+      - name: Release build
+        run: swift build -c release
+      - name: Packaging script syntax
+        run: bash -n scripts/build_app.sh scripts/install.sh
