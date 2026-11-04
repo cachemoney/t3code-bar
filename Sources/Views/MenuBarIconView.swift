@@ -17,7 +17,10 @@ public struct MenuBarIconView: View {
             if status.showsLabelInMenuBar {
                 Text(activeCount > 1 ? "\(status.label) \(activeCount)" : status.label)
                     .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundStyle(status.color)
+                    .foregroundStyle(Color.black.opacity(0.85))
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 1)
+                    .background(Capsule().fill(status.color))
             } else if activeCount > 1 {
                 Text("\(activeCount)")
                     .font(.system(size: 12, weight: .medium, design: .rounded))
