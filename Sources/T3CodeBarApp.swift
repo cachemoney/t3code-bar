@@ -121,6 +121,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         panel.setFrame(NSRect(x: x, y: anchor.minY - 6 - size.height, width: size.width, height: size.height), display: true)
     }
 
+    private func addMuteItem(to menu: NSMenu) {
+        let item = NSMenuItem(title: "Mute Notifications", action: #selector(toggleMuteNotifications), keyEquivalent: "")
+        item.target = self
+        item.state = notifier.isMuted ? .on : .off
+        menu.addItem(item)
+        menu.addItem(.separator())
+    }
+
+    @objc private func toggleMuteNotifications() { notifier.toggleMute() }
+
     private func installContextMenuMonitor() {
         NSEvent.addLocalMonitorForEvents(matching: [.rightMouseDown, .rightMouseUp]) { event in
             guard let window = event.window,
@@ -130,6 +140,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
             if event.type == .rightMouseDown {
                 let menu = NSMenu()
+                MainActor.assumeIsolated { self.addMuteItem(to: menu) }
                 let quitItem = NSMenuItem(
                     title: "Quit T3 Code Bar",
                     action: #selector(NSApplication.terminate(_:)),

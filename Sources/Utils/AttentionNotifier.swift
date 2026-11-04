@@ -35,7 +35,14 @@ public struct AttentionTracker: Sendable {
 @MainActor
 public final class AttentionNotifier: NSObject, UNUserNotificationCenterDelegate {
     private var tracker = AttentionTracker()
-    private var authorizationRequested = false
+    private static let mutedKey = "notificationsMuted"
+
+    public private(set) var isMuted = UserDefaults.standard.bool(forKey: AttentionNotifier.mutedKey)
+
+    public func toggleMute() {
+        isMuted.toggle()
+        UserDefaults.standard.set(isMuted, forKey: Self.mutedKey)
+    }
 
     public override init() {
         super.init()
@@ -44,7 +51,7 @@ public final class AttentionNotifier: NSObject, UNUserNotificationCenterDelegate
 
     public func process(_ threads: [ThreadItem]) {
         let alerts = tracker.update(with: threads)
-        guard !alerts.isEmpty else { return }
+        guard !alerts.isEmpty, !isMuted else { return }
         let center = UNUserNotificationCenter.current()
         center.requestAuthorization(options: [.alert, .sound]) { granted, _ in
             guard granted else { return }
