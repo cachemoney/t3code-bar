@@ -2,6 +2,8 @@ name: Swift checks
 
 on:
   push:
+    branches:
+      - "**"
     tags-ignore:
       - "**"
     paths-ignore:
