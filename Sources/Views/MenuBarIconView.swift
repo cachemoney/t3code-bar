@@ -16,8 +16,8 @@ public struct MenuBarIconView: View {
 
             if activeCount > 1 {
                 Text("\(activeCount)")
-                    .font(.system(size: 10.5, weight: .bold, design: .monospaced))
-                    .foregroundStyle(status.color)
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.primary)
             }
         }
     }
