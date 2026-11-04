@@ -2,7 +2,6 @@ name: Swift checks
 
 on:
   push:
-    branches: [main]
     paths-ignore:
       - "**/*.md"
       - "LICENSE"
@@ -25,10 +24,11 @@ concurrency:
 
 jobs:
   # Trusted commits run on the self-hosted machine, where there is no queue.
-  # pull_request is excluded on purpose: the runner is a real Mac, and a fork
-  # PR can rewrite this workflow file to target it.
+  # Only pushes (collaborators only) and dispatches from main qualify:
+  # pull_request is excluded on purpose, because the runner is a real Mac and a
+  # fork PR can rewrite this workflow file to target it.
   local:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
     uses: ./.github/workflows/check.yml
     with:
       runner: '["self-hosted", "t3code-bar"]'
@@ -38,7 +38,7 @@ jobs:
   # Everything else stays on GitHub-hosted runners, where untrusted code is
   # someone else's problem.
   hosted:
-    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref != 'refs/heads/main')
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main')
     uses: ./.github/workflows/check.yml
     with:
       runner: '["macos-15"]'

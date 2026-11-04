@@ -143,6 +143,12 @@ bash -n scripts/build_app.sh scripts/install.sh
 
 A nonzero exit code indicates failure. Confirm that the Swift Testing summary reports tests executed and passing. CI runs tests, a Release build, and script syntax checks on macOS.
 
+Install the tracked pre-push hook once per clone so the same checks run before every push (`git push --no-verify` skips it):
+
+```bash
+bash scripts/setup_hooks.sh
+```
+
 To package a local app without installing it:
 
 ```bash

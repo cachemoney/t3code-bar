@@ -14,7 +14,7 @@ permissions:
 jobs:
   test-and-build:
     runs-on: ${{ fromJSON(inputs.runner) }}
-    timeout-minutes: 30
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
       - name: Toolchain
