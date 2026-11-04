@@ -40,6 +40,13 @@ public enum ThreadStatus: Equatable, Hashable, Sendable {
         }
     }
 
+    public var isRunning: Bool {
+        switch self {
+        case .connecting, .working, .goal: return true
+        default: return false
+        }
+    }
+
     public var shouldPulse: Bool {
         switch self {
         case .connecting, .working, .goal:

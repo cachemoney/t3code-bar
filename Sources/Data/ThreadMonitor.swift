@@ -5,6 +5,7 @@ public struct ThreadSummary: Equatable, Sendable {
     public var status: ThreadStatus = .settled
     public var attentionCount = 0
     public var runningCount = 0
+    public var badgeCount = 0
 
     public init(threads: [ThreadItem], isServerOnline: Bool) {
         guard isServerOnline else { return }
@@ -16,6 +17,11 @@ public struct ThreadSummary: Equatable, Sendable {
             case .connecting, .working, .goal: runningCount += 1
             default: break
             }
+        }
+        if status.isRunning {
+            badgeCount = runningCount
+        } else if status.isAttention {
+            badgeCount = threads.filter { $0.status.priority == status.priority }.count
         }
     }
 }
@@ -33,6 +39,7 @@ public final class ThreadMonitor: ObservableObject {
     public var overallStatus: ThreadStatus { summary.status }
     public var attentionCount: Int { summary.attentionCount }
     public var runningCount: Int { summary.runningCount }
+    public var badgeCount: Int { summary.badgeCount }
     public var canShowLiveStatus: Bool { isServerOnline && readError == nil }
     public var visibleThreads: [ThreadItem] {
         let query = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)

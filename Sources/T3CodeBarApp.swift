@@ -149,7 +149,7 @@ private struct StatusItemView: View {
     var body: some View {
         MenuBarIconView(
             status: monitor.overallStatus,
-            activeCount: monitor.runningCount > 0 ? monitor.runningCount : monitor.attentionCount
+            activeCount: monitor.badgeCount
         )
     }
 }

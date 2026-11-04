@@ -64,3 +64,20 @@ struct StatusAndMonitorTests {
         #expect(monitor.overallStatus == .settled)
     }
 }
+
+struct BadgeTests {
+    @Test func badgeCountsThreadsInTheHighestPriorityState() {
+        let running = [makeThread(id: "a", active: "running"), makeThread(id: "b", active: "running")]
+        #expect(ThreadSummary(threads: running, isServerOnline: true).badgeCount == 2)
+
+        let mixed = running + [makeThread(id: "c", approvals: 1)]
+        let summary = ThreadSummary(threads: mixed, isServerOnline: true)
+        #expect(summary.status == .approval)
+        #expect(summary.badgeCount == 1)
+
+        let twoInputs = running + [makeThread(id: "d", inputs: 1), makeThread(id: "e", inputs: 2)]
+        let inputSummary = ThreadSummary(threads: twoInputs, isServerOnline: true)
+        #expect(inputSummary.status == .input)
+        #expect(inputSummary.badgeCount == 2)
+    }
+}
