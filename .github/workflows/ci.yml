@@ -2,26 +2,45 @@ name: Swift checks
 
 on:
   push:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - "LICENSE"
+      - ".gitignore"
   pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - "LICENSE"
+      - ".gitignore"
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+# One run per ref. Cancel superseded PR runs so a stale commit does not hold a
+# runner slot while the newer one waits.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  test-and-build:
-    runs-on: macos-15
-    steps:
-      - uses: actions/checkout@v4
-      - name: Toolchain
-        run: swift --version
-      - name: Cache SwiftPM build
-        uses: actions/cache@v4
-        with:
-          path: .build
-          key: ${{ runner.os }}-${{ runner.arch }}-swift-${{ hashFiles('Package.swift', 'Sources/**', 'Tests/**') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-swift-
-      - name: Release build and tests
-        run: swift test -c release
-      - name: Packaging script syntax
-        run: bash -n scripts/build_app.sh scripts/install.sh
+  # Trusted commits run on the self-hosted machine, where there is no queue.
+  # pull_request is excluded on purpose: the runner is a real Mac, and a fork
+  # PR can rewrite this workflow file to target it.
+  local:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    uses: ./.github/workflows/check.yml
+    with:
+      runner: '["self-hosted", "t3code-bar"]'
+    permissions:
+      contents: read
+
+  # Everything else stays on GitHub-hosted runners, where untrusted code is
+  # someone else's problem.
+  hosted:
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref != 'refs/heads/main')
+    uses: ./.github/workflows/check.yml
+    with:
+      runner: '["macos-15"]'
+    permissions:
+      contents: read
