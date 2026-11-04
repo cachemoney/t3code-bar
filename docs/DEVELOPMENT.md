@@ -1,18 +1,18 @@
-# Phát triển và kiểm chứng
+# Development and validation
 
-## Cấu trúc
+## Structure
 
-- `Sources/Config/EnvironmentConfig.swift`: chọn thư mục dữ liệu, đọc runtime/environment ID, xây URL.
-- `Sources/Data/DatabaseManager.swift`: actor sở hữu SQLite read-only và date formatter, trả dữ liệu `Sendable` hoặc lỗi rõ ràng.
-- `Sources/Data/ThreadModel.swift`: trạng thái từ projection đã lưu.
-- `Sources/Data/ThreadMonitor.swift`: một lần đọc bất đồng bộ tại một thời điểm; tổng hợp badge từ toàn bộ inbox, độc lập bộ lọc tìm kiếm.
-- `Sources/Views/PopoverView.swift`: danh sách và thông báo loading/offline/lỗi; khi dữ liệu cũ thì không hiện nhãn live.
-- `Sources/Utils/AppLauncher.swift`: mở ứng dụng/link qua macOS và báo lỗi khi không mở được.
-- `Tests/`: fixture SQLite riêng trong thư mục tạm, không dùng dữ liệu cá nhân hoặc server thật.
+- `Sources/Config/EnvironmentConfig.swift`: resolves the data directory, runtime metadata, and environment ID, then builds URLs.
+- `Sources/Data/DatabaseManager.swift`: owns read-only SQLite access and date parsing on an actor; returns `Sendable` data or explicit errors.
+- `Sources/Data/ThreadModel.swift`: derives status from persisted projection data.
+- `Sources/Data/ThreadMonitor.swift`: allows one asynchronous read at a time and aggregates the badge from the full inbox independently of search filtering.
+- `Sources/Views/PopoverView.swift`: renders the list and loading/offline/error states; stale data does not display live labels.
+- `Sources/Utils/AppLauncher.swift`: opens applications and links through macOS and reports failures.
+- `Tests/`: isolated SQLite fixtures in temporary directories; no personal database or real server is used.
 
-## Kiểm tra tự động
+## Automated checks
 
-Chạy từ thư mục gốc:
+Run from the repository root:
 
 ```bash
 swift test
@@ -20,37 +20,35 @@ swift build -c release
 bash -n scripts/build_app.sh scripts/install.sh
 ```
 
-Test bao phủ inbox hơn 50 thread, thứ tự pin, thread ẩn, silent run/cancelled/queued, mức ưu tiên trạng thái, Done cho completion chưa xem, cập nhật visit và completion mới, thiếu/invalid visit, dữ liệu offline/lỗi và phục hồi, tìm kiếm không làm mất badge tổng, thư mục dữ liệu tùy chỉnh, port runtime, encoding URL và thiếu cấu hình. Bổ sung regression Snooze: approval/input đang chờ, completion/lỗi phiên trước–bằng–sau snooze, request đã giải quyết, Woke sau lần xem và mốc ngày không hợp lệ.
+The tests cover inboxes larger than 50 threads, pin ordering, hidden threads, silent/cancelled/queued runs, status priority, unread completion, persisted visits and later completions, missing/invalid visits, offline and read-error recovery, search without losing global badge counts, custom data directories, runtime ports, URL encoding, and missing configuration. Snooze regressions cover pending approval/input, completion and session errors before/equal/after snoozing, resolved requests, Woke after a visit, and invalid dates.
 
-Mỗi lệnh kiểm tra phải trả mã 0; lỗi build/test/cú pháp trả mã khác 0. Với Swift Testing, xác nhận dòng cuối có số test thực sự chạy và passed; phần XCTest có thể báo 0 vì project dùng Swift Testing.
+Every check must return exit code 0. A build, test, or syntax failure returns a nonzero code. With Swift Testing, verify the final summary reports tests actually executed and all passed; the XCTest compatibility summary may separately report zero tests because this project uses Swift Testing.
 
-CI chỉ chạy test/build và kiểm tra cú pháp script. Không upload `.app`, ký Developer ID, notarize, commit hay publish tự động.
+CI runs tests, a Release build, and script syntax checks. It does not upload an `.app`, sign with Developer ID, notarize, commit, or publish automatically.
 
-## Kết quả local ngày 2026-11-04
+## Local validation result — 2026-11-04
 
-- `swift test`: 28 test trong 3 suite đều qua, bao gồm lock SQLite, lỗi JSON khi đọc kết quả và chuyển Done → thời gian sau khi T3 Code lưu lần xem mới.
-- `swift build -c release`: thành công; cảnh báo API activation deprecated trước đó đã được loại bỏ.
-- `bash -n scripts/build_app.sh scripts/install.sh`: qua. Đã đóng gói và mở `.app` local theo yêu cầu xem thử; không phát hành artifact tải về.
-- Cài bằng `scripts/install.sh` vào thư mục tạm với `T3_CODE_BAR_SKIP_OPEN=1`: thành công; resource bundle và license/notices có đủ. Chạy lại bị từ chối với mã khác 0 và không thay đổi binary cũ. Chưa kiểm tra nhánh tự mở app của installer mới.
-- Các link Markdown local: hợp lệ. README sử dụng ảnh PNG do tác giả cung cấp, giữ nguyên ảnh gốc, không cắt phần menu bar hệ thống; không dùng hình minh họa SVG trước đó. Cú pháp workflow YAML và quy tắc `.gitignore` đã được kiểm tra ở đợt trước.
-- Truy vấn SQL hiện tại đọc thành công projection database local qua kết nối read-only; không in title/nội dung thread. Đây là kiểm tra tương thích truy vấn, không phải benchmark hay UAT toàn bộ ứng dụng.
-- Binary Release mới: arm64, linker-signed ad hoc; không có Developer ID. Không thực hiện notarization.
-- Người dùng xác nhận approval/input hiển thị đúng. Chưa xác nhận UAT thủ công riêng cho tình huống đang Snooze; chưa chạy workflow trên GitHub hoặc hoàn tất toàn bộ checklist bên dưới.
+- `swift test`: 28 tests in 3 suites passed, including SQLite locking, malformed JSON during result stepping, and Done returning to a timestamp after T3 Code persists a newer visit.
+- `swift build -c release`: passed; the earlier deprecated activation warning was removed.
+- `bash -n scripts/build_app.sh scripts/install.sh`: passed. A local `.app` was packaged and opened for review; no download artifact was released.
+- `scripts/install.sh` installed successfully into a temporary directory with `T3_CODE_BAR_SKIP_OPEN=1`. The resource bundle and license/notices were present. A second install was refused with a nonzero exit code and did not modify the existing binary. The installer’s normal auto-open branch has not been separately tested.
+- Local Markdown links were valid. The README uses the author-provided PNG at its original size, including the menu bar; no generated illustration is used. Workflow syntax and `.gitignore` rules were checked earlier.
+- The current SQL query successfully reads the local projection database through a read-only connection without printing thread titles or content. This is a compatibility check, not a benchmark or full application UAT.
+- Release binary: arm64, linker-signed ad hoc, without Developer ID; notarization was not performed.
+- The user confirmed that approval/input appears correctly. The snooze regression has automated coverage; a dedicated manual snooze UAT has not been completed. GitHub workflow execution and the full checklist below remain unverified.
 
-## Kiểm thử thủ công trước khi chia sẻ
+## Manual checks before wider sharing
 
-1. Chạy T3 Code rồi `swift run T3CodeBar`; xác nhận biểu tượng menu bar xuất hiện.
-2. Tạo lượt chạy, yêu cầu approval và user input; đối chiếu thread/nhãn với T3 Code. Kiểm tra thêm thread đang snooze được đánh thức khi có yêu cầu hoặc completion mới; xem thread trong T3 Code và kiểm tra Woke theo dữ liệu visit đã lưu.
-3. Click thread, Copy Link và Open in Browser; thử instance dùng port khác nếu có.
-4. Thoát T3 Code: banner Offline hiện và badge hoạt động tắt. Mở lại: dữ liệu cập nhật trở lại.
-5. Dùng `T3_CODE_BAR_STATE_DIR` trỏ tới một thư mục tạm không có database: xác nhận báo thiếu dữ liệu; không sửa/xóa database thật để thử lỗi.
-6. Cuộn danh sách dài, kiểm tra title/branch/provider và click phải biểu tượng để thoát.
-7. Nếu dùng script đóng gói local, mở app từ Finder ở ngoài thư mục source để kiểm tra resource bundle.
+1. Start T3 Code and run `swift run T3CodeBar`; confirm the menu bar icon appears.
+2. Start a run, request approval and user input, and compare the row and label with T3 Code. Also verify that a snoozed thread wakes for a request or new completion, then check Woke against the persisted visit data.
+3. Click a thread, copy its link, and open it in the browser; try a different runtime port if available.
+4. Quit T3 Code: the Offline banner should appear and the activity badge should turn off. Reopen T3 Code and confirm data updates again.
+5. Set `T3_CODE_BAR_STATE_DIR` to a temporary directory without a database and confirm the missing-data error; do not modify or delete the real database to create an error.
+6. Scroll a long list, inspect title/branch/provider data, and right-click the menu bar icon to quit.
+7. If using local packaging, open the app from Finder outside the source directory and confirm the resource bundle loads.
 
-Các bước này là checklist, không phải tuyên bố đã hoàn tất UAT. Chưa có kiểm chứng Intel, Gatekeeper hay notarization. Chưa có benchmark RAM/CPU/độ trễ.
+This is a checklist, not a claim that all UAT is complete. Intel, Gatekeeper, notarization, and RAM/CPU/latency benchmarks have not been verified.
 
-## Trước commit đầu tiên
+## Repository hygiene
 
-Trước mỗi commit, kiểm tra danh sách staged để chỉ đưa source, tài nguyên cần thiết, test, script, workflow, README/docs và giấy phép. `.build/`, `build/`, `.local-reference/`, database và file môi trường được loại bởi `.gitignore`.
-
-Không đưa ảnh chụp có tên thread, đường dẫn dự án hoặc nội dung cá nhân lên public nếu chưa làm sạch dữ liệu.
+Keep generated `.build/`, `build/`, `.local-reference/`, database, and environment files out of commits; `.gitignore` covers these paths. Do not publish screenshots containing private thread names, project paths, or message content without redacting them.

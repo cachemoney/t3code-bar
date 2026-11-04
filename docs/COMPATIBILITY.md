@@ -1,15 +1,15 @@
-# Tương thích với T3 Code
+# T3 Code compatibility
 
-Đối chiếu ngày 2026-11-04:
+Checked on 2026-11-04.
 
-- Source tham khảo: repository `pingdotgg/t3code`, revision `21a3669cee0c6fb54f5afe065cf0eb0348bd232c`.
-- Các nguồn tham khảo chính: `apps/web/src/components/Sidebar.logic.ts`, `packages/client-runtime/src/state/threadSort.ts`, `packages/client-runtime/src/state/threadSettled.ts`, `apps/server/src/orchestration/ThreadBackgroundLiveness.ts`, `apps/server/src/config.ts`.
-- Runtime local được kiểm tra metadata: `0.1.7-nightly.20261104.4151`.
-- Runtime đã cài và source tham khảo không được coi là cùng một revision: schema projection v2 được xác minh trực tiếp từ database local; không suy ra chứng nhận tương thích với mọi build T3 Code từ source trên.
+- Reference repository: `pingdotgg/t3code`, revision `21a3669cee0c6fb54f5afe065cf0eb0348bd232c`.
+- Main references: `apps/web/src/components/Sidebar.logic.ts`, `packages/client-runtime/src/state/threadSort.ts`, `packages/client-runtime/src/state/threadSettled.ts`, `apps/server/src/orchestration/ThreadBackgroundLiveness.ts`, and `apps/server/src/config.ts`.
+- Local runtime metadata checked: `0.1.7-nightly.20261104.4151`.
+- The installed runtime and reference source are not treated as the same revision. Projection-v2 schema was verified directly against the local database; this does not certify compatibility with every T3 Code build.
 
-## Hợp đồng SQLite
+## SQLite contract
 
-App yêu cầu các bảng sau, với các cột được truy vấn trong `Sources/Data/DatabaseManager.swift`:
+The app requires these tables and queries them from `Sources/Data/DatabaseManager.swift`:
 
 - `orchestration_v2_projection_threads`
 - `orchestration_v2_projection_runs`
@@ -20,30 +20,30 @@ App yêu cầu các bảng sau, với các cột được truy vấn trong `Sour
 - `projection_projects`
 - `projection_thread_pull_requests`
 
-Các thuộc tính inbox như `settledAt`, `snoozedAt`, `snoozedUntil`, `pinnedAt`, `pinOrderKey`, `activeOrderKey`, `lineage` và `lastVisitedAt` được đọc từ JSON payload. Không sửa schema, tạo index hay migrate dữ liệu của T3 Code. Khi SQL không chuẩn bị được vì thiếu bảng/cột, app báo lỗi tương thích thay vì hiển thị inbox trống.
+Inbox properties such as `settledAt`, `snoozedAt`, `snoozedUntil`, `pinnedAt`, `pinOrderKey`, `activeOrderKey`, `lineage`, and `lastVisitedAt` are read from JSON payloads. The app does not change the schema, create indexes, or migrate T3 Code data. If SQL preparation fails because a table or column is missing, the app reports an incompatibility instead of showing an empty inbox.
 
-App mở SQLite read-only; không dùng `immutable=1`, để vẫn đọc thay đổi trong WAL. Mỗi lượt đọc mở và đóng kết nối; chờ lock tối đa 250 ms. Lỗi khi bước qua kết quả không được coi là đọc thành công một phần.
+SQLite is opened read-only. The app does not use `immutable=1`, so changes in the WAL remain visible. Each poll opens and closes its connection and waits up to 250 ms for a lock. Errors while stepping through results are never treated as partial success.
 
-## Snooze và Woke
+## Snooze and Woke
 
-Snooze được phân loại sau khi đọc trạng thái, không loại thread bằng SQL chỉ dựa vào giờ hẹn. Approval/input pending luôn vượt snooze; completion của lượt hiển thị sau `snoozedAt` hoặc lỗi phiên mới cũng đánh thức sớm. Phiên được lấy từ payload provider-thread có `last_run_ordinal` lớn nhất (`status`, `updatedAt`); đây là ánh xạ projection-v2 local cho dữ liệu session của source tham khảo. Không suy đoán lỗi mới từ `thread.updated_at`.
+Snooze is classified after the row is read; a thread is not filtered in SQL solely because its scheduled time is in the future. Pending approval/input always outranks snooze. A completion after `snoozedAt` or a fresh session error also wakes the thread early. The session is read from the provider-thread payload with the highest `last_run_ordinal` (`status` and `updatedAt`); this is the local projection-v2 mapping for the session data used by the reference implementation. The app does not infer a new error from `thread.updated_at`.
 
-Woke dùng mốc completion nếu completion đánh thức sớm, nếu không dùng thời gian session/snooze cho sự kiện cần chú ý, hoặc giờ hẹn cho timer wake. So sánh với `lastVisitedAt` đã persistence để xác định còn chưa xem. Ngày snooze không hợp lệ không làm ẩn thread. Bar không sửa snooze/visit và không gọi API acknowledge riêng của sidebar; chỉ phản ánh dữ liệu đã lưu.
+Woke uses the completion timestamp for an early completion wake, the session/snooze event timestamp for another attention event, or the scheduled time for a timer wake. It compares that timestamp with persisted `lastVisitedAt` to determine whether the wake is still unread. Invalid snooze dates never hide a thread. Bar does not change snooze or visit fields and does not call the sidebar's separate acknowledgment API; it reflects persisted data.
 
-## Những gì không thể suy ra từ SQLite này
+## What SQLite cannot provide
 
-`ThreadBackgroundLivenessService` của source tham khảo dùng registry trong bộ nhớ, không persistence. Nó phân biệt agent/workflow đang chạy với vòng watch chỉ theo dõi. App hiện không kết nối tới runtime service này và không suy đoán trạng thái từ task cũ trong lịch sử.
+The reference `ThreadBackgroundLivenessService` uses an in-memory registry rather than persistence. It distinguishes an active agent/workflow from a watch loop. T3 Code Bar does not connect to that runtime service and does not infer current work from old task history.
 
-Source tham khảo dùng `lastVisitedAt` trong state của client. Bản nightly local đã cài còn persistence trường này vào payload của `orchestration_v2_projection_threads`; app đọc trường đó trực tiếp. Done chỉ hiện nếu lượt hiển thị gần nhất có status completed và `completedAt > lastVisitedAt` hợp lệ. Đã xem, bằng mốc hoàn thành hoặc thiếu mốc đã xem hợp lệ thì hiện thời gian. Khi T3 Code lưu lần xem mới, lần poll tiếp theo của Bar tự cập nhật; Bar không tự ghi mốc đã xem khi người dùng click link. Những bản chỉ lưu visit trong localStorage mà không persistence vào projection sẽ không có chỉ báo Done này. T3 Code Bar vẫn giữ các nhãn riêng Goal, Failed, Woke và không tuyên bố giống hoàn toàn sidebar.
+The reference client uses `lastVisitedAt` in client state. The installed nightly also persists this field in `orchestration_v2_projection_threads.payload_json`, so Bar reads it directly. Done appears only when the latest visible run has status `completed` and a valid `completedAt > lastVisitedAt`. After a visit, or when the visit timestamp is missing/invalid, the row shows time. When T3 Code persists a newer visit, Bar updates on its next poll; clicking a link in Bar does not write the visit timestamp. Versions that keep visits only in browser localStorage cannot provide this Done indicator. T3 Code Bar retains its own Goal, Failed, and Woke labels and does not claim complete sidebar parity.
 
-Nguồn dữ liệu cố định cho một instance local. Không ghép remote environment, không tự phát hiện tất cả instance, không truy cập token hoặc kho credential.
+Data is read from one fixed local instance. The app does not merge remote environments, discover every local instance, or access tokens or credential stores.
 
-## Kiến trúc và phân phối
+## Architecture and distribution
 
 - macOS deployment target: 14.0.
-- Kiến trúc đã kiểm tra local: arm64.
-- x86_64 và universal binary: chưa kiểm tra.
-- Binary local: linker-signed ad hoc, không Developer ID, chưa notarize.
-- `.app` sẵn có trong `build/` là output local, có thể cũ hơn source; không phải artifact phát hành và không được commit.
+- Locally tested architecture: arm64.
+- x86_64 and universal binaries: not tested.
+- Local Release binary: linker-signed ad hoc, without Developer ID, and not notarized.
+- Any `.app` under `build/` is local output, may be older than the source, is not a release artifact, and is excluded from Git.
 
-Việc build thành công không thay thế kiểm thử thao tác người dùng, Gatekeeper hoặc xác nhận trên máy khác.
+A successful build does not replace user-acceptance testing, Gatekeeper testing, or validation on another Mac.
