@@ -81,3 +81,19 @@ struct BadgeTests {
         #expect(inputSummary.badgeCount == 2)
     }
 }
+
+struct AttentionTrackerTests {
+    @Test func alertsOnlyOnTransitionIntoAttention() {
+        var tracker = AttentionTracker()
+        #expect(tracker.update(with: [makeThread(id: "a", approvals: 1)]).isEmpty)
+        #expect(tracker.update(with: [makeThread(id: "a", approvals: 1)]).isEmpty)
+
+        let alerts = tracker.update(with: [makeThread(id: "a", approvals: 1), makeThread(id: "b", inputs: 1)])
+        #expect(alerts.map(\.threadId) == ["b"])
+        #expect(alerts.first?.status == .input)
+
+        #expect(tracker.update(with: [makeThread(id: "a", active: "running"), makeThread(id: "b", inputs: 1)]).isEmpty)
+        let again = tracker.update(with: [makeThread(id: "a", approvals: 1), makeThread(id: "b", inputs: 1)])
+        #expect(again.map(\.threadId) == ["a"])
+    }
+}

@@ -11,6 +11,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var panelHeight: CGFloat = 160
     private var clickMonitor: Any?
     private var widthObserver: AnyCancellable?
+    private let notifier = AttentionNotifier()
+    private var refreshObserver: AnyCancellable?
     private var hostingController: NSHostingController<PopoverView>!
 
     static func main() {
@@ -26,6 +28,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         configureStatusItem()
         configurePopover()
         installContextMenuMonitor()
+        refreshObserver = monitor.$lastRefreshedAt.compactMap { $0 }.sink { [weak self] _ in
+            guard let self else { return }
+            self.notifier.process(self.monitor.activeThreads)
+        }
     }
 
     func applicationDidResignActive(_ notification: Notification) {
