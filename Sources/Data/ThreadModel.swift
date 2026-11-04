@@ -40,6 +40,13 @@ public enum ThreadStatus: Equatable, Hashable, Sendable {
         }
     }
 
+    public var showsLabelInMenuBar: Bool {
+        switch self {
+        case .approval, .input, .woke, .planReady, .failed: return true
+        default: return false
+        }
+    }
+
     public var isRunning: Bool {
         switch self {
         case .connecting, .working, .goal: return true

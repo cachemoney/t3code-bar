@@ -52,6 +52,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         updateWidth()
         widthObserver = monitor.objectWillChange.sink { _ in
             DispatchQueue.main.async { updateWidth() }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { updateWidth() }
         }
         button.action = #selector(togglePopover(_:))
         button.target = self
