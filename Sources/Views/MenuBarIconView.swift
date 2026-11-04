@@ -14,7 +14,7 @@ public struct MenuBarIconView: View {
         HStack(spacing: 3) {
             Image(nsImage: MenuBarIconGenerator.createIcon(status: status, activeCount: activeCount))
 
-            if activeCount > 1 || (activeCount == 1 && !status.isRunning) {
+            if activeCount > 1 {
                 Text("\(activeCount)")
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .foregroundStyle(status.isRunning ? Color.primary : status.color)
