@@ -2,45 +2,46 @@ name: Swift checks
 
 on:
   push:
+    tags-ignore:
+      - "**"
     paths-ignore:
       - "**/*.md"
       - "LICENSE"
       - ".gitignore"
   pull_request:
-    paths-ignore:
-      - "**/*.md"
-      - "LICENSE"
-      - ".gitignore"
   workflow_dispatch:
 
 permissions:
   contents: read
 
-# One run per ref. Cancel superseded PR runs so a stale commit does not hold a
-# runner slot while the newer one waits.
+# One run per ref, and a superseded commit never keeps a runner slot while the
+# newer push waits for capacity.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
 
 jobs:
-  # Trusted commits run on the self-hosted machine, where there is no queue.
-  # Only pushes (collaborators only) and dispatches from main qualify:
-  # pull_request is excluded on purpose, because the runner is a real Mac and a
-  # fork PR can rewrite this workflow file to target it.
-  local:
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
-    uses: ./.github/workflows/check.yml
-    with:
-      runner: '["self-hosted", "t3code-bar"]'
-    permissions:
-      contents: read
-
-  # Everything else stays on GitHub-hosted runners, where untrusted code is
-  # someone else's problem.
-  hosted:
-    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main')
-    uses: ./.github/workflows/check.yml
-    with:
-      runner: '["macos-15"]'
-    permissions:
-      contents: read
+  test-and-build:
+    # macOS arm64 hosted capacity is the slow part, so cap the job itself and
+    # keep the work identical across every ref.
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - name: Toolchain
+        run: swift --version
+      - name: Cache SwiftPM build
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .build
+          # Keyed on the manifest only, so a source change still reuses the
+          # dependency build instead of starting from an empty .build.
+          key: ${{ runner.os }}-${{ runner.arch }}-swift-${{ hashFiles('Package.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-swift-
+      - name: Release build and tests
+        run: swift test -c release
+      - name: Script syntax
+        run: bash -n scripts/build_app.sh scripts/install.sh scripts/setup_hooks.sh

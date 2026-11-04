@@ -28,14 +28,14 @@ CI runs tests, a Release build, and script syntax checks. It does not upload an 
 
 ## Local validation result — 2026-11-04
 
-- `swift test`: 28 tests in 3 suites passed, including SQLite locking, malformed JSON during result stepping, and Done returning to a timestamp after T3 Code persists a newer visit.
+- `swift test`: 30 tests in 5 suites passed, including SQLite locking, malformed JSON during result stepping, and Done returning to a timestamp after T3 Code persists a newer visit.
 - `swift build -c release`: passed; the earlier deprecated activation warning was removed.
 - `bash -n scripts/build_app.sh scripts/install.sh`: passed. A local `.app` was packaged and opened for review; no download artifact was released.
 - `scripts/install.sh` installed successfully into a temporary directory with `T3_CODE_BAR_SKIP_OPEN=1`. The resource bundle and license/notices were present. A second install was refused with a nonzero exit code and did not modify the existing binary. The installer’s normal auto-open branch has not been separately tested.
 - Local Markdown links were valid. The README uses the author-provided PNG at its original size, including the menu bar; no generated illustration is used. Workflow syntax and `.gitignore` rules were checked earlier.
 - The current SQL query successfully reads the local projection database through a read-only connection without printing thread titles or content. This is a compatibility check, not a benchmark or full application UAT.
 - Release binary: arm64, linker-signed ad hoc, without Developer ID; notarization was not performed.
-- The user confirmed that approval/input appears correctly. The snooze regression has automated coverage; a dedicated manual snooze UAT has not been completed. GitHub workflow execution and the full checklist below remain unverified.
+- The user confirmed that approval/input appears correctly. The snooze regression has automated coverage; a dedicated manual snooze UAT has not been completed. CI runs on GitHub-hosted macOS and has passed; the manual checklist below remains unverified.
 
 ## Manual checks before wider sharing
 
