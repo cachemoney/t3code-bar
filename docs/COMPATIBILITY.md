@@ -14,7 +14,6 @@ The app requires these tables and queries them from `Sources/Data/DatabaseManage
 - `orchestration_v2_projection_threads`
 - `orchestration_v2_projection_runs`
 - `orchestration_v2_projection_runtime_requests`
-- `orchestration_v2_projection_plans`
 - `orchestration_v2_projection_provider_threads`
 - `orchestration_v2_projection_messages`
 - `projection_projects`

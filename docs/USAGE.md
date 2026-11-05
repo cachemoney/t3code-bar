@@ -8,12 +8,11 @@ Reference for thread states, configuration, troubleshooting, and known limitatio
 | --- | --- |
 | Approval / Input | The thread is waiting for you to approve an action or answer a question. |
 | Request | A guest on a shared link has a message waiting for you to send or dismiss. |
-| Connecting / Working / Goal | The saved run state indicates startup or work in progress. |
+| Working / Goal | A run is starting, running or paused on a wait. T3 Code shows all of these as Working. |
 | Waiting | The thread has never run, or its run is only waiting on other threads (`t3_thread_wait`, or `delegate_task` in wait mode). Gray, and not counted as running. |
 | Failed | The latest visible run failed. |
 | Limited | The latest visible run failed because the provider's usage limit was reached. Shown in amber, as in T3 Code, and not as a failure. When the failure records a reset time, the row shows it (for example `Limited · 2h`) and the tooltip says when it resets; many failures record none. |
 | Woke | A snoozed thread has woken and its wake timestamp is newer than the persisted last visit, or no valid visit is available. |
-| Plan Ready | A proposed plan is ready in plan mode. |
 | Done | The latest visible run completed after the last valid visit saved by T3 Code. |
 | Relative time | No higher-priority status applies; the row shows time based on the latest user message. |
 

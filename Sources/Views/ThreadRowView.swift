@@ -41,6 +41,37 @@ public struct ThreadRowView: View {
         return "\((hours + 23) / 24)d"
     }
 
+    /// One sentence for VoiceOver, so the row reads as a unit and status never depends on color.
+    /// An idle thread has no status worth announcing.
+    nonisolated static func accessibilityLabel(project: String, title: String, branch: String?, status: ThreadStatus) -> String {
+        var parts = [title, "in \(project)"]
+        if let branch, !branch.isEmpty { parts.append("on branch \(branch)") }
+        if status != .settled { parts.append(status.label) }
+        return parts.joined(separator: ", ")
+    }
+
+    private func pillSuffix(for status: ThreadStatus) -> String? {
+        switch status {
+        case .working(let started), .goal(let started):
+            return started.map(formatDuration)
+        case .waiting:
+            return thread.latestRunCompletedAt.map(formatDuration)
+        case .limited:
+            return thread.usageLimitResetAt.flatMap { Self.timeUntil($0) }.map { "· \($0)" }
+        default:
+            return nil
+        }
+    }
+
+    private func pillHelp(for status: ThreadStatus) -> String {
+        switch status {
+        case .done: return completionTooltip
+        case .limited: return limitHelp
+        case .request: return "A guest has a message waiting for you"
+        default: return status.label
+        }
+    }
+
     private var limitHelp: String {
         if let reset = thread.usageLimitResetAt, let until = Self.timeUntil(reset) {
             return "Usage limit reached. Resets in \(until)."
@@ -97,104 +128,16 @@ public struct ThreadRowView: View {
 
                 Spacer(minLength: 4)
 
-                // Right slot: Working / Goal / Woke / Input / Failed, or fallback to relative time
-                switch showsLiveStatus ? thread.status : .settled {
-                case .connecting:
-                    Text("Connecting")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(T3Theme.statusWorking)
-                case .working(let startedAt):
-                    HStack(spacing: 3) {
-                        Text("Working")
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(Color(hex: "#38bdf8"))
-                        if let started = startedAt {
-                            Text(formatDuration(started))
-                                .font(.system(size: 10, weight: .regular, design: .monospaced))
-                                .foregroundColor(Color(hex: "#38bdf8").opacity(0.85))
-                        }
-                    }
-                case .goal(let startedAt):
-                    HStack(spacing: 3) {
-                        Text("Goal")
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(Color(hex: "#38bdf8"))
-                        if let started = startedAt {
-                            Text(formatDuration(started))
-                                .font(.system(size: 10, weight: .regular, design: .monospaced))
-                                .foregroundColor(Color(hex: "#38bdf8").opacity(0.85))
-                        }
-                    }
-                case .woke:
-                    HStack(spacing: 3) {
-                        Image(systemName: "alarm.fill")
-                            .font(.system(size: 9))
-                            .foregroundColor(Color(hex: "#f59e0b"))
-                        Text("Woke")
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(Color(hex: "#f59e0b"))
-                    }
-                case .input:
-                    Text("Input")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(Color(hex: "#a5b4fc"))
-                case .approval:
-                    Text("Approval")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(Color(hex: "#fcd34d"))
-                case .failed:
-                    HStack(spacing: 3) {
-                        Image(systemName: "exclamationmark.circle")
-                            .font(.system(size: 9, weight: .semibold))
-                            .foregroundColor(Color(hex: "#f87171"))
-                        Text("Failed")
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(Color(hex: "#f87171"))
-                    }
-                case .limited:
-                    HStack(spacing: 3) {
-                        Image(systemName: "exclamationmark.circle")
-                            .font(.system(size: 9, weight: .semibold))
-                            .foregroundColor(Color(hex: "#fcd34d"))
-                        Text("Limited")
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(Color(hex: "#fcd34d"))
-                        if let reset = thread.usageLimitResetAt, let until = Self.timeUntil(reset) {
-                            Text("· \(until)")
-                                .font(.system(size: 11, weight: .regular))
-                                .foregroundColor(Color(hex: "#fcd34d").opacity(0.75))
-                        }
-                    }
-                    .help(limitHelp)
-                case .request:
-                    Text("Request")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(T3Theme.statusRequest)
-                        .help("A guest has a message waiting for you")
-                case .waiting:
-                    Text("Waiting")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(Color(hex: "#71717a"))
-                case .planReady:
-                    Text("Plan")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(Color(hex: "#c084fc"))
-                case .done:
-                    HStack(spacing: 4) {
-                        CompletionStatusIcon()
-                            .stroke(style: StrokeStyle(lineWidth: 14.0 / 12, lineCap: .round, lineJoin: .round))
-                            .frame(width: 14, height: 14)
-                            .accessibilityHidden(true)
-                        Text("Done")
-                            .font(.system(size: 11, weight: .medium))
-                    }
-                    .foregroundColor(T3Theme.statusDone)
-                    .help(completionTooltip)
-                case .settled:
+                // Right slot: the dot and label T3 Code's sidebar uses, or the idle time.
+                let status = showsLiveStatus ? thread.status : .settled
+                if status == .settled {
                     Text(formatRelativeTime(thread.latestUserMessageAt ?? thread.updatedAt))
-                        .font(.system(size: 11, weight: .regular))
-                        .foregroundColor(Color(hex: "#71717a"))
+                        .font(.system(size: 10, weight: .regular))
+                        .foregroundColor(T3Theme.textMuted)
                         .help(thread.latestRunStatus == "completed" && thread.latestRunCompletedAt != nil ? completionTooltip : "Last activity")
+                } else {
+                    StatusPill(status: status, suffix: pillSuffix(for: status))
+                        .help(pillHelp(for: status))
                 }
             }
 
@@ -249,6 +192,12 @@ public struct ThreadRowView: View {
         .buttonStyle(.plain)
         .focusable(false)
         .focusEffectDisabled()
+        .accessibilityLabel(Self.accessibilityLabel(
+            project: thread.projectTitle,
+            title: thread.title,
+            branch: hasGitBranch ? thread.branch : nil,
+            status: showsLiveStatus ? thread.status : .settled
+        ))
         .onHover { hovering in
             withAnimation(.easeInOut(duration: 0.12)) {
                 isHovered = hovering
@@ -278,20 +227,5 @@ public struct ThreadRowView: View {
                 AppLauncher.copyThreadLink(threadId: thread.id)
             }
         }
-    }
-}
-
-/// Matches the 24-point circle-check geometry used by T3 Code's sidebar.
-private struct CompletionStatusIcon: Shape {
-    func path(in rect: CGRect) -> Path {
-        let sx = rect.width / 24
-        let sy = rect.height / 24
-        var path = Path()
-        path.addEllipse(in: CGRect(x: rect.minX + 2 * sx, y: rect.minY + 2 * sy,
-                                   width: 20 * sx, height: 20 * sy))
-        path.move(to: CGPoint(x: rect.minX + 9 * sx, y: rect.minY + 12 * sy))
-        path.addLine(to: CGPoint(x: rect.minX + 11 * sx, y: rect.minY + 14 * sy))
-        path.addLine(to: CGPoint(x: rect.minX + 15 * sx, y: rect.minY + 10 * sy))
-        return path
     }
 }

@@ -214,8 +214,6 @@ public actor DatabaseManager {
             json_extract(t.payload_json, '$.branch') as branch,
             json_extract(t.payload_json, '$.worktreePath') as worktree_path,
             json_extract(t.payload_json, '$.modelSelection.model') as model_name,
-            t.interaction_mode,
-            CASE WHEN (SELECT COUNT(*) FROM orchestration_v2_projection_plans plan WHERE plan.thread_id = t.thread_id AND plan.status = 'ready') > 0 THEN 1 ELSE 0 END as has_plan,
             (SELECT number FROM projection_thread_pull_requests pr WHERE pr.thread_id = t.thread_id LIMIT 1) as pr_number,
             CASE WHEN json_extract(t.payload_json, '$.pinnedAt') IS NOT NULL THEN 1 ELSE 0 END as is_pinned,
             CASE WHEN json_extract(t.payload_json, '$.settledAt') IS NOT NULL THEN 1 ELSE 0 END as is_settled,
@@ -337,27 +335,25 @@ public actor DatabaseManager {
             let branch = sqlite3_column_text(stmt, 13).map { String(cString: $0) }
             let worktreePath = sqlite3_column_text(stmt, 14).map { String(cString: $0) }
             let modelName = sqlite3_column_text(stmt, 15).map { String(cString: $0) }
-            let interactionMode = sqlite3_column_text(stmt, 16).map { String(cString: $0) }
-            let hasPlan = sqlite3_column_int(stmt, 17) > 0
-            let prNumber: Int? = sqlite3_column_type(stmt, 18) != SQLITE_NULL ? Int(sqlite3_column_int(stmt, 18)) : nil
-            let isPinned = sqlite3_column_int(stmt, 19) > 0
-            let isSettled = sqlite3_column_int(stmt, 20) > 0
-            let snoozedUntil = parseDate(text(stmt, 21))
-            let hasGoal = sqlite3_column_int(stmt, 22) > 0
-            let snoozedAt = parseDate(text(stmt, 23))
-            let pinOrderKey = sqlite3_column_text(stmt, 24).map { String(cString: $0) }
-            let activeOrderKey = sqlite3_column_text(stmt, 25).map { String(cString: $0) }
-            let providerHistoryStr = sqlite3_column_text(stmt, 26).map { String(cString: $0) }
-            let latestUserMessageAtStr = sqlite3_column_text(stmt, 27).map { String(cString: $0) }
-            let projectIconJson = sqlite3_column_text(stmt, 28).map { String(cString: $0) }
-            let projectFaviconPath = sqlite3_column_text(stmt, 29).map { String(cString: $0) }
-            let workspaceRoot = sqlite3_column_text(stmt, 30).map { String(cString: $0) }
-            let unsettledAtStr = sqlite3_column_text(stmt, 31).map { String(cString: $0) }
-            let lastVisitedAtStr = text(stmt, 32)
-            let failure = parseFailure(text(stmt, 35))
-            let pendingGuestMessages = Int(sqlite3_column_int(stmt, 36))
-            let hasRuns = sqlite3_column_int(stmt, 37) > 0
-            let blockedOnThreadWait = sqlite3_column_int(stmt, 38) > 0
+            let prNumber: Int? = sqlite3_column_type(stmt, 16) != SQLITE_NULL ? Int(sqlite3_column_int(stmt, 16)) : nil
+            let isPinned = sqlite3_column_int(stmt, 17) > 0
+            let isSettled = sqlite3_column_int(stmt, 18) > 0
+            let snoozedUntil = parseDate(text(stmt, 19))
+            let hasGoal = sqlite3_column_int(stmt, 20) > 0
+            let snoozedAt = parseDate(text(stmt, 21))
+            let pinOrderKey = sqlite3_column_text(stmt, 22).map { String(cString: $0) }
+            let activeOrderKey = sqlite3_column_text(stmt, 23).map { String(cString: $0) }
+            let providerHistoryStr = sqlite3_column_text(stmt, 24).map { String(cString: $0) }
+            let latestUserMessageAtStr = sqlite3_column_text(stmt, 25).map { String(cString: $0) }
+            let projectIconJson = sqlite3_column_text(stmt, 26).map { String(cString: $0) }
+            let projectFaviconPath = sqlite3_column_text(stmt, 27).map { String(cString: $0) }
+            let workspaceRoot = sqlite3_column_text(stmt, 28).map { String(cString: $0) }
+            let unsettledAtStr = sqlite3_column_text(stmt, 29).map { String(cString: $0) }
+            let lastVisitedAtStr = text(stmt, 30)
+            let failure = parseFailure(text(stmt, 33))
+            let pendingGuestMessages = Int(sqlite3_column_int(stmt, 34))
+            let hasRuns = sqlite3_column_int(stmt, 35) > 0
+            let blockedOnThreadWait = sqlite3_column_int(stmt, 36) > 0
 
             let providers = providerHistoryStr?
                 .split(separator: ",")
@@ -369,7 +365,7 @@ public actor DatabaseManager {
             }
             let lastVisitedAt = parseDate(lastVisitedAtStr)
             let completedAt = parseDate(latestRunCompletedAtStr)
-            let sessionUpdatedAt = parseDate(text(stmt, 34))
+            let sessionUpdatedAt = parseDate(text(stmt, 32))
             // Match T3 Code's raised-hand precedence without modifying persisted snooze fields.
             let completedWhileSnoozed: Bool
             if latestRunStatus == "completed", let snoozedAt, let completedAt {
@@ -377,7 +373,7 @@ public actor DatabaseManager {
             } else {
                 completedWhileSnoozed = false
             }
-            let freshFailure = text(stmt, 33) == "error"
+            let freshFailure = text(stmt, 31) == "error"
                 && (snoozedAt.map { snooze in sessionUpdatedAt.map { $0 > snooze } ?? false } ?? true)
             let raisedHand = pendingApproval > 0 || pendingUserInput > 0
                 || freshFailure || completedWhileSnoozed
@@ -414,8 +410,6 @@ public actor DatabaseManager {
                 worktreePath: worktreePath,
                 modelName: modelName,
                 providers: providers,
-                interactionMode: interactionMode,
-                hasActionableProposedPlan: hasPlan,
                 hasGoal: hasGoal,
                 isPinned: isPinned,
                 isSettled: isSettled,

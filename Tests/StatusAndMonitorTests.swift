@@ -9,14 +9,14 @@ struct StatusAndMonitorTests {
     }
 
     @Test(arguments: ["starting", "preparing"])
-    func startupIsConnecting(_ status: String) {
-        #expect(makeThread(active: status).status == .connecting)
+    func startupCountsAsWorking(_ status: String) {
+        // T3 Code has no Connecting state: starting and preparing runs are Working.
+        #expect(makeThread(active: status).status.label == "Working")
     }
 
-    @Test func waitingGoalPlanAndFailure() {
+    @Test func waitingGoalAndFailure() {
         #expect(makeThread(active: "waiting").status.label == "Working")
         #expect(makeThread(active: "running", goal: true).status.label == "Goal")
-        #expect(makeThread(plan: true).status == .planReady)
         #expect(makeThread(latest: "failed").status == .failed)
         #expect(makeThread(woke: true).status == .woke)
     }

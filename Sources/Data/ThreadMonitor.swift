@@ -14,7 +14,7 @@ public struct ThreadSummary: Equatable, Sendable {
             if current.priority > status.priority { status = current }
             if current.isAttention { attentionCount += 1 }
             switch current {
-            case .connecting, .working, .goal: runningCount += 1
+            case .working, .goal: runningCount += 1
             default: break
             }
         }

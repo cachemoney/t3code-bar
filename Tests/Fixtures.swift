@@ -25,7 +25,6 @@ final class DatabaseFixture {
               thread_id TEXT, status TEXT, payload_json TEXT, ordinal INTEGER, run_id TEXT,
               requested_at TEXT, completed_at TEXT);
             CREATE TABLE orchestration_v2_projection_runtime_requests (thread_id TEXT, status TEXT, kind TEXT);
-            CREATE TABLE orchestration_v2_projection_plans (thread_id TEXT, status TEXT);
             CREATE TABLE projection_thread_pull_requests (thread_id TEXT, number INTEGER);
             CREATE TABLE orchestration_v2_projection_provider_threads (thread_id TEXT, payload_json TEXT, last_run_ordinal INTEGER);
             CREATE TABLE orchestration_v2_projection_messages (thread_id TEXT, updated_at TEXT, role TEXT);
@@ -73,7 +72,7 @@ final class DatabaseFixture {
 }
 
 func makeThread(id: String = "t", active: String? = nil, latest: String? = nil, approvals: Int = 0,
-                inputs: Int = 0, plan: Bool = false, goal: Bool = false, woke: Bool = false,
+                inputs: Int = 0, goal: Bool = false, woke: Bool = false,
                 lastVisitedAt: Date? = Date(timeIntervalSince1970: 0)) -> ThreadItem {
     ThreadItem(id: id, projectId: "p", projectTitle: "Project", title: "Thread \(id)",
                createdAt: Date(timeIntervalSince1970: 0), updatedAt: Date(timeIntervalSince1970: 0),
@@ -81,8 +80,7 @@ func makeThread(id: String = "t", active: String? = nil, latest: String? = nil, 
                latestRunStatus: latest, latestRunStartedAt: nil,
                latestRunCompletedAt: latest == "completed" ? Date(timeIntervalSince1970: 1) : nil,
                pendingUserInputCount: inputs, pendingApprovalCount: approvals, branch: nil, worktreePath: nil,
-               modelName: nil, providers: [], interactionMode: plan ? "plan" : "default",
-               hasActionableProposedPlan: plan, hasGoal: goal, isPinned: false, isSettled: false,
+               modelName: nil, providers: [], hasGoal: goal, isPinned: false, isSettled: false,
                isSnoozed: false, isWoke: woke, pinOrderKey: nil, activeOrderKey: nil, prNumber: nil,
                projectIconJson: nil, projectFaviconPath: nil, workspaceRoot: nil, unsettledAt: nil,
                lastVisitedAt: lastVisitedAt)

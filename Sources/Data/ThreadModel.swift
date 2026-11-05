@@ -2,7 +2,6 @@ import Foundation
 import SwiftUI
 
 public enum ThreadStatus: Equatable, Hashable, Sendable {
-    case connecting
     case working(startedAt: Date?)
     case goal(startedAt: Date?)
     case approval
@@ -10,7 +9,6 @@ public enum ThreadStatus: Equatable, Hashable, Sendable {
     /// A guest on a shared link has a message waiting for the owner.
     case request
     case woke
-    case planReady
     case failed
     /// The thread is idle or is blocked waiting on another thread, so nothing is running here.
     case waiting
@@ -21,14 +19,12 @@ public enum ThreadStatus: Equatable, Hashable, Sendable {
 
     public var label: String {
         switch self {
-        case .connecting: return "Connecting"
         case .working: return "Working"
         case .goal: return "Goal"
         case .approval: return "Approval"
         case .input: return "Input"
         case .request: return "Request"
         case .woke: return "Woke"
-        case .planReady: return "Plan Ready"
         case .failed: return "Failed"
         case .limited: return "Limited"
         case .waiting: return "Waiting"
@@ -39,11 +35,10 @@ public enum ThreadStatus: Equatable, Hashable, Sendable {
 
     public var color: Color {
         switch self {
-        case .connecting, .working, .goal: return T3Theme.statusWorking
+        case .working, .goal: return T3Theme.statusWorking
         case .approval, .woke, .limited: return T3Theme.statusApproval
         case .input: return T3Theme.statusInput
         case .request: return T3Theme.statusRequest
-        case .planReady: return Color(hex: "#c084fc")
         case .failed: return T3Theme.statusFailed
         case .done: return T3Theme.statusDone
         case .settled, .waiting: return T3Theme.statusSettled
@@ -52,21 +47,21 @@ public enum ThreadStatus: Equatable, Hashable, Sendable {
 
     public var showsLabelInMenuBar: Bool {
         switch self {
-        case .approval, .input, .request, .woke, .planReady, .failed, .limited: return true
+        case .approval, .input, .request, .woke, .failed, .limited: return true
         default: return false
         }
     }
 
     public var isRunning: Bool {
         switch self {
-        case .connecting, .working, .goal: return true
+        case .working, .goal: return true
         default: return false
         }
     }
 
     public var isAttention: Bool {
         switch self {
-        case .connecting, .working, .goal, .approval, .input, .request, .planReady, .failed, .limited, .woke:
+        case .working, .goal, .approval, .input, .request, .failed, .limited, .woke:
             return true
         default:
             return false
@@ -78,10 +73,9 @@ public enum ThreadStatus: Equatable, Hashable, Sendable {
         case .approval: return 8
         case .input, .request: return 7
         case .goal: return 6
-        case .connecting, .working: return 5
+        case .working: return 5
         case .failed, .limited: return 4
         case .woke: return 3
-        case .planReady: return 2
         case .done: return 1
         case .settled, .waiting: return 0
         }
@@ -107,8 +101,6 @@ public struct ThreadItem: Identifiable, Equatable, Sendable {
     public let worktreePath: String?
     public let modelName: String?
     public let providers: [String]
-    public let interactionMode: String?
-    public let hasActionableProposedPlan: Bool
     public let hasGoal: Bool
     public let isPinned: Bool
     public let isSettled: Bool
@@ -143,13 +135,11 @@ public struct ThreadItem: Identifiable, Equatable, Sendable {
         if pendingGuestMessageCount > 0 {
             return .request
         }
-        if activeRunStatus == "starting" || activeRunStatus == "preparing" {
-            return .connecting
-        }
         if activeRunStatus == "running" && isBlockedOnThreadWait {
             return .waiting
         }
-        if activeRunStatus == "running" || activeRunStatus == "waiting" {
+        // T3 Code counts startup and a paused wait as Working too; it has no Connecting state.
+        if let run = activeRunStatus, ["starting", "preparing", "running", "waiting"].contains(run) {
             if hasGoal {
                 return .goal(startedAt: activeRunStartedAt ?? latestRunStartedAt ?? updatedAt)
             }
@@ -160,9 +150,6 @@ public struct ThreadItem: Identifiable, Equatable, Sendable {
         }
         if isWoke {
             return .woke
-        }
-        if interactionMode == "plan" && hasActionableProposedPlan {
-            return .planReady
         }
         if !hasRuns {
             return .waiting

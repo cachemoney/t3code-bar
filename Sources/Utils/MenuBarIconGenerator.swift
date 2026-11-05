@@ -73,24 +73,7 @@ public enum MenuBarIconGenerator {
                 NSColor.black.setFill()
                 outlinePath.fill()
 
-                // Status dot color
-                let dotColor: NSColor
-                switch status {
-                case .connecting, .working, .goal:
-                    dotColor = NSColor(calibratedRed: 0.22, green: 0.74, blue: 0.97, alpha: 1.0) // Sky
-                case .approval, .woke, .limited:
-                    dotColor = NSColor(calibratedRed: 0.99, green: 0.83, blue: 0.30, alpha: 1.0) // Amber
-                case .input:
-                    dotColor = NSColor(calibratedRed: 0.65, green: 0.71, blue: 0.99, alpha: 1.0) // Indigo
-                case .request:
-                    dotColor = NSColor(calibratedRed: 0.94, green: 0.67, blue: 0.99, alpha: 1.0) // Fuchsia
-                case .failed:
-                    dotColor = NSColor(calibratedRed: 0.99, green: 0.65, blue: 0.65, alpha: 1.0) // Red
-                case .done:
-                    dotColor = NSColor(calibratedRed: 0.43, green: 0.91, blue: 0.72, alpha: 1.0) // Emerald
-                default:
-                    dotColor = NSColor(calibratedRed: 0.86, green: 0.15, blue: 0.47, alpha: 1.0) // Pink
-                }
+                let dotColor = NSColor(status.color)
 
                 let dotPath = NSBezierPath(ovalIn: dotRect)
                 dotColor.setFill()
