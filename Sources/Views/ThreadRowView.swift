@@ -31,7 +31,7 @@ public struct ThreadRowView: View {
 
     /// How long until a future time, such as a usage limit reset: "45m", "2h", "3d".
     /// Nil once the time has passed, because then there is nothing left to wait for.
-    static func timeUntil(_ date: Date, now: Date = Date()) -> String? {
+    nonisolated static func timeUntil(_ date: Date, now: Date = Date()) -> String? {
         let seconds = Int(date.timeIntervalSince(now).rounded(.up))
         guard seconds > 0 else { return nil }
         let minutes = max(1, (seconds + 59) / 60)
