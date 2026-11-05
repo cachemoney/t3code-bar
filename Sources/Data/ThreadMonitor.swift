@@ -34,20 +34,14 @@ public final class ThreadMonitor: ObservableObject {
     @Published public private(set) var readError: DatabaseReadError?
     @Published public private(set) var summary = ThreadSummary(threads: [], isServerOnline: false)
     @Published public private(set) var lastRefreshedAt: Date?
-    @Published public var searchQuery = ""
+    /// Set after every read, failed or not, so the UI can tell a retry has finished.
+    @Published public private(set) var lastAttemptAt: Date?
 
     public var overallStatus: ThreadStatus { summary.status }
     public var attentionCount: Int { summary.attentionCount }
     public var runningCount: Int { summary.runningCount }
     public var badgeCount: Int { summary.badgeCount }
     public var canShowLiveStatus: Bool { isServerOnline && readError == nil }
-    public var visibleThreads: [ThreadItem] {
-        let query = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !query.isEmpty else { return activeThreads }
-        return activeThreads.filter {
-            $0.title.localizedCaseInsensitiveContains(query) || $0.projectTitle.localizedCaseInsensitiveContains(query)
-        }
-    }
 
     private let database: DatabaseManager
     private var timer: Timer?
@@ -93,6 +87,7 @@ public final class ThreadMonitor: ObservableObject {
 
     func apply(_ result: Result<ThreadSnapshot, DatabaseReadError>) {
         isLoading = false
+        lastAttemptAt = Date()
         switch result {
         case .success(let snapshot):
             activeThreads = snapshot.threads

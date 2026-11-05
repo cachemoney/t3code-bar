@@ -3,6 +3,7 @@ import SwiftUI
 public struct PopoverView: View {
     @ObservedObject var monitor: ThreadMonitor
     @State private var contentHeight: CGFloat = 0
+    @State private var isRetrying = false
 
     private let onHeightChange: (CGFloat) -> Void
 
@@ -16,11 +17,11 @@ public struct PopoverView: View {
         if contentHeight > 0 {
             return min(contentHeight, maxHeight)
         }
-        if monitor.visibleThreads.isEmpty {
+        if monitor.activeThreads.isEmpty {
             return 160
         }
         var total: CGFloat = 12
-        for thread in monitor.visibleThreads {
+        for thread in monitor.activeThreads {
             let hasBranch = !(thread.branch?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
             total += (hasBranch ? 63 : 47) + 2
         }
@@ -41,19 +42,10 @@ public struct PopoverView: View {
                     } else if !monitor.isServerOnline {
                         notice("T3 Code offline · showing saved threads", symbol: "wifi.slash")
                     }
-                    if !monitor.isLoading && monitor.visibleThreads.isEmpty && monitor.readError == nil {
-                        VStack(spacing: 8) {
-                            Image(systemName: "tray")
-                                .font(.system(size: 20))
-                                .foregroundColor(Color(hex: "#52525b"))
-                            Text(monitor.searchQuery.isEmpty ? "No active threads" : "No matching threads")
-                                .font(.system(size: 12))
-                                .foregroundColor(Color(hex: "#71717a"))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 32)
+                    if !monitor.isLoading && monitor.activeThreads.isEmpty && monitor.readError == nil {
+                        emptyState
                     } else {
-                        ForEach(monitor.visibleThreads) { thread in
+                        ForEach(monitor.activeThreads) { thread in
                             ThreadRowView(thread: thread, showsLiveStatus: monitor.canShowLiveStatus) {
                                 AppLauncher.openThread(thread: thread)
                             }
@@ -86,21 +78,64 @@ public struct PopoverView: View {
         .preferredColorScheme(.dark)
     }
 
+    private var emptyState: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "tray")
+                .font(.system(size: 20))
+                .foregroundColor(T3Theme.textFaint)
+                .accessibilityHidden(true)
+            Text("No active threads")
+                .font(.system(size: 12))
+                .foregroundColor(T3Theme.textMuted)
+            Button("Open T3 Code", action: AppLauncher.activateT3Code)
+                .buttonStyle(.borderless)
+                .font(.system(size: 12))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 28)
+    }
+
     private func notice(_ text: String, symbol: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Label(text, systemImage: symbol)
                 .font(.system(size: 12))
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
-            HStack {
+            HStack(spacing: 12) {
                 Button("Open T3 Code", action: AppLauncher.activateT3Code)
-                Button("Retry", action: monitor.refresh)
+                Button(action: retry) {
+                    if isRetrying {
+                        HStack(spacing: 5) {
+                            ProgressView().controlSize(.mini)
+                            Text("Retrying…")
+                        }
+                    } else {
+                        Text("Retry")
+                    }
+                }
+                .disabled(isRetrying)
             }
             .buttonStyle(.borderless)
             .font(.system(size: 12))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
+    }
+
+    /// Waits for the read that follows the click, then holds the spinner briefly: a read takes
+    /// milliseconds, and a spinner that never paints looks like a button that did nothing.
+    private func retry() {
+        isRetrying = true
+        let started = Date()
+        monitor.refresh()
+        Task { @MainActor in
+            let deadline = started.addingTimeInterval(10)
+            while (monitor.lastAttemptAt ?? .distantPast) <= started, Date() < deadline {
+                try? await Task.sleep(for: .milliseconds(50))
+            }
+            try? await Task.sleep(for: .milliseconds(500))
+            isRetrying = false
+        }
     }
 }
 

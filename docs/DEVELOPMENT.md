@@ -5,7 +5,7 @@
 - `Sources/Config/EnvironmentConfig.swift`: resolves the data directory, runtime metadata, and environment ID, then builds URLs.
 - `Sources/Data/DatabaseManager.swift`: owns read-only SQLite access and date parsing on an actor; returns `Sendable` data or explicit errors.
 - `Sources/Data/ThreadModel.swift`: derives status from persisted projection data.
-- `Sources/Data/ThreadMonitor.swift`: allows one asynchronous read at a time and aggregates the badge from the full inbox independently of search filtering.
+- `Sources/Data/ThreadMonitor.swift`: allows one asynchronous read at a time and aggregates the badge from the full inbox.
 - `Sources/Views/PopoverView.swift`: renders the list and loading/offline/error states; stale data does not display live labels.
 - `Sources/Utils/AppLauncher.swift`: opens applications and links through macOS and reports failures.
 - `Tests/`: isolated SQLite fixtures in temporary directories; no personal database or real server is used.
@@ -55,7 +55,7 @@ swift build -c release
 bash -n scripts/build_app.sh scripts/install.sh
 ```
 
-The tests cover inboxes larger than 50 threads, pin ordering, hidden threads, silent/cancelled/queued runs, status priority, unread completion, persisted visits and later completions, missing/invalid visits, offline and read-error recovery, search without losing global badge counts, custom data directories, runtime ports, URL encoding, and missing configuration. Snooze regressions cover pending approval/input, completion and session errors before/equal/after snoozing, resolved requests, Woke after a visit, and invalid dates.
+The tests cover inboxes larger than 50 threads, pin ordering, hidden threads, silent/cancelled/queued runs, status priority, unread completion, persisted visits and later completions, missing/invalid visits, offline and read-error recovery, custom data directories, runtime ports, URL encoding, and missing configuration. Snooze regressions cover pending approval/input, completion and session errors before/equal/after snoozing, resolved requests, Woke after a visit, and invalid dates.
 
 Every check must return exit code 0. A build, test, or syntax failure returns a nonzero code. With Swift Testing, verify the final summary reports tests actually executed and all passed; the XCTest compatibility summary may separately report zero tests because this project uses Swift Testing.
 

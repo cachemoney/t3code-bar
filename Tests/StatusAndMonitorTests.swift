@@ -29,15 +29,6 @@ struct StatusAndMonitorTests {
         #expect(makeThread().status == .settled)
     }
 
-    @Test @MainActor func searchDoesNotHideGlobalActivity() {
-        let monitor = ThreadMonitor(startsMonitoring: false)
-        monitor.apply(.success(ThreadSnapshot(threads: [makeThread(id: "visible"), makeThread(id: "hidden", active: "running")], isServerOnline: true)))
-        monitor.searchQuery = "visible"
-        #expect(monitor.visibleThreads.map(\.id) == ["visible"])
-        #expect(monitor.runningCount == 1)
-        #expect(monitor.overallStatus.label == "Working")
-    }
-
     @Test @MainActor func readFailurePreservesListButClearsLiveStatusAndRecovers() {
         let monitor = ThreadMonitor(startsMonitoring: false)
         let snapshot = ThreadSnapshot(threads: [makeThread(active: "running")], isServerOnline: true)

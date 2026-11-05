@@ -23,6 +23,16 @@ struct RowAccessibilityTests {
     }
 }
 
+struct RetryFeedbackTests {
+    @Test @MainActor func aFailedReadStillMarksTheAttemptSoARetryCanFinish() {
+        let monitor = ThreadMonitor(startsMonitoring: false)
+        #expect(monitor.lastAttemptAt == nil)
+        monitor.apply(.failure(.busy))
+        #expect(monitor.lastAttemptAt != nil)
+        #expect(monitor.lastRefreshedAt == nil)
+    }
+}
+
 struct StatusIconTests {
     @Test @MainActor func everyIconShipsAndLoads() {
         for icon in StatusIcon.allCases {
