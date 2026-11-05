@@ -1,6 +1,9 @@
 import SwiftUI
 
 public struct PopoverView: View {
+    /// Tall enough for a full list plus one expanded preview; longer lists scroll.
+    public static let maxHeight: CGFloat = 560
+
     @ObservedObject var monitor: ThreadMonitor
     @State private var contentHeight: CGFloat = 0
     @State private var isRetrying = false
@@ -13,7 +16,7 @@ public struct PopoverView: View {
     }
 
     private var effectiveHeight: CGFloat {
-        let maxHeight: CGFloat = 480
+        let maxHeight = Self.maxHeight
         if contentHeight > 0 {
             return min(contentHeight, maxHeight)
         }
@@ -46,7 +49,8 @@ public struct PopoverView: View {
                         emptyState
                     } else {
                         ForEach(monitor.activeThreads) { thread in
-                            ThreadRowView(thread: thread, showsLiveStatus: monitor.canShowLiveStatus) {
+                            ThreadRowView(thread: thread, showsLiveStatus: monitor.canShowLiveStatus,
+                                          loadPreview: { await monitor.preview(for: $0) }) {
                                 AppLauncher.openThread(thread: thread)
                             }
                         }
@@ -71,9 +75,12 @@ public struct PopoverView: View {
                 onHeightChange(effectiveHeight)
             }
         }
+        // The window is resized by AppDelegate. The content fills it and stays pinned to the top.
+        // A fixed height here would be animated separately from the window, and the hosting view
+        // centers fixed-size content, so for a moment the rows would slide under a resting pointer:
+        // the hovered row loses hover and its preview closes again.
         .frame(width: 320)
-        .frame(height: effectiveHeight)
-        .animation(.easeInOut(duration: 0.15), value: effectiveHeight)
+        .frame(maxHeight: .infinity, alignment: .top)
         .background(T3Theme.canvas)
         .preferredColorScheme(.dark)
     }

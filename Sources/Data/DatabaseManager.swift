@@ -41,6 +41,41 @@ public actor DatabaseManager {
         ThreadSnapshot(threads: try fetchActiveThreads(), isServerOnline: config.isServerOnline)
     }
 
+    /// The start of the thread's latest assistant reply, for the hover preview.
+    ///
+    /// Reads only `messages`, through its `(thread_id, created_at)` index: one row, text capped in SQL.
+    /// `turn_items` payloads run to a megabyte and are never touched here.
+    public func preview(threadId: String) throws -> ThreadPreview? {
+        let db = try openDatabase()
+        defer { sqlite3_close(db) }
+
+        var statement: OpaquePointer?
+        let sql = """
+        SELECT substr(json_extract(payload_json, '$.text'), 1, 4000), updated_at
+        FROM orchestration_v2_projection_messages
+        WHERE thread_id = ?1 AND role = 'assistant'
+          AND COALESCE(json_extract(payload_json, '$.text'), '') != ''
+        ORDER BY created_at DESC
+        LIMIT 1
+        """
+        let prepared = sqlite3_prepare_v2(db, sql, -1, &statement, nil)
+        guard prepared == SQLITE_OK, let statement else {
+            throw prepared == SQLITE_ERROR ? DatabaseReadError.incompatibleSchema : readError(code: prepared, db: db)
+        }
+        defer { sqlite3_finalize(statement) }
+        sqlite3_bind_text(statement, 1, threadId, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self))
+
+        switch sqlite3_step(statement) {
+        case SQLITE_ROW:
+            let excerpt = PreviewText.excerpt(text(statement, 0) ?? "")
+            return excerpt.isEmpty ? nil : ThreadPreview(text: excerpt, updatedAt: parseDate(text(statement, 1)))
+        case SQLITE_DONE:
+            return nil
+        case let code:
+            throw readError(code: code, db: db)
+        }
+    }
+
     /// Reads `class` and `resetAt` from a `failure` object. Anything else is ignored.
     private func parseFailure(_ json: String?) -> (failureClass: String?, resetAt: Date?) {
         guard let data = json?.data(using: .utf8),

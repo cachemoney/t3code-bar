@@ -27,7 +27,7 @@ final class DatabaseFixture {
             CREATE TABLE orchestration_v2_projection_runtime_requests (thread_id TEXT, status TEXT, kind TEXT);
             CREATE TABLE projection_thread_pull_requests (thread_id TEXT, number INTEGER);
             CREATE TABLE orchestration_v2_projection_provider_threads (thread_id TEXT, payload_json TEXT, last_run_ordinal INTEGER);
-            CREATE TABLE orchestration_v2_projection_messages (thread_id TEXT, updated_at TEXT, role TEXT);
+            CREATE TABLE orchestration_v2_projection_messages (thread_id TEXT, role TEXT, created_at TEXT, updated_at TEXT, payload_json TEXT);
             """)
         }
     }
@@ -66,6 +66,12 @@ final class DatabaseFixture {
     func run(_ thread: String, status: String, ordinal: Int = 1, payload: String = "{}", completedAt: String = "") throws {
         try execute("INSERT INTO orchestration_v2_projection_runs VALUES (?, ?, ?, ?, ?, '2026-11-04T00:00:00Z', NULLIF(?, ''))",
                     values: [thread, status, payload, String(ordinal), "run-\(thread)-\(ordinal)", completedAt])
+    }
+
+    func message(_ thread: String, role: String = "assistant", text: String, createdAt: String) throws {
+        let payload = (try? JSONSerialization.data(withJSONObject: ["text": text])).flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
+        try execute("INSERT INTO orchestration_v2_projection_messages VALUES (?, ?, ?, ?, ?)",
+                    values: [thread, role, createdAt, createdAt, payload])
     }
 
     enum FixtureError: Error { case sql }

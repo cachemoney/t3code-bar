@@ -24,6 +24,10 @@ Archived, deleted, and settled threads, side chats, and separate subagent thread
 
 Click a thread to open it in T3 Code. Right-click a thread for **Open in T3 Code**, **Open in Browser**, or **Copy Link**.
 
+## Previews and the menu bar icon menu
+
+Rest the pointer on a thread for half a second and its row expands to show the start of the thread's last assistant reply (up to five lines, code blocks left out) and how long ago it was sent. Moving away closes it. Previews read only the `messages` table, never the large turn items, and show real message text, so turn them off with **Show Previews** in the menu you get by right-clicking the menu bar icon. The same menu has **Mute Notifications**.
+
 Browser links use `127.0.0.1` and the port configured by your local T3 Code instance. Your browser session may need sign-in or pairing. Opening links in T3 Code requires its `t3code://` URL scheme to be registered.
 
 ## Launch at login

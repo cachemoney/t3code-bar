@@ -85,6 +85,11 @@ public final class ThreadMonitor: ObservableObject {
         }
     }
 
+    /// A preview is a convenience, so a failed read is simply no preview.
+    public func preview(for threadId: String) async -> ThreadPreview? {
+        try? await database.preview(threadId: threadId)
+    }
+
     func apply(_ result: Result<ThreadSnapshot, DatabaseReadError>) {
         isLoading = false
         lastAttemptAt = Date()

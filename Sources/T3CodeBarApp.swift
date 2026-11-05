@@ -110,7 +110,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func resizePanel(to height: CGFloat) {
-        panelHeight = min(max(height, 80), 480)
+        panelHeight = min(max(height, 80), PopoverView.maxHeight)
         if panel.isVisible { positionPanel() } else { panel.setContentSize(NSSize(width: 320, height: panelHeight)) }
     }
 
@@ -125,15 +125,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         panel.setFrame(NSRect(x: x, y: anchor.minY - 6 - size.height, width: size.width, height: size.height), display: true)
     }
 
-    private func addMuteItem(to menu: NSMenu) {
-        let item = NSMenuItem(title: "Mute Notifications", action: #selector(toggleMuteNotifications), keyEquivalent: "")
-        item.target = self
-        item.state = notifier.isMuted ? .on : .off
-        menu.addItem(item)
+    private func addToggleItems(to menu: NSMenu) {
+        let mute = NSMenuItem(title: "Mute Notifications", action: #selector(toggleMuteNotifications), keyEquivalent: "")
+        mute.target = self
+        mute.state = notifier.isMuted ? .on : .off
+        menu.addItem(mute)
+
+        let previews = NSMenuItem(title: "Show Previews", action: #selector(togglePreviews), keyEquivalent: "")
+        previews.target = self
+        previews.state = PreviewSettings.isEnabled ? .on : .off
+        menu.addItem(previews)
         menu.addItem(.separator())
     }
 
     @objc private func toggleMuteNotifications() { notifier.toggleMute() }
+
+    @objc private func togglePreviews() {
+        UserDefaults.standard.set(!PreviewSettings.isEnabled, forKey: PreviewSettings.key)
+    }
 
     private func installContextMenuMonitor() {
         NSEvent.addLocalMonitorForEvents(matching: [.rightMouseDown, .rightMouseUp]) { event in
@@ -144,7 +153,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
             if event.type == .rightMouseDown {
                 let menu = NSMenu()
-                MainActor.assumeIsolated { self.addMuteItem(to: menu) }
+                MainActor.assumeIsolated { self.addToggleItems(to: menu) }
                 let quitItem = NSMenuItem(
                     title: "Quit T3 Code Bar",
                     action: #selector(NSApplication.terminate(_:)),

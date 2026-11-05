@@ -5,11 +5,23 @@ public struct ThreadRowView: View {
     public let onSelect: () -> Void
     public let showsLiveStatus: Bool
     @State private var isHovered = false
+    @StateObject private var previews: PreviewController
+    @AppStorage(PreviewSettings.key) private var showsPreviews = true
 
-    public init(thread: ThreadItem, showsLiveStatus: Bool = true, onSelect: @escaping () -> Void) {
+    public init(thread: ThreadItem, showsLiveStatus: Bool = true,
+                loadPreview: @escaping @MainActor (String) async -> ThreadPreview? = { _ in nil },
+                onSelect: @escaping () -> Void) {
         self.thread = thread
         self.showsLiveStatus = showsLiveStatus
         self.onSelect = onSelect
+        _previews = StateObject(wrappedValue: PreviewController(load: loadPreview))
+    }
+
+    private func previewAge(_ preview: ThreadPreview) -> String? {
+        preview.updatedAt.map { date in
+            let relative = formatRelativeTime(date)
+            return relative == "now" ? "just now" : "\(relative) ago"
+        }
     }
 
     private func formatRelativeTime(_ date: Date) -> String {
@@ -179,7 +191,13 @@ public struct ThreadRowView: View {
                 }
                 .padding(.top, 1)
             }
+
+            if showsPreviews, let preview = previews.preview {
+                PreviewBlock(preview: preview, age: previewAge(preview))
+                    .transition(.opacity)
+            }
         }
+        .animation(.easeInOut(duration: 0.18), value: previews.preview)
         .padding(.horizontal, 10)
         .padding(.vertical, 7)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -202,6 +220,7 @@ public struct ThreadRowView: View {
             withAnimation(.easeInOut(duration: 0.12)) {
                 isHovered = hovering
             }
+            previews.hover(hovering && showsPreviews, threadId: thread.id)
             if hovering {
                 NSCursor.pointingHand.push()
             } else {
@@ -209,7 +228,11 @@ public struct ThreadRowView: View {
             }
         }
         .pointingHandCursor()
+        .onChange(of: showsPreviews) { _, isOn in
+            if !isOn { previews.hover(false, threadId: thread.id) }
+        }
         .onDisappear {
+            previews.hover(false, threadId: thread.id)
             if isHovered {
                 NSCursor.pop()
                 isHovered = false
