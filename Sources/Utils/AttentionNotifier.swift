@@ -1,5 +1,5 @@
 import Foundation
-import UserNotifications
+@preconcurrency import UserNotifications
 
 public struct AttentionAlert: Equatable, Sendable {
     public let threadId: String

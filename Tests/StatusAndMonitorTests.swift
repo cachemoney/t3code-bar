@@ -6,8 +6,6 @@ struct StatusAndMonitorTests {
     @Test func attentionOutranksWork() {
         #expect(makeThread(active: "running", approvals: 1, inputs: 1).status == .approval)
         #expect(makeThread(active: "running", inputs: 1).status == .input)
-        #expect(!ThreadStatus.approval.shouldPulse)
-        #expect(!ThreadStatus.input.shouldPulse)
     }
 
     @Test(arguments: ["starting", "preparing"])

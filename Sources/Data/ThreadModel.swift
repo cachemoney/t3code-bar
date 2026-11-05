@@ -64,15 +64,6 @@ public enum ThreadStatus: Equatable, Hashable, Sendable {
         }
     }
 
-    public var shouldPulse: Bool {
-        switch self {
-        case .connecting, .working, .goal:
-            return true
-        default:
-            return false
-        }
-    }
-
     public var isAttention: Bool {
         switch self {
         case .connecting, .working, .goal, .approval, .input, .request, .planReady, .failed, .limited, .woke:
@@ -182,9 +173,5 @@ public struct ThreadItem: Identifiable, Equatable, Sendable {
             return .done
         }
         return .settled
-    }
-
-    public var isActiveAttention: Bool {
-        return !isSettled && !isSnoozed
     }
 }
