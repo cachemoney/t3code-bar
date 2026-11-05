@@ -82,7 +82,7 @@ public struct PopoverView: View {
         .frame(width: 320)
         .frame(height: effectiveHeight)
         .animation(.easeInOut(duration: 0.15), value: effectiveHeight)
-        .background(Color(hex: "#000000"))
+        .background(T3Theme.canvas)
         .preferredColorScheme(.dark)
     }
 

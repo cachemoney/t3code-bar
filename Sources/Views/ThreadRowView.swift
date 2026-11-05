@@ -118,12 +118,12 @@ public struct ThreadRowView: View {
                     Image(systemName: "pin.fill")
                         .font(.system(size: 9))
                         .rotationEffect(.degrees(-45))
-                        .foregroundColor(Color(hex: "#71717a"))
+                        .foregroundColor(T3Theme.textMuted)
                 }
 
                 Text(thread.projectTitle)
                     .font(.system(size: 12.5, weight: .regular))
-                    .foregroundColor(isHovered ? Color(hex: "#d1d5db") : Color(hex: "#9ca3af"))
+                    .foregroundColor(isHovered ? T3Theme.textHover : T3Theme.textSecondary)
                     .lineLimit(1)
 
                 Spacer(minLength: 4)
@@ -146,7 +146,7 @@ public struct ThreadRowView: View {
                 // Line 2: [Thread Title]
                 Text(thread.title)
                     .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(isHovered ? Color.white : Color(hex: "#f4f4f5"))
+                    .foregroundColor(isHovered ? Color.white : T3Theme.textPrimary)
                     .lineLimit(1)
                     .truncationMode(.tail)
                     .padding(.top, 1)
@@ -155,7 +155,7 @@ public struct ThreadRowView: View {
                 HStack(alignment: .center, spacing: 6) {
                     Text(thread.branch ?? "")
                         .font(.system(size: 11, weight: .regular))
-                        .foregroundColor(isHovered ? Color(hex: "#9ca3af") : Color(hex: "#71717a"))
+                        .foregroundColor(isHovered ? T3Theme.textSecondary : T3Theme.textMuted)
                         .lineLimit(1)
 
                     Spacer()
@@ -169,7 +169,7 @@ public struct ThreadRowView: View {
                 HStack(alignment: .center, spacing: 6) {
                     Text(thread.title)
                         .font(.system(size: 13, weight: .medium))
-                        .foregroundColor(isHovered ? Color.white : Color(hex: "#f4f4f5"))
+                        .foregroundColor(isHovered ? Color.white : T3Theme.textPrimary)
                         .lineLimit(1)
                         .truncationMode(.tail)
 
@@ -185,7 +185,7 @@ public struct ThreadRowView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .fill(isHovered ? Color(hex: "#1e1e1e") : Color.clear)
+                .fill(isHovered ? T3Theme.rowHover : Color.clear)
         )
             .contentShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
         }

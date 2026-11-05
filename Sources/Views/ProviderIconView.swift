@@ -98,7 +98,7 @@ public struct ProviderIconView: View {
         let name = providers.first { ProviderKind.resolve($0) == .unknown } ?? "?"
         return Text(String(name.prefix(2)).uppercased())
             .font(.system(size: size * 0.5, weight: .semibold))
-            .foregroundColor(Color(hex: "#9ca3af"))
+            .foregroundColor(T3Theme.textSecondary)
             .frame(width: size, height: size)
     }
 }

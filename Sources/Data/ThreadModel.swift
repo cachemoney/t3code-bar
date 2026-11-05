@@ -41,7 +41,8 @@ public enum ThreadStatus: Equatable, Hashable, Sendable {
         case .request: return T3Theme.statusRequest
         case .failed: return T3Theme.statusFailed
         case .done: return T3Theme.statusDone
-        case .settled, .waiting: return T3Theme.statusSettled
+        case .waiting: return T3Theme.statusWaiting
+        case .settled: return T3Theme.statusSettled
         }
     }
 

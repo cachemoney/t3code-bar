@@ -4,43 +4,29 @@ public enum T3Theme {
     // Canvas & Outer - Pure OLED Black matching T3 Code
     public static let canvas = Color(hex: "#000000")
     public static let sidebar = Color(hex: "#000000")
-    public static let chrome = Color(hex: "#000000")
-
-    // Surfaces
-    public static let surface = Color(hex: "#111111")
-    public static let surfaceRaised = Color(hex: "#161616")
-    public static let surfaceOverlay = Color(hex: "#000000")
 
     // Borders
     public static let border = Color.white.opacity(0.08)
-    public static let sidebarBorder = Color.white.opacity(0.08)
-    public static let controlBorder = Color.white.opacity(0.12)
 
     // Rows & Controls - Exact T3 Code Dark Mode values
-    public static let controlSurface = Color(hex: "#121214")
-    public static let controlSurfaceHover = Color(hex: "#1e1e1e")
     public static let rowHover = Color(hex: "#1e1e1e")
-    public static let rowActive = Color(hex: "#262626")
-    public static let cardHover = Color(hex: "#1e1e1e")
 
     // Typography
     public static let textPrimary = Color(hex: "#f4f4f5")
     public static let textSecondary = Color(hex: "#a1a1aa")
-    public static let textMuted = Color(hex: "#71717a")
+    public static let textMuted = Color(hex: "#8b8b94") // 6:1 on black; the old #71717a was 4.4:1
+    public static let textHover = Color(hex: "#d1d5db")
+    public static let textFaint = Color(hex: "#52525b") // decorative only, never carries information
 
-    // Accents
-    public static let accent = Color(hex: "#38bdf8")
-    public static let accentSubtle = Color(hex: "#0284c7")
-    public static let focus = Color(hex: "#38bdf8")
-
-    // Status Tokens matching Sidebar.tsx exactly
-    public static let statusWorking = Color(hex: "#38bdf8") // Sky-400
-    public static let statusApproval = Color(hex: "#fcd34d") // Amber-300
+    // Status colors: T3 Code's dark-mode foreground tokens
+    public static let statusWorking = Color(hex: "#60a5fa") // blue-400, T3 Code info-foreground
+    public static let statusApproval = Color(hex: "#fbbf24") // amber-400, T3 Code warning-foreground
     public static let statusInput = Color(hex: "#a5b4fc") // Indigo-300
-    public static let statusDone = Color(hex: "#6ee7b7") // Emerald-300
+    public static let statusDone = Color(hex: "#34d399") // emerald-400, T3 Code success-foreground
     public static let statusFailed = Color(hex: "#f87171") // Red-400
     public static let statusRequest = Color(hex: "#f0abfc") // Fuchsia-300, T3 Code's guest color
-    public static let statusSettled = Color(hex: "#71717a")
+    public static let statusWaiting = Color(hex: "#a3a3a3") // neutral-400, T3 Code muted-foreground
+    public static let statusSettled = textMuted
 }
 
 extension Color {
