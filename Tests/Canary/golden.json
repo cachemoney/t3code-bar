@@ -1,0 +1,1738 @@
+{
+ "now": "2026-11-06T09:08:00Z",
+ "periods": {
+  "30 days": {
+   "cacheCreation": 1243110,
+   "cacheSavingsUsd": 12.9306839,
+   "cachedInput": 7232386,
+   "costBySpeed": {
+    "fast": 1.99368,
+    "premium": 1.493239,
+    "standard": 10.425297450000002,
+    "ultrafast": 2.441185
+   },
+   "costByType": {
+    "cacheRead": 3.7244519999999994,
+    "cacheWrite": 3.4172179999999996,
+    "input": 4.227858999999999,
+    "other": 0.32999545000000197,
+    "output": 3.160638000000001
+   },
+   "costUsd": 14.86016245,
+   "duplicatesDropped": 16,
+   "models": {
+    "claude/bar-model": {
+     "cost": 0.05399999999999999,
+     "records": 1,
+     "tokens": 52000,
+     "unpriced": 0
+    },
+    "claude/claude-haiku-4-5": {
+     "cost": 0.2526876,
+     "records": 3,
+     "tokens": 370767,
+     "unpriced": 0
+    },
+    "claude/claude-sonnet-5-5": {
+     "cost": 4.79183055,
+     "records": 26,
+     "tokens": 2445954,
+     "unpriced": 0
+    },
+    "claude/custom-model": {
+     "cost": 1.452801,
+     "records": 3,
+     "tokens": 536439,
+     "unpriced": 0
+    },
+    "claude/dual-model": {
+     "cost": 0.212,
+     "records": 1,
+     "tokens": 52000,
+     "unpriced": 0
+    },
+    "claude/foo-model": {
+     "cost": 0.0,
+     "records": 1,
+     "tokens": 52000,
+     "unpriced": 1
+    },
+    "claude/gpt-6.1-sol": {
+     "cost": 0.08621799999999999,
+     "records": 2,
+     "tokens": 39665,
+     "unpriced": 0
+    },
+    "claude/loop-x": {
+     "cost": 0.0,
+     "records": 3,
+     "tokens": 454979,
+     "unpriced": 3
+    },
+    "claude/opus": {
+     "cost": 0.0,
+     "records": 2,
+     "tokens": 312647,
+     "unpriced": 2
+    },
+    "codex/gpt-6-luna": {
+     "cost": 0.2684330999999999,
+     "records": 13,
+     "tokens": 1811144,
+     "unpriced": 0
+    },
+    "codex/gpt-6-stella": {
+     "cost": 2.3111487,
+     "records": 11,
+     "tokens": 2466052,
+     "unpriced": 0
+    },
+    "codex/gpt-6.1-sol": {
+     "cost": 2.5297799999999997,
+     "records": 20,
+     "tokens": 1128370,
+     "unpriced": 0
+    },
+    "grok/grok-5": {
+     "cost": 2.1465375,
+     "records": 6,
+     "tokens": 799551,
+     "unpriced": 0
+    },
+    "muse/gpt-6.1-sol": {
+     "cost": 0.31272600000000006,
+     "records": 1,
+     "tokens": 150047,
+     "unpriced": 0
+    },
+    "muse/muse-unpriced-x": {
+     "cost": 0.33,
+     "records": 1,
+     "tokens": 5500,
+     "unpriced": 0
+    },
+    "pi/anthropic/claude-sonnet-5-5": {
+     "cost": 0.11,
+     "records": 2,
+     "tokens": 13000,
+     "unpriced": 0
+    },
+    "pi/grok-5": {
+     "cost": 0.002,
+     "records": 1,
+     "tokens": 1750,
+     "unpriced": 0
+    }
+   },
+   "output": 289366,
+   "providers": {
+    "claude": {
+     "cost": 6.8495371500000015,
+     "records": 42,
+     "sessions": 5,
+     "tokens": 4316451
+    },
+    "codex": {
+     "cost": 5.1093618,
+     "records": 44,
+     "sessions": 3,
+     "tokens": 5405566
+    },
+    "grok": {
+     "cost": 2.1465375,
+     "records": 6,
+     "sessions": 1,
+     "tokens": 799551
+    },
+    "muse": {
+     "cost": 0.6427260000000001,
+     "records": 2,
+     "sessions": 2,
+     "tokens": 155547
+    },
+    "pi": {
+     "cost": 0.112,
+     "records": 3,
+     "sessions": 2,
+     "tokens": 14750
+    }
+   },
+   "reasoning": 18948,
+   "records": 97,
+   "series": {
+    "columns": {
+     "2026-10-08": {
+      "claude": {
+       "cost": 0.010725,
+       "tokens": 3700
+      },
+      "codex": {
+       "cost": 0.035082999999999996,
+       "tokens": 146899
+      }
+     },
+     "2026-10-09": {
+      "claude": {
+       "cost": 0.0,
+       "tokens": 100439
+      },
+      "grok": {
+       "cost": 0.47605875000000003,
+       "tokens": 211202
+      }
+     },
+     "2026-10-10": {
+      "claude": {
+       "cost": 0.3384575,
+       "tokens": 164728
+      },
+      "codex": {
+       "cost": 0.2766378,
+       "tokens": 89942
+      },
+      "muse": {
+       "cost": 0.31272600000000006,
+       "tokens": 150047
+      }
+     },
+     "2026-10-11": {
+      "claude": {
+       "cost": 0.31549905,
+       "tokens": 217143
+      }
+     },
+     "2026-10-12": {
+      "codex": {
+       "cost": 0.2517037,
+       "tokens": 411021
+      },
+      "grok": {
+       "cost": 0.3912725,
+       "tokens": 109902
+      }
+     },
+     "2026-10-13": {
+      "claude": {
+       "cost": 0.23492235,
+       "tokens": 53999
+      },
+      "codex": {
+       "cost": 0.027735799999999998,
+       "tokens": 133431
+      }
+     },
+     "2026-10-14": {
+      "claude": {
+       "cost": 0.48900705,
+       "tokens": 439231
+      },
+      "codex": {
+       "cost": 0.255516,
+       "tokens": 119470
+      }
+     },
+     "2026-10-15": {
+      "claude": {
+       "cost": 0.43011105,
+       "tokens": 266322
+      },
+      "grok": {
+       "cost": 0.35878750000000004,
+       "tokens": 146531
+      }
+     },
+     "2026-10-16": {
+      "codex": {
+       "cost": 0.16931000000000002,
+       "tokens": 52987
+      },
+      "grok": {
+       "cost": 0.1647475,
+       "tokens": 45254
+      }
+     },
+     "2026-10-17": {
+      "claude": {
+       "cost": 0.41421195,
+       "tokens": 196750
+      },
+      "codex": {
+       "cost": 0.22980999999999996,
+       "tokens": 102197
+      }
+     },
+     "2026-10-18": {
+      "claude": {
+       "cost": 0.08469055,
+       "tokens": 114057
+      },
+      "codex": {
+       "cost": 0.102388,
+       "tokens": 44938
+      }
+     },
+     "2026-10-19": {
+      "claude": {
+       "cost": 0.25786410000000004,
+       "tokens": 309004
+      },
+      "codex": {
+       "cost": 0.028358799999999997,
+       "tokens": 269088
+      }
+     },
+     "2026-10-21": {
+      "codex": {
+       "cost": 0.0100564,
+       "tokens": 95104
+      }
+     },
+     "2026-10-22": {
+      "claude": {
+       "cost": 0.35787405,
+       "tokens": 234759
+      },
+      "codex": {
+       "cost": 0.0172791,
+       "tokens": 165115
+      }
+     },
+     "2026-10-23": {
+      "claude": {
+       "cost": 0.14586375000000001,
+       "tokens": 141783
+      }
+     },
+     "2026-10-24": {
+      "claude": {
+       "cost": 0.0,
+       "tokens": 152266
+      }
+     },
+     "2026-10-25": {
+      "claude": {
+       "cost": 0.30054365,
+       "tokens": 476123
+      },
+      "codex": {
+       "cost": 0.3414814,
+       "tokens": 269049
+      }
+     },
+     "2026-10-26": {
+      "claude": {
+       "cost": 0.23948220000000003,
+       "tokens": 137082
+      },
+      "codex": {
+       "cost": 0.327826,
+       "tokens": 152161
+      }
+     },
+     "2026-10-27": {
+      "codex": {
+       "cost": 0.36764289999999994,
+       "tokens": 288757
+      }
+     },
+     "2026-10-28": {
+      "codex": {
+       "cost": 0.24833319999999998,
+       "tokens": 276444
+      }
+     },
+     "2026-10-29": {
+      "claude": {
+       "cost": 0.12520635,
+       "tokens": 52178
+      },
+      "codex": {
+       "cost": 0.032306999999999995,
+       "tokens": 286818
+      }
+     },
+     "2026-10-30": {
+      "claude": {
+       "cost": 0.2943435,
+       "tokens": 207711
+      }
+     },
+     "2026-10-31": {
+      "grok": {
+       "cost": 0.3578325,
+       "tokens": 192006
+      }
+     },
+     "2026-11-01": {
+      "claude": {
+       "cost": 0.010725,
+       "tokens": 3700
+      },
+      "codex": {
+       "cost": 0.32490129999999995,
+       "tokens": 188571
+      },
+      "grok": {
+       "cost": 0.39783874999999996,
+       "tokens": 94656
+      },
+      "pi": {
+       "cost": 0.002,
+       "tokens": 1750
+      }
+     },
+     "2026-11-02": {
+      "claude": {
+       "cost": 0.29118955,
+       "tokens": 265450
+      }
+     },
+     "2026-11-03": {
+      "claude": {
+       "cost": 0.266,
+       "tokens": 156000
+      },
+      "codex": {
+       "cost": 0.21708,
+       "tokens": 98580
+      }
+     },
+     "2026-11-04": {
+      "claude": {
+       "cost": 0.29333385,
+       "tokens": 235105
+      },
+      "codex": {
+       "cost": 0.43254,
+       "tokens": 196890
+      }
+     },
+     "2026-11-05": {
+      "claude": {
+       "cost": 1.9278566500000003,
+       "tokens": 381501
+      },
+      "codex": {
+       "cost": 0.4730134,
+       "tokens": 537661
+      },
+      "pi": {
+       "cost": 0.11,
+       "tokens": 13000
+      }
+     },
+     "2026-11-06": {
+      "claude": {
+       "cost": 0.02163,
+       "tokens": 7420
+      },
+      "codex": {
+       "cost": 0.9403579999999999,
+       "tokens": 1480443
+      },
+      "muse": {
+       "cost": 0.33,
+       "tokens": 5500
+      }
+     }
+    },
+    "resolution": "day"
+   },
+   "sessions": 13,
+   "totalTokens": 10691865,
+   "uncachedInput": 1927003,
+   "unpricedRecords": 6
+  },
+  "7 days": {
+   "cacheCreation": 238095,
+   "cacheSavingsUsd": 5.44305605,
+   "cachedInput": 2359037,
+   "costBySpeed": {
+    "fast": 1.428429,
+    "premium": 0.785618,
+    "standard": 4.072894,
+    "ultrafast": 0.894976
+   },
+   "costByType": {
+    "cacheRead": 1.4104990000000002,
+    "cacheWrite": 0.9079189999999998,
+    "input": 2.604796,
+    "other": 0.32999899999999993,
+    "output": 1.143086
+   },
+   "costUsd": 6.396299,
+   "duplicatesDropped": 16,
+   "models": {
+    "claude/bar-model": {
+     "cost": 0.05399999999999999,
+     "records": 1,
+     "tokens": 52000,
+     "unpriced": 0
+    },
+    "claude/claude-sonnet-5-5": {
+     "cost": 1.6385170500000001,
+     "records": 11,
+     "tokens": 537669,
+     "unpriced": 0
+    },
+    "claude/custom-model": {
+     "cost": 0.8200000000000002,
+     "records": 1,
+     "tokens": 164000,
+     "unpriced": 0
+    },
+    "claude/dual-model": {
+     "cost": 0.212,
+     "records": 1,
+     "tokens": 52000,
+     "unpriced": 0
+    },
+    "claude/foo-model": {
+     "cost": 0.0,
+     "records": 1,
+     "tokens": 52000,
+     "unpriced": 1
+    },
+    "claude/gpt-6.1-sol": {
+     "cost": 0.08621799999999999,
+     "records": 2,
+     "tokens": 39665,
+     "unpriced": 0
+    },
+    "claude/loop-x": {
+     "cost": 0.0,
+     "records": 1,
+     "tokens": 151842,
+     "unpriced": 1
+    },
+    "codex/gpt-6-luna": {
+     "cost": 0.05807079999999999,
+     "records": 2,
+     "tokens": 282954,
+     "unpriced": 0
+    },
+    "codex/gpt-6-stella": {
+     "cost": 1.2009759,
+     "records": 5,
+     "tokens": 1709576,
+     "unpriced": 0
+    },
+    "codex/gpt-6.1-sol": {
+     "cost": 1.1288459999999998,
+     "records": 14,
+     "tokens": 509615,
+     "unpriced": 0
+    },
+    "grok/grok-5": {
+     "cost": 0.75567125,
+     "records": 2,
+     "tokens": 286662,
+     "unpriced": 0
+    },
+    "muse/muse-unpriced-x": {
+     "cost": 0.33,
+     "records": 1,
+     "tokens": 5500,
+     "unpriced": 0
+    },
+    "pi/anthropic/claude-sonnet-5-5": {
+     "cost": 0.11,
+     "records": 2,
+     "tokens": 13000,
+     "unpriced": 0
+    },
+    "pi/grok-5": {
+     "cost": 0.002,
+     "records": 1,
+     "tokens": 1750,
+     "unpriced": 0
+    }
+   },
+   "output": 77099,
+   "providers": {
+    "claude": {
+     "cost": 2.81073505,
+     "records": 18,
+     "sessions": 5,
+     "tokens": 1049176
+    },
+    "codex": {
+     "cost": 2.3878926999999996,
+     "records": 21,
+     "sessions": 3,
+     "tokens": 2502145
+    },
+    "grok": {
+     "cost": 0.75567125,
+     "records": 2,
+     "sessions": 1,
+     "tokens": 286662
+    },
+    "muse": {
+     "cost": 0.33,
+     "records": 1,
+     "sessions": 1,
+     "tokens": 5500
+    },
+    "pi": {
+     "cost": 0.112,
+     "records": 3,
+     "sessions": 2,
+     "tokens": 14750
+    }
+   },
+   "reasoning": 7581,
+   "records": 45,
+   "series": {
+    "columns": {
+     "2026-10-31": {
+      "grok": {
+       "cost": 0.3578325,
+       "tokens": 192006
+      }
+     },
+     "2026-11-01": {
+      "claude": {
+       "cost": 0.010725,
+       "tokens": 3700
+      },
+      "codex": {
+       "cost": 0.32490129999999995,
+       "tokens": 188571
+      },
+      "grok": {
+       "cost": 0.39783874999999996,
+       "tokens": 94656
+      },
+      "pi": {
+       "cost": 0.002,
+       "tokens": 1750
+      }
+     },
+     "2026-11-02": {
+      "claude": {
+       "cost": 0.29118955,
+       "tokens": 265450
+      }
+     },
+     "2026-11-03": {
+      "claude": {
+       "cost": 0.266,
+       "tokens": 156000
+      },
+      "codex": {
+       "cost": 0.21708,
+       "tokens": 98580
+      }
+     },
+     "2026-11-04": {
+      "claude": {
+       "cost": 0.29333385,
+       "tokens": 235105
+      },
+      "codex": {
+       "cost": 0.43254,
+       "tokens": 196890
+      }
+     },
+     "2026-11-05": {
+      "claude": {
+       "cost": 1.9278566500000003,
+       "tokens": 381501
+      },
+      "codex": {
+       "cost": 0.4730134,
+       "tokens": 537661
+      },
+      "pi": {
+       "cost": 0.11,
+       "tokens": 13000
+      }
+     },
+     "2026-11-06": {
+      "claude": {
+       "cost": 0.02163,
+       "tokens": 7420
+      },
+      "codex": {
+       "cost": 0.9403579999999999,
+       "tokens": 1480443
+      },
+      "muse": {
+       "cost": 0.33,
+       "tokens": 5500
+      }
+     }
+    },
+    "resolution": "day"
+   },
+   "sessions": 12,
+   "totalTokens": 3858233,
+   "uncachedInput": 1184002,
+   "unpricedRecords": 2
+  },
+  "90 days": {
+   "cacheCreation": 3881403,
+   "cacheSavingsUsd": 31.92333374999999,
+   "cachedInput": 18766954,
+   "costBySpeed": {
+    "fast": 4.437340000000001,
+    "premium": 3.0375739999999998,
+    "standard": 55.9470734,
+    "ultrafast": 4.445685
+   },
+   "costByType": {
+    "cacheRead": 24.13684300000001,
+    "cacheWrite": 11.325339,
+    "input": 17.044410000000017,
+    "other": 0.3299853999999698,
+    "output": 11.993520999999994
+   },
+   "costUsd": 64.8300984,
+   "duplicatesDropped": 16,
+   "models": {
+    "claude/bar-model": {
+     "cost": 0.05399999999999999,
+     "records": 1,
+     "tokens": 52000,
+     "unpriced": 0
+    },
+    "claude/claude-haiku-4-5": {
+     "cost": 0.5896968,
+     "records": 8,
+     "tokens": 1139410,
+     "unpriced": 0
+    },
+    "claude/claude-opus-9[1m]": {
+     "cost": 20.30475,
+     "records": 9,
+     "tokens": 1217374,
+     "unpriced": 0
+    },
+    "claude/claude-sonnet-5-5": {
+     "cost": 18.608538449999998,
+     "records": 60,
+     "tokens": 8703015,
+     "unpriced": 0
+    },
+    "claude/custom-model": {
+     "cost": 2.5401870000000004,
+     "records": 7,
+     "tokens": 1076430,
+     "unpriced": 0
+    },
+    "claude/dual-model": {
+     "cost": 0.212,
+     "records": 1,
+     "tokens": 52000,
+     "unpriced": 0
+    },
+    "claude/foo-model": {
+     "cost": 0.0,
+     "records": 1,
+     "tokens": 52000,
+     "unpriced": 1
+    },
+    "claude/gpt-6.1-sol": {
+     "cost": 0.08621799999999999,
+     "records": 2,
+     "tokens": 39665,
+     "unpriced": 0
+    },
+    "claude/loop-x": {
+     "cost": 0.0,
+     "records": 5,
+     "tokens": 640670,
+     "unpriced": 5
+    },
+    "claude/opus": {
+     "cost": 0.0,
+     "records": 7,
+     "tokens": 950038,
+     "unpriced": 7
+    },
+    "codex/gpt-6-luna": {
+     "cost": 0.5124724,
+     "records": 28,
+     "tokens": 3569777,
+     "unpriced": 0
+    },
+    "codex/gpt-6-stella": {
+     "cost": 4.904885500000001,
+     "records": 28,
+     "tokens": 4843454,
+     "unpriced": 0
+    },
+    "codex/gpt-6.1-sol": {
+     "cost": 7.079228000000001,
+     "records": 37,
+     "tokens": 3104634,
+     "unpriced": 0
+    },
+    "grok/grok-5": {
+     "cost": 7.15731625,
+     "records": 20,
+     "tokens": 2672050,
+     "unpriced": 0
+    },
+    "muse/gpt-6.1-sol": {
+     "cost": 2.338806,
+     "records": 9,
+     "tokens": 1023339,
+     "unpriced": 0
+    },
+    "muse/muse-unpriced-x": {
+     "cost": 0.33,
+     "records": 3,
+     "tokens": 154168,
+     "unpriced": 2
+    },
+    "pi/anthropic/claude-sonnet-5-5": {
+     "cost": 0.11,
+     "records": 2,
+     "tokens": 13000,
+     "unpriced": 0
+    },
+    "pi/grok-5": {
+     "cost": 0.002,
+     "records": 1,
+     "tokens": 1750,
+     "unpriced": 0
+    }
+   },
+   "output": 896074,
+   "providers": {
+    "claude": {
+     "cost": 42.39539025000001,
+     "records": 101,
+     "sessions": 5,
+     "tokens": 13922602
+    },
+    "codex": {
+     "cost": 12.496585899999994,
+     "records": 93,
+     "sessions": 3,
+     "tokens": 11517865
+    },
+    "grok": {
+     "cost": 7.15731625,
+     "records": 20,
+     "sessions": 1,
+     "tokens": 2672050
+    },
+    "muse": {
+     "cost": 2.668806,
+     "records": 12,
+     "sessions": 2,
+     "tokens": 1177507
+    },
+    "pi": {
+     "cost": 0.112,
+     "records": 3,
+     "sessions": 2,
+     "tokens": 14750
+    }
+   },
+   "reasoning": 52357,
+   "records": 229,
+   "series": {
+    "columns": {
+     "2026-08-09": {
+      "claude": {
+       "cost": 0.010725,
+       "tokens": 3700
+      },
+      "codex": {
+       "cost": 0.35920599999999997,
+       "tokens": 154651
+      }
+     },
+     "2026-08-10": {
+      "claude": {
+       "cost": 5.318685,
+       "tokens": 324599
+      },
+      "codex": {
+       "cost": 0.0143166,
+       "tokens": 128206
+      },
+      "grok": {
+       "cost": 0.39145625,
+       "tokens": 213062
+      },
+      "muse": {
+       "cost": 0.0,
+       "tokens": 59704
+      }
+     },
+     "2026-08-12": {
+      "claude": {
+       "cost": 0.19481115000000002,
+       "tokens": 374252
+      },
+      "codex": {
+       "cost": 0.1286408,
+       "tokens": 97801
+      }
+     },
+     "2026-08-13": {
+      "codex": {
+       "cost": 0.250434,
+       "tokens": 117865
+      }
+     },
+     "2026-08-14": {
+      "claude": {
+       "cost": 0.06991535,
+       "tokens": 259551
+      },
+      "codex": {
+       "cost": 0.1633756,
+       "tokens": 284124
+      }
+     },
+     "2026-08-15": {
+      "codex": {
+       "cost": 0.539414,
+       "tokens": 241743
+      }
+     },
+     "2026-08-16": {
+      "codex": {
+       "cost": 0.0446711,
+       "tokens": 182528
+      },
+      "grok": {
+       "cost": 0.28436625000000004,
+       "tokens": 86191
+      }
+     },
+     "2026-08-17": {
+      "muse": {
+       "cost": 0.0,
+       "tokens": 88964
+      }
+     },
+     "2026-08-18": {
+      "claude": {
+       "cost": 1.9999223999999998,
+       "tokens": 461932
+      },
+      "codex": {
+       "cost": 0.018770000000000002,
+       "tokens": 182556
+      }
+     },
+     "2026-08-19": {
+      "claude": {
+       "cost": 0.485466,
+       "tokens": 341204
+      },
+      "grok": {
+       "cost": 0.24881125000000004,
+       "tokens": 68866
+      }
+     },
+     "2026-08-21": {
+      "claude": {
+       "cost": 1.5318450000000001,
+       "tokens": 76967
+      }
+     },
+     "2026-08-22": {
+      "codex": {
+       "cost": 0.2020321,
+       "tokens": 294176
+      },
+      "muse": {
+       "cost": 0.436768,
+       "tokens": 199356
+      }
+     },
+     "2026-08-24": {
+      "claude": {
+       "cost": 2.5275165,
+       "tokens": 592702
+      }
+     },
+     "2026-08-25": {
+      "codex": {
+       "cost": 0.53981,
+       "tokens": 210801
+      },
+      "muse": {
+       "cost": 0.5432299999999999,
+       "tokens": 243939
+      }
+     },
+     "2026-08-26": {
+      "claude": {
+       "cost": 3.0796884,
+       "tokens": 321612
+      },
+      "codex": {
+       "cost": 0.522899,
+       "tokens": 451079
+      }
+     },
+     "2026-08-27": {
+      "codex": {
+       "cost": 0.47861790000000004,
+       "tokens": 224614
+      }
+     },
+     "2026-08-28": {
+      "claude": {
+       "cost": 0.27950600000000003,
+       "tokens": 74281
+      }
+     },
+     "2026-08-29": {
+      "codex": {
+       "cost": 0.34126999999999996,
+       "tokens": 142551
+      },
+      "grok": {
+       "cost": 0.22600000000000003,
+       "tokens": 48749
+      }
+     },
+     "2026-08-30": {
+      "claude": {
+       "cost": 0.3557967,
+       "tokens": 355352
+      },
+      "codex": {
+       "cost": 0.08316399999999999,
+       "tokens": 40630
+      },
+      "grok": {
+       "cost": 1.000085,
+       "tokens": 413149
+      }
+     },
+     "2026-08-31": {
+      "codex": {
+       "cost": 0.124198,
+       "tokens": 46239
+      },
+      "grok": {
+       "cost": 0.29708124999999996,
+       "tokens": 125814
+      }
+     },
+     "2026-09-01": {
+      "claude": {
+       "cost": 0.6555534000000001,
+       "tokens": 527159
+      }
+     },
+     "2026-09-02": {
+      "claude": {
+       "cost": 0.0760875,
+       "tokens": 284885
+      }
+     },
+     "2026-09-03": {
+      "codex": {
+       "cost": 0.3057468,
+       "tokens": 176372
+      },
+      "muse": {
+       "cost": 0.248494,
+       "tokens": 96435
+      }
+     },
+     "2026-09-05": {
+      "claude": {
+       "cost": 0.2178987,
+       "tokens": 137328
+      },
+      "codex": {
+       "cost": 0.0650499,
+       "tokens": 102267
+      }
+     },
+     "2026-09-06": {
+      "claude": {
+       "cost": 0.16522755,
+       "tokens": 43108
+      }
+     },
+     "2026-09-07": {
+      "claude": {
+       "cost": 0.23414025,
+       "tokens": 190965
+      },
+      "grok": {
+       "cost": 0.352855,
+       "tokens": 72936
+      }
+     },
+     "2026-09-08": {
+      "grok": {
+       "cost": 0.44058250000000004,
+       "tokens": 174764
+      },
+      "muse": {
+       "cost": 0.48097999999999996,
+       "tokens": 217702
+      }
+     },
+     "2026-09-09": {
+      "claude": {
+       "cost": 0.16829715,
+       "tokens": 54976
+      }
+     },
+     "2026-09-10": {
+      "claude": {
+       "cost": 0.1823658,
+       "tokens": 81396
+      }
+     },
+     "2026-09-11": {
+      "claude": {
+       "cost": 0.058504200000000006,
+       "tokens": 117179
+      },
+      "codex": {
+       "cost": 0.011975299999999998,
+       "tokens": 118393
+      }
+     },
+     "2026-09-12": {
+      "claude": {
+       "cost": 0.0,
+       "tokens": 190983
+      },
+      "codex": {
+       "cost": 0.0092393,
+       "tokens": 76169
+      }
+     },
+     "2026-09-13": {
+      "codex": {
+       "cost": 0.464672,
+       "tokens": 204176
+      }
+     },
+     "2026-09-14": {
+      "claude": {
+       "cost": 1.788405,
+       "tokens": 117507
+      }
+     },
+     "2026-09-16": {
+      "claude": {
+       "cost": 0.2714663,
+       "tokens": 261831
+      }
+     },
+     "2026-09-17": {
+      "codex": {
+       "cost": 0.012679499999999998,
+       "tokens": 103807
+      }
+     },
+     "2026-09-18": {
+      "codex": {
+       "cost": 0.6122706,
+       "tokens": 422429
+      }
+     },
+     "2026-09-19": {
+      "claude": {
+       "cost": 0.2401371,
+       "tokens": 126549
+      },
+      "codex": {
+       "cost": 0.0221024,
+       "tokens": 213868
+      }
+     },
+     "2026-09-20": {
+      "claude": {
+       "cost": 0.2176236,
+       "tokens": 257925
+      },
+      "codex": {
+       "cost": 0.2956777,
+       "tokens": 193021
+      }
+     },
+     "2026-09-21": {
+      "claude": {
+       "cost": 0.22334579999999998,
+       "tokens": 211880
+      },
+      "codex": {
+       "cost": 0.0059701,
+       "tokens": 36577
+      }
+     },
+     "2026-09-23": {
+      "codex": {
+       "cost": 0.0929098,
+       "tokens": 217220
+      }
+     },
+     "2026-09-24": {
+      "claude": {
+       "cost": 0.1458327,
+       "tokens": 48877
+      },
+      "codex": {
+       "cost": 0.274448,
+       "tokens": 105308
+      }
+     },
+     "2026-09-25": {
+      "claude": {
+       "cost": 3.2745300000000004,
+       "tokens": 200502
+      },
+      "codex": {
+       "cost": 0.14469379999999998,
+       "tokens": 168496
+      },
+      "muse": {
+       "cost": 0.197496,
+       "tokens": 75532
+      }
+     },
+     "2026-09-26": {
+      "claude": {
+       "cost": 0.1809072,
+       "tokens": 167214
+      }
+     },
+     "2026-09-27": {
+      "claude": {
+       "cost": 0.0,
+       "tokens": 53283
+      }
+     },
+     "2026-09-28": {
+      "codex": {
+       "cost": 0.4607996,
+       "tokens": 273500
+      },
+      "grok": {
+       "cost": 0.40498375000000003,
+       "tokens": 110443
+      }
+     },
+     "2026-09-29": {
+      "claude": {
+       "cost": 0.0714945,
+       "tokens": 22064
+      }
+     },
+     "2026-09-30": {
+      "claude": {
+       "cost": 0.2191467,
+       "tokens": 58210
+      },
+      "codex": {
+       "cost": 0.103716,
+       "tokens": 34654
+      },
+      "muse": {
+       "cost": 0.119112,
+       "tokens": 40328
+      }
+     },
+     "2026-10-01": {
+      "claude": {
+       "cost": 0.5796612000000001,
+       "tokens": 306354
+      },
+      "codex": {
+       "cost": 0.22241840000000002,
+       "tokens": 186800
+      }
+     },
+     "2026-10-02": {
+      "grok": {
+       "cost": 0.58964625,
+       "tokens": 245003
+      }
+     },
+     "2026-10-03": {
+      "claude": {
+       "cost": 0.11675310000000001,
+       "tokens": 204740
+      },
+      "codex": {
+       "cost": 0.36286589999999996,
+       "tokens": 312771
+      }
+     },
+     "2026-10-04": {
+      "claude": {
+       "cost": 0.1556583,
+       "tokens": 221019
+      },
+      "codex": {
+       "cost": 0.08360069999999999,
+       "tokens": 248357
+      }
+     },
+     "2026-10-05": {
+      "claude": {
+       "cost": 0.25147935,
+       "tokens": 134528
+      },
+      "grok": {
+       "cost": 0.25265750000000003,
+       "tokens": 99956
+      }
+     },
+     "2026-10-06": {
+      "claude": {
+       "cost": 2.6867351999999998,
+       "tokens": 295837
+      },
+      "codex": {
+       "cost": 0.0255692,
+       "tokens": 118550
+      }
+     },
+     "2026-10-07": {
+      "claude": {
+       "cost": 0.010725,
+       "tokens": 3700
+      },
+      "grok": {
+       "cost": 0.5222537500000001,
+       "tokens": 213566
+      }
+     },
+     "2026-10-08": {
+      "claude": {
+       "cost": 0.010725,
+       "tokens": 3700
+      },
+      "codex": {
+       "cost": 0.035082999999999996,
+       "tokens": 146899
+      }
+     },
+     "2026-10-09": {
+      "claude": {
+       "cost": 0.0,
+       "tokens": 100439
+      },
+      "grok": {
+       "cost": 0.47605875000000003,
+       "tokens": 211202
+      }
+     },
+     "2026-10-10": {
+      "claude": {
+       "cost": 0.3384575,
+       "tokens": 164728
+      },
+      "codex": {
+       "cost": 0.2766378,
+       "tokens": 89942
+      },
+      "muse": {
+       "cost": 0.31272600000000006,
+       "tokens": 150047
+      }
+     },
+     "2026-10-11": {
+      "claude": {
+       "cost": 0.31549905,
+       "tokens": 217143
+      }
+     },
+     "2026-10-12": {
+      "codex": {
+       "cost": 0.2517037,
+       "tokens": 411021
+      },
+      "grok": {
+       "cost": 0.3912725,
+       "tokens": 109902
+      }
+     },
+     "2026-10-13": {
+      "claude": {
+       "cost": 0.23492235,
+       "tokens": 53999
+      },
+      "codex": {
+       "cost": 0.027735799999999998,
+       "tokens": 133431
+      }
+     },
+     "2026-10-14": {
+      "claude": {
+       "cost": 0.48900705,
+       "tokens": 439231
+      },
+      "codex": {
+       "cost": 0.255516,
+       "tokens": 119470
+      }
+     },
+     "2026-10-15": {
+      "claude": {
+       "cost": 0.43011105,
+       "tokens": 266322
+      },
+      "grok": {
+       "cost": 0.35878750000000004,
+       "tokens": 146531
+      }
+     },
+     "2026-10-16": {
+      "codex": {
+       "cost": 0.16931000000000002,
+       "tokens": 52987
+      },
+      "grok": {
+       "cost": 0.1647475,
+       "tokens": 45254
+      }
+     },
+     "2026-10-17": {
+      "claude": {
+       "cost": 0.41421195,
+       "tokens": 196750
+      },
+      "codex": {
+       "cost": 0.22980999999999996,
+       "tokens": 102197
+      }
+     },
+     "2026-10-18": {
+      "claude": {
+       "cost": 0.08469055,
+       "tokens": 114057
+      },
+      "codex": {
+       "cost": 0.102388,
+       "tokens": 44938
+      }
+     },
+     "2026-10-19": {
+      "claude": {
+       "cost": 0.25786410000000004,
+       "tokens": 309004
+      },
+      "codex": {
+       "cost": 0.028358799999999997,
+       "tokens": 269088
+      }
+     },
+     "2026-10-21": {
+      "codex": {
+       "cost": 0.0100564,
+       "tokens": 95104
+      }
+     },
+     "2026-10-22": {
+      "claude": {
+       "cost": 0.35787405,
+       "tokens": 234759
+      },
+      "codex": {
+       "cost": 0.0172791,
+       "tokens": 165115
+      }
+     },
+     "2026-10-23": {
+      "claude": {
+       "cost": 0.14586375000000001,
+       "tokens": 141783
+      }
+     },
+     "2026-10-24": {
+      "claude": {
+       "cost": 0.0,
+       "tokens": 152266
+      }
+     },
+     "2026-10-25": {
+      "claude": {
+       "cost": 0.30054365,
+       "tokens": 476123
+      },
+      "codex": {
+       "cost": 0.3414814,
+       "tokens": 269049
+      }
+     },
+     "2026-10-26": {
+      "claude": {
+       "cost": 0.23948220000000003,
+       "tokens": 137082
+      },
+      "codex": {
+       "cost": 0.327826,
+       "tokens": 152161
+      }
+     },
+     "2026-10-27": {
+      "claude": {
+       "cost": 7.5,
+       "tokens": 2100000
+      },
+      "codex": {
+       "cost": 0.36764289999999994,
+       "tokens": 288757
+      }
+     },
+     "2026-10-28": {
+      "codex": {
+       "cost": 0.24833319999999998,
+       "tokens": 276444
+      }
+     },
+     "2026-10-29": {
+      "claude": {
+       "cost": 0.12520635,
+       "tokens": 52178
+      },
+      "codex": {
+       "cost": 0.032306999999999995,
+       "tokens": 286818
+      }
+     },
+     "2026-10-30": {
+      "claude": {
+       "cost": 0.2943435,
+       "tokens": 207711
+      }
+     },
+     "2026-10-31": {
+      "grok": {
+       "cost": 0.3578325,
+       "tokens": 192006
+      }
+     },
+     "2026-11-01": {
+      "claude": {
+       "cost": 0.010725,
+       "tokens": 3700
+      },
+      "codex": {
+       "cost": 0.32490129999999995,
+       "tokens": 188571
+      },
+      "grok": {
+       "cost": 0.39783874999999996,
+       "tokens": 94656
+      },
+      "pi": {
+       "cost": 0.002,
+       "tokens": 1750
+      }
+     },
+     "2026-11-02": {
+      "claude": {
+       "cost": 0.29118955,
+       "tokens": 265450
+      }
+     },
+     "2026-11-03": {
+      "claude": {
+       "cost": 0.266,
+       "tokens": 156000
+      },
+      "codex": {
+       "cost": 0.21708,
+       "tokens": 98580
+      }
+     },
+     "2026-11-04": {
+      "claude": {
+       "cost": 0.29333385,
+       "tokens": 235105
+      },
+      "codex": {
+       "cost": 0.43254,
+       "tokens": 196890
+      }
+     },
+     "2026-11-05": {
+      "claude": {
+       "cost": 1.9278566500000003,
+       "tokens": 381501
+      },
+      "codex": {
+       "cost": 0.4730134,
+       "tokens": 537661
+      },
+      "pi": {
+       "cost": 0.11,
+       "tokens": 13000
+      }
+     },
+     "2026-11-06": {
+      "claude": {
+       "cost": 0.02163,
+       "tokens": 7420
+      },
+      "codex": {
+       "cost": 0.9403579999999999,
+       "tokens": 1480443
+      },
+      "muse": {
+       "cost": 0.33,
+       "tokens": 5500
+      }
+     }
+    },
+    "resolution": "day"
+   },
+   "sessions": 13,
+   "totalTokens": 29304774,
+   "uncachedInput": 5760343,
+   "unpricedRecords": 15
+  },
+  "Past 24h": {
+   "cacheCreation": 63935,
+   "cacheSavingsUsd": 3.2104134,
+   "cachedInput": 1502226,
+   "costBySpeed": {
+    "fast": 0.47035799999999994,
+    "premium": 0.516146,
+    "standard": 1.4864975999999999,
+    "ultrafast": 0.570075
+   },
+   "costByType": {
+    "cacheRead": 0.5608029999999999,
+    "cacheWrite": 0.16237800000000002,
+    "input": 1.055706,
+    "other": 0.32999959999999984,
+    "output": 0.41804399999999997
+   },
+   "costUsd": 2.5269306,
+   "duplicatesDropped": 16,
+   "models": {
+    "claude/claude-sonnet-5-5": {
+     "cost": 0.02163,
+     "records": 3,
+     "tokens": 7420,
+     "unpriced": 0
+    },
+    "claude/custom-model": {
+     "cost": 0.8200000000000002,
+     "records": 1,
+     "tokens": 164000,
+     "unpriced": 0
+    },
+    "codex/gpt-6-stella": {
+     "cost": 0.8760745999999999,
+     "records": 4,
+     "tokens": 1521005,
+     "unpriced": 0
+    },
+    "codex/gpt-6.1-sol": {
+     "cost": 0.47922599999999993,
+     "records": 2,
+     "tokens": 214145,
+     "unpriced": 0
+    },
+    "muse/muse-unpriced-x": {
+     "cost": 0.33,
+     "records": 1,
+     "tokens": 5500,
+     "unpriced": 0
+    }
+   },
+   "output": 30566,
+   "providers": {
+    "claude": {
+     "cost": 0.8416300000000001,
+     "records": 4,
+     "sessions": 3,
+     "tokens": 171420
+    },
+    "codex": {
+     "cost": 1.3553005999999996,
+     "records": 6,
+     "sessions": 3,
+     "tokens": 1735150
+    },
+    "muse": {
+     "cost": 0.33,
+     "records": 1,
+     "sessions": 1,
+     "tokens": 5500
+    }
+   },
+   "reasoning": 3320,
+   "records": 11,
+   "series": {
+    "columns": {
+     "0": {
+      "claude": {
+       "cost": 0.8307250000000002,
+       "tokens": 167700
+      }
+     },
+     "1": {
+      "codex": {
+       "cost": 0.21286799999999997,
+       "tokens": 92702
+      }
+     },
+     "18": {
+      "muse": {
+       "cost": 0.33,
+       "tokens": 5500
+      }
+     },
+     "19": {
+      "claude": {
+       "cost": 0.00018,
+       "tokens": 20
+      }
+     },
+     "20": {
+      "codex": {
+       "cost": 0.102,
+       "tokens": 453000
+      }
+     },
+     "21": {
+      "codex": {
+       "cost": 0.204,
+       "tokens": 453000
+      }
+     },
+     "22": {
+      "codex": {
+       "cost": 0.634358,
+       "tokens": 574443
+      }
+     },
+     "23": {
+      "claude": {
+       "cost": 0.010725,
+       "tokens": 3700
+      }
+     },
+     "6": {
+      "codex": {
+       "cost": 0.2020746,
+       "tokens": 162005
+      }
+     }
+    },
+    "resolution": "hour"
+   },
+   "sessions": 7,
+   "totalTokens": 1912070,
+   "uncachedInput": 315343,
+   "unpricedRecords": 0
+  }
+ },
+ "timeZone": "Asia/Ho_Chi_Minh"
+}

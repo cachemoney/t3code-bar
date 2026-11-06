@@ -36,17 +36,17 @@ Apple Silicon is the tested architecture. Releases are universal and include an 
 - Keep pinned threads and manual inbox ordering.
 - Bring snoozed threads back when something needs attention.
 - Open threads in T3 Code or your browser, or copy their links.
-- See your token usage by type and provider for the past day, week, month, or quarter.
+- See what T3 Code's Usage page shows, in three tabs. Cost and Tokens cover the past 24 hours, 7, 30 or 90 days with a chart, providers, models and cache savings. Limits shows each provider's remaining quota, pace and reset times.
 
 ## Usage
 
 Click the menu bar icon to view your inbox, and click a thread to open it in T3 Code. Right-click a thread for **Open in T3 Code**, **Open in Browser**, or **Copy Link**. Right-click the menu bar icon to quit.
 
-See the [usage guide](docs/USAGE.md) for thread states, launching at login, custom data directories, troubleshooting, and known limitations. T3 Code Bar reads T3 Code's internal database schema, which can change between versions. See the [compatibility notes](docs/COMPATIBILITY.md).
+See the [usage guide](docs/USAGE.md) for thread states, launching at login, custom data directories, troubleshooting, and known limitations. T3 Code Bar reads T3 Code's internal database schema and usage cache, which can change between versions. See the [compatibility notes](docs/COMPATIBILITY.md).
 
 ## Privacy
 
-T3 Code Bar needs no API key, collects no telemetry, and never calls AI services. It opens T3 Code's SQLite database read-only and never modifies it. The only network request is the update check against GitHub's releases API, which **Update Automatically** controls. When sharing screenshots or bug reports, check for private thread names, project names, and paths.
+T3 Code Bar collects no telemetry and never calls AI services or provider APIs. It opens T3 Code's SQLite database read-only and never modifies it. A required Limits connection uses a separately created read-only pairing code to read provider and CLI Proxy snapshots from `127.0.0.1`. Its Bar access token stays in memory unless you select **Remember Bar token in Keychain**. The other network request is the update check against GitHub's releases API, which **Update Automatically** controls. When sharing screenshots or bug reports, check for private thread names, project names, and paths.
 
 ## Contributing
 

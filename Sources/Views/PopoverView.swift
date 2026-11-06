@@ -19,6 +19,9 @@ public struct PopoverView: View {
 
     @ObservedObject var monitor: ThreadMonitor
     @ObservedObject var usage: UsageMonitor
+    @ObservedObject var limits: LimitsMonitor
+    @ObservedObject private var connection: LimitsLiveConnection
+    @ObservedObject var usageScreen: UsageScreenModel
     @ObservedObject var navigation: PopoverNavigation
     /// The height the current screen wants, chrome included.
     @State private var contentHeight: CGFloat = 0
@@ -26,10 +29,13 @@ public struct PopoverView: View {
 
     private let onHeightChange: (CGFloat) -> Void
 
-    public init(monitor: ThreadMonitor, usage: UsageMonitor, navigation: PopoverNavigation,
-                onHeightChange: @escaping (CGFloat) -> Void = { _ in }) {
+    public init(monitor: ThreadMonitor, usage: UsageMonitor, limits: LimitsMonitor, usageScreen: UsageScreenModel,
+                navigation: PopoverNavigation, onHeightChange: @escaping (CGFloat) -> Void = { _ in }) {
         self.monitor = monitor
         self.usage = usage
+        self.limits = limits
+        self.connection = limits.live
+        self.usageScreen = usageScreen
         self.navigation = navigation
         self.onHeightChange = onHeightChange
     }
@@ -52,9 +58,20 @@ public struct PopoverView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            switch navigation.screen {
-            case .threads: threadsScreen
-            case .usage: UsageView(usage: usage) { navigation.screen = .threads }
+            if !connection.isConnected && connection.data == nil {
+                requiredConnectionScreen
+            } else {
+                if !connection.isConnected {
+                    Label(connection.lastUpdatedAt.map { "Disconnected · updated \(LimitsFormat.ago($0, now: Date()))" } ?? "Disconnected · showing saved data", systemImage: "wifi.slash")
+                        .font(.system(size: 11))
+                        .foregroundColor(T3Theme.statusApproval)
+                        .help(connection.status.text)
+                        .padding(8)
+                }
+                switch navigation.screen {
+                case .threads: threadsScreen
+                case .usage: UsageView(usage: usage, limits: limits, screen: usageScreen) { navigation.screen = .threads }
+                }
             }
         }
         .onPreferenceChange(ContentHeightPreferenceKey.self) { height in
@@ -71,6 +88,22 @@ public struct PopoverView: View {
         .frame(maxHeight: .infinity, alignment: .top)
         .background(T3Theme.canvas)
         .preferredColorScheme(.dark)
+    }
+
+    private var requiredConnectionScreen: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Connect T3 Code")
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundColor(T3Theme.textPrimary)
+            LimitsConnectionView(connection: limits.live, required: true)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            GeometryReader { proxy in
+                Color.clear.preference(key: ContentHeightPreferenceKey.self, value: proxy.size.height)
+            }
+        )
     }
 
     private var threadsScreen: some View {
@@ -234,7 +267,7 @@ private struct UsageLinkRow: View {
             .buttonStyle(.plain)
             .focusable(false)
             .accessibilityLabel("Usage")
-            .accessibilityHint("Shows token usage")
+            .accessibilityHint("Shows cost, tokens and limits")
         }
         .overlay(alignment: .top) { T3Theme.border.frame(height: 1) }
     }

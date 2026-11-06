@@ -20,19 +20,73 @@ Done clears when T3 Code saves a newer visit timestamp. If no valid visit timest
 
 Archived, deleted, and settled threads, side chats, and separate subagent threads are excluded. Snoozed threads stay hidden until the timer expires or a new attention event wakes them. An error or completion that already existed when the thread was snoozed does not wake it early.
 
-## Token usage
+## Usage
 
-Click **Usage** at the bottom of the thread list to see how many tokens T3 Code has processed. Click the back arrow or press Esc to return to the threads. The popover always opens on the threads.
+Click **Usage** at the bottom of the thread list to see what T3 Code's own Usage page shows. Click the back arrow or press Esc to return to the threads. The popover always opens on the threads.
 
-The period control sets a rolling window of 24 hours, 7 days, 30 days, or 90 days. Bar remembers your choice. Hover a period for its full name.
+Three tabs sit under the header, in T3 Code's order. **Cost** and **Tokens** combine T3 Code's transcript cache with local OpenCode and Antigravity usage and Cursor's saved account cache. **Limits** reads the connected local T3 Code provider and CLI Proxy snapshots. A read-only T3 connection is required before the main popover opens. Bar remembers the tab you left open. On first launch it opens on Limits and 30 days, as T3 Code does.
 
-- **Processed tokens** is input plus output, as on T3 Code's Usage page. Below it you see the number of turns and the cache hit rate.
-- **Tokens by type** splits the total into input, cache read, cache write, and output. Input here is the part that was not served from cache.
-- **By provider** lists each provider with its processed tokens and turns, largest first.
+The period control on Cost and Tokens offers Past 24h, 7 days, 30 days and 90 days. Limits has no period, so the control is hidden there. Past 24h is a sliding window. The other periods are whole calendar days in your time zone, with today counted in full. Bar remembers your choice. Hover a period for its full name.
 
-A footnote appears when some turns reported partial usage, or none. Partial turns are included in the numbers, which can then read slightly low. Turns with no usage are left out.
+### Cost
 
-The numbers refresh every 5 seconds while the screen is open. Bar reads nothing extra while it is closed. Cost and limits are not shown, because T3 Code does not store them where Bar can read them.
+- The headline is the estimated cost, with the number of sessions and "API estimate" under it. When some records have no price, hover the info icon. It says what share of records the estimate leaves out.
+- Each provider row shows its cost, its sessions, its share of the cost and its tokens.
+- The chart shows daily cost per provider. Past 24h shows hourly cost. Hover it for the numbers of one day or hour.
+- **Totals** lists processed tokens, cached input, uncached input, output and cache savings. Cache savings is what the cached reads would have cost at the full input price.
+- **Cost by type** splits the cost into input, cache read, cache write, output and other. Other is cost that has no split, and it hides below half a cent.
+- **Cost by speed** appears only when something ran fast or ultrafast. It shows what the faster tiers added as the premium.
+- **Breakdown** ranks models by cost. A model whose records all lack a price reads "Unpriced". The list shows the first five models. Click "Show all N models" for the rest.
+
+### Tokens
+
+- The headline is processed tokens, which is uncached input, cached input, cache writes and output added together, with the number of sessions below it.
+- **Tokens by type** splits the total into input, cache read, cache write and output.
+- **Totals**, **By provider**, the chart and the **Breakdown** follow the same rules as on Cost. Models rank by tokens here.
+
+The small footer shows only warnings and the transcript cache age. OpenCode and Antigravity refresh locally in the background while this tab is open. Transcript providers update when T3 Code's Usage page scans. Cursor uses only its saved account cache, which Bar never fetches. Costs are API estimates from T3 Code's price list. They are not what a plan bills.
+
+### Limits
+
+- Each provider has a section with one line per signed-in account. The line shows the plan and when T3 Code last checked that account.
+- Each window pool has a card with the share left, the pace, and a bar of what is left. The line on the bar is where even spending would be. The hatched stretch is what the reset will restore.
+- Under the bar, Bar writes when the window resets, the share that even pace would leave by now, what the reset restores, and any banked reset credits.
+- When two accounts share a pool, each one gets its own bar.
+- A card for an external usage page, such as ChatGPT, has a **Manage usage** button that opens the page in your browser. Bar does not fetch that page or contact the provider.
+- If the newest check is more than 30 minutes old, a line above the cards says so. T3 Code probes providers only while it runs, so old numbers usually mean T3 Code is closed.
+
+Limits do not need the transcript usage cache. The first launch requires pairing with the local T3 server. CLI Proxy pooled accounts are held in T3 Code’s live server and are absent from the provider cache.
+
+To include those accounts:
+
+1. In T3 Code, open **Settings → Connections → Authorized clients** for the local environment and click **Create link**. You must be allowed to create pairing links.
+2. Give it a label such as `T3 Code Bar Limits`. Under **Permissions**, leave only **View environment** (`orchestration:read`) selected. Clear the other permissions; the **Read only** preset includes additional scopes.
+3. Click **Create link**, then **Share → Copy code** on the new card (or **Copy code** directly when offered). Use the new code rather than a provider key, an existing client token, or a full pairing URL.
+4. In Bar, open **Usage → Limits → Connect T3 Code…**. Confirm the **Local port**, paste the code, and click **Pair & connect**. The port is prefilled from the local runtime when available; Bar always connects to `127.0.0.1` regardless of any advertised host.
+5. Select **Remember Bar token in Keychain** if Bar should reconnect automatically after restart. Without it, the exchanged Bar token lives only until the app quits. The one-time pairing code is never saved. A remembered token is loaded at app launch and must still be valid.
+
+These T3 labels were checked in the `0.1.8-nightly.20261105.4205` client bundle. If your T3 version does not expose a separate scoped pairing code or the RPC ticket endpoint, saved provider data remains available. Live pairing, account counts against a real server, and macOS Keychain prompts still require manual verification; the connection is covered by mock tests.
+
+After pairing, the subscription is maintained while the app is running, including when the popover is closed. If the connection drops after a successful snapshot, Bar keeps the last data and shows when it was received. Token expiry requires pairing again. To revoke a Bar session on the server, use T3 Code’s authorized-client controls.
+
+The connection reads this environment’s providers and configured CLI Proxy sources. Linked environments are excluded. Bar never sends refresh, reset-credit, or settings commands. T3 Code may still perform its own remote/direct-endpoint discovery while building the server-config subscription.
+
+Bar requests a DPoP-bound access token and rejects a plain bearer token. When remembered, the token and its private key are stored together in Keychain. Existing bearer-only sessions must pair again. DPoP reduces reuse of a stolen token but does not authenticate the local server: a process impersonating T3 on the configured port can still receive a pairing code. Only pair when the local T3 server is running and trusted.
+
+### How Bar reads the data
+
+Bar checks the files about every 5 seconds while the screen is open and decodes the usage cache again only when it changes. It scans local providers at launch and keeps their snapshot between visits. The paired Limits subscription stays open while Bar runs.
+
+If T3 Code has never scanned, Cost and Tokens can still show local provider usage and explain that transcript usage is missing. Without any local sources, they ask you to open T3 Code's Usage page once. If T3 Code writes a newer cache format than this build understands, they say so and show no numbers. Update Bar in that case. While T3 Code is rewriting the cache, Bar keeps the last numbers and retries. A warning appears when entries or lines could not be read, because the totals may then read low. A period with no usage says "No usage in this period".
+
+### What is missing
+
+- Usage for a provider without a readable local source or a T3 Code cache. Missing and unreadable OpenCode, Antigravity and Cursor sources are identified below the totals. Bar does not contact provider APIs or read their credentials. The required Limits connection handles only the new pairing code and Bar’s own access token.
+- Remote and linked environments. Bar reads this Mac only.
+- T3 Code's own list of hidden providers. It lives in T3 Code's renderer storage, which Bar does not read.
+- Freshness beyond T3 Code’s last scan, saved Cursor fetch, or provider/source probe. The live Limits stream delivers T3’s snapshots without forcing a new probe. Local OpenCode and Antigravity sources are checked separately.
+- The table of cost by day or hour, and the model dialog with its price per million tokens. The popover has no room for them.
+- Setting a price, refreshing prices or limits, and using a reset credit. Bar never changes provider data or contacts a provider.
 
 ## Opening threads
 
@@ -54,7 +108,7 @@ By default, the app reads `~/.t3/userdata`. Override it using one of these envir
 
 | Variable | Expected directory |
 | --- | --- |
-| `T3_CODE_BAR_STATE_DIR` | Contains `statev2.sqlite`, `server-runtime.json`, and `environment-id` directly. |
+| `T3_CODE_BAR_STATE_DIR` | Contains `statev2.sqlite`, `server-runtime.json`, `environment-id`, and the usage files directly. |
 | `T3CODE_HOME` | T3 Code's root directory; Bar appends `/userdata`. |
 
 For example, from the source directory:
@@ -70,6 +124,11 @@ Apps opened from Finder or Login Items do not automatically inherit your termina
 | Problem | What to check |
 | --- | --- |
 | Data not found | Open T3 Code at least once and check the configured data directory. |
+| Usage says "Open T3 Code's Usage page once" | T3 Code has not written `usage-scan-cache-vN.json` in the data directory yet. Open its Usage page. |
+| Usage says "T3 Code changed its usage format" | T3 Code writes a cache version newer than 11. Update T3 Code Bar. |
+| Usage numbers differ from T3 Code's page | Compare the same period and time zone, check each source's freshness, and allow a local refresh. Open T3 Code's Usage page to refresh transcript and Cursor caches. Remote environments and unsupported local sources are excluded. |
+| Limits say "No limits data yet" | T3 Code has not written its provider files to `caches` yet. Open T3 Code once. |
+| Limits say T3 Code last checked hours ago | T3 Code probes providers only while it runs. Open T3 Code and the numbers refresh within minutes. |
 | Unsupported schema | Your T3 Code version may use a different database structure. See the [compatibility notes](COMPATIBILITY.md). Bar does not repair the database. |
 | Offline | Reopen T3 Code. Saved threads remain visible, but live activity indicators are disabled. |
 | Busy/read error | The app retries every second. Use **Retry** to retry immediately when no read is in progress. |
@@ -80,7 +139,7 @@ For a bug report, [open an issue](https://github.com/eliophan/t3code-bar/issues)
 
 ## Known limitations
 
-- Monitors one local T3 Code instance, not remote machines.
+- Monitors one local T3 Code instance, not remote machines. Usage excludes remote environments. OpenCode and Antigravity refresh from local sources, while other usage depends on T3 Code's saved caches. Limits are only as fresh as T3 Code's last provider check.
 - Some background activity exists only in T3 Code's memory and cannot be inferred from SQLite. Working/Monitoring indicators after the main run ends may be incomplete.
 - Unread completion and wake indicators depend on visit timestamps persisted by T3 Code; Bar does not read browser localStorage or call the sidebar's acknowledgment API.
 - Server availability uses the runtime PID, not an HTTP health check. After a read error, the last successful list remains visible with live status disabled.
