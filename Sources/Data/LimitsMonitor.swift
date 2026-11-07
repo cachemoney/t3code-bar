@@ -54,7 +54,7 @@ public final class LimitsMonitor: ObservableObject {
     }
 
     /// Stops cache polling when Usage leaves the screen. The app-level live connection stays up
-    /// so the mandatory pairing remains valid while the popover is closed.
+    /// so the live Limits connection remains valid while the popover is closed.
     public func stop() {
         timer?.invalidate()
         timer = nil

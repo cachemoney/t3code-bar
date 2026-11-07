@@ -43,38 +43,8 @@ final class LimitsLiveConnection: ObservableObject {
         self.retryDelay = retryDelay
     }
 
-    func pair(port: Int, pairingCredential: String, remember: Bool) {
-        stop()
-        credential = nil
-        data = nil
-        lastUpdatedAt = nil
-        generation += 1
-        let run = generation
-        status = .connecting
-        onChange?()
-        task = Task { [weak self] in
-            guard let self else { return }
-            do {
-                let endpoint = try LimitsEndpoint(port: port)
-                let input = pairingCredential.trimmingCharacters(in: .whitespacesAndNewlines)
-                guard !input.isEmpty, input.utf8.count < 16_384 else { throw LimitsConnectionError.authorization }
-                let grant = try await exchange(input, endpoint: endpoint)
-                try Task.checkCancellation()
-                guard generation == run else { return }
-                if remember { try store.save(grant) } else { try store.delete() }
-                credential = grant
-                task = Task { [weak self] in await self?.runConnection(grant, generation: run) }
-            } catch {
-                guard generation == run, !Task.isCancelled else { return }
-                task = nil
-                status = .failed((error as? LimitsConnectionError)?.message ?? "Could not connect to local T3 Code. Try connecting again.")
-                onChange?()
-            }
-        }
-    }
-
-    /// Uses a long-lived token from T3's CLI directly. No token exchange happens, so there is no DPoP key.
-    func connect(port: Int, bearerToken: String, remember: Bool) {
+    /// Connects with a T3 CLI session token and stores it for future launches.
+    func connect(port: Int, bearerToken: String) {
         stop()
         credential = nil
         data = nil
@@ -84,13 +54,56 @@ final class LimitsLiveConnection: ObservableObject {
             let token = bearerToken.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !token.isEmpty, token.utf8.count <= 16_384 else { throw LimitsConnectionError.invalidToken }
             let grant = LimitsCredential.bearer(port: port, token: token)
-            if remember { try store.save(grant) } else { try store.delete() }
+            try store.save(grant)
             credential = grant
             resume()
         } catch {
             status = .failed((error as? LimitsConnectionError)?.message ?? LimitsConnectionError.storage.message)
         }
         onChange?()
+    }
+
+    /// Runs the locally installed T3 CLI and saves the resulting session token.
+    func autoGenerateToken(port: Int) {
+        stop()
+        status = .connecting
+        onChange?()
+        task = Task { [weak self] in
+            do {
+                let token = try await Task.detached(priority: .userInitiated) {
+                    try Self.issueTokenWithCLI()
+                }.value
+                guard let self, !Task.isCancelled else { return }
+                self.connect(port: port, bearerToken: token)
+            } catch {
+                guard let self, !Task.isCancelled else { return }
+                self.task = nil
+                self.status = .failed(error.localizedDescription)
+                self.onChange?()
+            }
+        }
+    }
+
+    private nonisolated static func issueTokenWithCLI() throws -> String {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
+        process.arguments = ["t3", "auth", "session", "issue", "--scope", "orchestration:read", "--ttl", "3650d", "--token-only"]
+        let output = Pipe()
+        let errors = Pipe()
+        process.standardOutput = output
+        process.standardError = errors
+        try process.run()
+        process.waitUntilExit()
+        let token = String(data: output.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        guard process.terminationStatus == 0, !token.isEmpty, token.utf8.count <= 16_384 else {
+            let message = String(data: errors.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)?
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            throw NSError(domain: "T3CLI", code: Int(process.terminationStatus), userInfo: [
+                NSLocalizedDescriptionKey: message?.isEmpty == false ? message! : "Could not generate an access token with the T3 CLI."
+            ])
+        }
+        return token
     }
 
     /// Explicit button action: no Keychain lookup or network request occurs just by opening Limits.
@@ -100,7 +113,7 @@ final class LimitsLiveConnection: ObservableObject {
         do {
             _ = try LimitsEndpoint(port: port)
             guard let saved = try store.load() else {
-                status = .failed("No saved Bar token. Enter a new read-only pairing credential.")
+                status = .failed("No saved access token. Generate or enter one to connect.")
                 return
             }
             guard saved.port == port else { throw LimitsConnectionError.destination }
@@ -169,36 +182,6 @@ final class LimitsLiveConnection: ObservableObject {
         onChange?()
     }
 
-    private func exchange(_ input: String, endpoint: LimitsEndpoint) async throws -> LimitsCredential {
-        let signer = LimitsDPoP()
-        var request = URLRequest(url: endpoint.url("/oauth/token"))
-        request.httpMethod = "POST"
-        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        request.setValue(try signer.proof(method: "POST", url: request.url!, now: clock()), forHTTPHeaderField: "DPoP")
-        // URLComponents percent-encodes separators; '+' must be escaped for form encoding as well.
-        var form = URLComponents()
-        form.queryItems = [
-            URLQueryItem(name: "grant_type", value: "urn:ietf:params:oauth:grant-type:token-exchange"),
-            URLQueryItem(name: "subject_token", value: input),
-            URLQueryItem(name: "subject_token_type", value: "urn:t3:params:oauth:token-type:environment-bootstrap"),
-            URLQueryItem(name: "requested_token_type", value: "urn:ietf:params:oauth:token-type:access_token"),
-            URLQueryItem(name: "scope", value: "orchestration:read"),
-            URLQueryItem(name: "client_label", value: "T3 Code Bar Limits"),
-            URLQueryItem(name: "client_device_type", value: "desktop"), URLQueryItem(name: "client_os", value: "macOS")]
-        request.httpBody = Data((form.percentEncodedQuery ?? "").replacingOccurrences(of: "+", with: "%2B").utf8)
-        let object = try await http(request)
-        guard object["token_type"] as? String == "DPoP",
-              object["issued_token_type"] as? String == "urn:ietf:params:oauth:token-type:access_token",
-              let scopes = object["scope"] as? String,
-              scopes.split(whereSeparator: { $0.isWhitespace }).map(String.init) == ["orchestration:read"],
-              let token = object["access_token"] as? String, !token.isEmpty,
-              let seconds = object["expires_in"] as? Double, seconds.isFinite, seconds > 0 else {
-            throw LimitsConnectionError.authorization
-        }
-        return LimitsCredential(port: endpoint.port, token: token, expiresAt: clock().addingTimeInterval(seconds),
-                                privateKey: signer.key.rawRepresentation)
-    }
-
     private func http(_ request: URLRequest, unauthorized: LimitsConnectionError? = nil) async throws -> [String: Any] {
         let (body, status) = try await transport.request(request)
         guard status == 200 else {
@@ -223,26 +206,15 @@ final class LimitsLiveConnection: ObservableObject {
                 let endpoint = try LimitsEndpoint(port: credential.port)
                 var request = URLRequest(url: endpoint.url("/api/auth/websocket-ticket/rpc"))
                 request.httpMethod = "POST"
-                let signer: LimitsDPoP?
-                switch credential.kind {
-                case .dpop(let privateKey):
-                    guard let key = try? LimitsDPoP(raw: privateKey) else { throw LimitsConnectionError.authorization }
-                    signer = key
-                    request.setValue("DPoP \(credential.token)", forHTTPHeaderField: "Authorization")
-                    request.setValue(try key.proof(method: "POST", url: request.url!, token: credential.token, now: clock()), forHTTPHeaderField: "DPoP")
-                case .bearer:
-                    signer = nil
-                    request.setValue("Bearer \(credential.token)", forHTTPHeaderField: "Authorization")
-                }
-                let issued = try await http(request, unauthorized: signer == nil ? .expired : nil)
+                request.setValue("Bearer \(credential.token)", forHTTPHeaderField: "Authorization")
+                let issued = try await http(request, unauthorized: .expired)
                 guard let ticket = issued["ticket"] as? String, !ticket.isEmpty,
                       let expires = issued["expiresAt"] as? String, let expiry = LimitsDate.parse(expires), expiry > clock() else {
                     throw LimitsConnectionError.protocolMismatch
                 }
                 try Task.checkCancellation()
                 guard generation == run else { return }
-                let proof = try signer?.proof(method: "GET", url: endpoint.url("/ws"), token: ticket, now: clock())
-                let connected = await transport.socket(endpoint.url("/ws", ticket: ticket, proof: proof))
+                let connected = await transport.socket(endpoint.url("/ws", ticket: ticket))
                 guard !Task.isCancelled, generation == run else { await connected.close(); return }
                 socket = connected
                 activeSocket = connected

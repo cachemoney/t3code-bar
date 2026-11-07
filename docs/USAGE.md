@@ -55,45 +55,23 @@ The small footer shows only warnings and the transcript cache age. OpenCode and 
 - A card for an external usage page, such as ChatGPT, has a **Manage usage** button that opens the page in your browser. Bar does not fetch that page or contact the provider.
 - If the newest check is more than 30 minutes old, a line above the cards says so. T3 Code probes providers only while it runs, so old numbers usually mean T3 Code is closed.
 
-Limits do not need the transcript usage cache. The first launch requires pairing with the local T3 server. CLI Proxy pooled accounts are held in T3 Code’s live server and are absent from the provider cache.
+Limits do not need the transcript usage cache. The first launch needs a local T3 access token with `orchestration:read`.
 
-To include those accounts:
+1. In Bar, open **Usage → Limits → Connect T3 Code…**.
+2. Click **Auto-Generate Token via T3 CLI**. Bar runs `t3 auth session issue --scope orchestration:read --ttl 3650d --token-only`, stores the token in its own Keychain item, and connects automatically.
+3. If the CLI is unavailable, paste an existing **Access Token** and click **Connect**. Bar sends it as a Bearer token to `127.0.0.1` only.
 
-1. In T3 Code, open **Settings → Connections → Authorized clients** for the local environment and click **Create link**. You must be allowed to create pairing links.
-2. Give it a label such as `T3 Code Bar Limits`. Under **Permissions**, leave only **View environment** (`orchestration:read`) selected. Clear the other permissions; the **Read only** preset includes additional scopes.
-3. Click **Create link**, then **Share → Copy code** on the new card (or **Copy code** directly when offered). Use the new code rather than a provider key, an existing client token, or a full pairing URL.
-4. In Bar, open **Usage → Limits → Connect T3 Code…**. Confirm the **Local port**, paste the code, and click **Pair & connect**. The port is prefilled from the local runtime when available; Bar always connects to `127.0.0.1` regardless of any advertised host.
-5. Select **Remember Bar token in Keychain** if Bar should reconnect automatically after restart. Without it, the exchanged Bar token lives only until the app quits. The one-time pairing code is never saved. A remembered token is loaded at app launch and must still be valid.
-
-These T3 labels were checked in the `0.1.8-nightly.20261105.4205` client bundle. If your T3 version does not expose a separate scoped pairing code or the RPC ticket endpoint, saved provider data remains available. Live pairing, account counts against a real server, and macOS Keychain prompts still require manual verification; the connection is covered by mock tests.
-
-After pairing, the subscription is maintained while the app is running, including when the popover is closed. If the connection drops after a successful snapshot, Bar keeps the last data and shows when it was received. A pairing-code token expires after one hour and requires pairing again. To revoke a Bar session on the server, use T3 Code’s authorized-client controls.
-
-The connection reads this environment’s providers and configured CLI Proxy sources. Linked environments are excluded. Bar never sends refresh, reset-credit, or settings commands. T3 Code may still perform its own remote/direct-endpoint discovery while building the server-config subscription.
-
-#### Long-lived access token
-
-A pairing code gives Bar a DPoP token that T3 Code expires after one hour, so the live connection ends and you must pair again. For a connection that lasts, choose **Access token** in the connect form and paste a token from T3 Code's command line:
-
-```bash
-t3 auth session issue --scope orchestration:read --ttl 3650d --token-only
-```
-
-Select **Remember in Keychain** to reconnect at every launch. Bar sends the token as a Bearer credential to `127.0.0.1` only, and never to the token exchange.
-
-The trade-off is that a Bearer token works for anyone who holds it. Its scope is read-only on this machine, and you can revoke it from T3 Code's authorized-client list. If T3 Code rejects the token, Bar stops and says the token expired or was revoked. Bar does not retry. This path has been tested against a mock server only. Live acceptance of a Bearer token by the ticket route still needs a manual check.
-
-Bar's pairing-code flow requests a DPoP-bound access token and rejects a plain bearer token from the exchange. When remembered, the token and its private key are stored together in Keychain. DPoP reduces reuse of a stolen token but does not authenticate the local server: a process impersonating T3 on the configured port can still receive a pairing code. Only pair when the local T3 server is running and trusted.
+The connection is read-only and limited to this local environment. Bar never reads T3 Code's credential stores or contacts provider APIs. If the token expires or is revoked, generate a new one from the same button.
 
 ### How Bar reads the data
 
-Bar checks the files about every 5 seconds while the screen is open and decodes the usage cache again only when it changes. It scans local providers at launch and keeps their snapshot between visits. The paired Limits subscription stays open while Bar runs.
+Bar checks the files about every 5 seconds while the screen is open and decodes the usage cache again only when it changes. It scans local providers at launch and keeps their snapshot between visits. The live Limits subscription stays open while Bar runs.
 
 If T3 Code has never scanned, Cost and Tokens can still show local provider usage and explain that transcript usage is missing. Without any local sources, they ask you to open T3 Code's Usage page once. If T3 Code writes a newer cache format than this build understands, they say so and show no numbers. Update Bar in that case. While T3 Code is rewriting the cache, Bar keeps the last numbers and retries. A warning appears when entries or lines could not be read, because the totals may then read low. A period with no usage says "No usage in this period".
 
 ### What is missing
 
-- Usage for a provider without a readable local source or a T3 Code cache. Missing and unreadable OpenCode, Antigravity and Cursor sources are identified below the totals. Bar does not contact provider APIs or read their credentials. The required Limits connection handles only the new pairing code and Bar’s own access token.
+- Usage for a provider without a readable local source or a T3 Code cache. Missing and unreadable OpenCode, Antigravity and Cursor sources are identified below the totals. Bar does not contact provider APIs or read their credentials. The required Limits connection handles only Bar’s own access token.
 - Remote and linked environments. Bar reads this Mac only.
 - T3 Code's own list of hidden providers. It lives in T3 Code's renderer storage, which Bar does not read.
 - Freshness beyond T3 Code’s last scan, saved Cursor fetch, or provider/source probe. The live Limits stream delivers T3’s snapshots without forcing a new probe. Local OpenCode and Antigravity sources are checked separately.
@@ -110,7 +88,7 @@ Rest the pointer on a thread for half a second and its row expands to show the s
 
 The top of the menu shows the app version, a status line, and one update button. The button reads **Check for Updates…**, **Checking…**, **Install v1.2.3 and Restart**, or **Installing…**. It is dimmed while a check or install runs and when updates are off. **Install Without Asking** sits under **Update Automatically** and only matters while that item is on. Both are described in the [README](../README.md#installation).
 
-Browser links use `127.0.0.1` and the port configured by your local T3 Code instance. Your browser session may need sign-in or pairing. Opening links in T3 Code requires its `t3code://` URL scheme to be registered.
+Browser links use `127.0.0.1` and the port configured by your local T3 Code instance. Your browser session may need sign-in. Opening links in T3 Code requires its `t3code://` URL scheme to be registered.
 
 ## Launch at login
 

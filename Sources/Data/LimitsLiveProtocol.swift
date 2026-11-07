@@ -1,13 +1,13 @@
 import Foundation
 
-/// Only the loopback port is accepted, never a URL supplied by runtime metadata or a pairing link.
+/// Only the loopback port is accepted, never a URL supplied by runtime metadata.
 struct LimitsEndpoint: Equatable, Sendable {
     let port: Int
     init(port: Int) throws {
         guard (1...65535).contains(port) else { throw LimitsConnectionError.destination }
         self.port = port
     }
-    func url(_ path: String, ticket: String? = nil, proof: String? = nil) -> URL {
+    func url(_ path: String, ticket: String? = nil) -> URL {
         var parts = URLComponents()
         parts.scheme = ticket == nil ? "http" : "ws"
         parts.host = "127.0.0.1"
@@ -16,7 +16,6 @@ struct LimitsEndpoint: Equatable, Sendable {
         if let ticket {
             parts.queryItems = [URLQueryItem(name: "wsTicket", value: ticket),
                                 URLQueryItem(name: "orchestrationProtocol", value: "2")]
-            if let proof { parts.queryItems?.append(URLQueryItem(name: "dpop", value: proof)) }
         }
         return parts.url!
     }
@@ -27,11 +26,11 @@ enum LimitsConnectionError: Error, Equatable {
     var message: String {
         switch self {
         case .destination: "Enter a local T3 Code port from 1 to 65535."
-        case .authorization: "Pairing failed. Create a new read-only code."
+        case .authorization: "The access token was rejected by T3 Code."
         case .invalidToken: "Enter a T3 Code access token of up to 16 KiB."
         case .protocolMismatch: "This T3 Code version returned an unsupported Limits stream."
-        case .expired: "The Bar access token expired or was revoked. Connect again with a new pairing code or access token."
-        case .storage: "Could not save the Bar access token in Keychain. Connect again without Remember."
+        case .expired: "The access token expired or was revoked. Generate or enter a new token."
+        case .storage: "Could not save the access token in Keychain."
         }
     }
 }

@@ -65,28 +65,15 @@ private struct LimitsURLSocket: LimitsSocket {
     func close() async { task.cancel(with: .goingAway, reason: nil) }
 }
 
-enum LimitsCredentialKind: Sendable {
-    /// Short-lived token from the pairing exchange, bound to this key.
-    case dpop(privateKey: Data)
-    /// Long-lived token issued by T3's CLI. Valid for whoever holds it.
-    case bearer
-}
-
 struct LimitsCredential: Codable, Sendable {
     let port: Int
     let token: String
     let expiresAt: Date
-    /// Stored shape stays flat so credentials saved before Bearer support still decode.
-    let privateKey: Data?
-
-    init(port: Int, token: String, expiresAt: Date, privateKey: Data? = nil) {
+    init(port: Int, token: String, expiresAt: Date) {
         self.port = port
         self.token = token
         self.expiresAt = expiresAt
-        self.privateKey = privateKey
     }
-
-    var kind: LimitsCredentialKind { privateKey.map { .dpop(privateKey: $0) } ?? .bearer }
 
     /// T3 session tokens look like `<base64url JSON>.<signature>` with `exp` in milliseconds.
     /// Anything else is treated as non-expiring and the server's 401 is the signal.
