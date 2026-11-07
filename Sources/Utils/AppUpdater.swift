@@ -21,6 +21,16 @@ public enum UpdateSettings {
         get { UserDefaults.standard.object(forKey: key) as? Bool ?? true }
         set { UserDefaults.standard.set(newValue, forKey: key) }
     }
+
+    public static let installsWithoutAskingKey = "installsWithoutAsking"
+    public static var installsWithoutAsking: Bool {
+        get { installsWithoutAsking(in: .standard) }
+        set { UserDefaults.standard.set(newValue, forKey: installsWithoutAskingKey) }
+    }
+
+    static func installsWithoutAsking(in defaults: UserDefaults) -> Bool {
+        defaults.object(forKey: installsWithoutAskingKey) as? Bool ?? false
+    }
 }
 
 public enum UpdatePlatform: Sendable {
@@ -98,6 +108,12 @@ public final class AppUpdater: ObservableObject {
     /// Calls back with the installer's exit status once it ends.
     private let runInstaller: (String, @escaping @Sendable (Int32) -> Void) -> Void
     private let isAutoUpdateEnabled: () -> Bool
+    private let installsWithoutAsking: () -> Bool
+    /// Called from an automatic check that found a release it will not install
+    /// on its own. Returns whether a prompt was shown. A tag is recorded as
+    /// announced only when it returns true, so a skipped prompt is retried.
+    public var onUpdateAvailable: (String) -> Bool
+    private var announcedTags: Set<String> = []
     /// Runs the work after the delay and returns a function that cancels it.
     private let scheduleRetry: (TimeInterval, @escaping @Sendable () -> Void) -> () -> Void
     private let log: UpdateLog
@@ -111,6 +127,8 @@ public final class AppUpdater: ObservableObject {
         fetchRelease: (() async -> Result<ReleaseInfo, UpdateFailure>)? = nil,
         runInstaller: ((String, @escaping @Sendable (Int32) -> Void) -> Void)? = nil,
         isAutoUpdateEnabled: @escaping () -> Bool = { UpdateSettings.isEnabled },
+        installsWithoutAsking: @escaping () -> Bool = { UpdateSettings.installsWithoutAsking },
+        onUpdateAvailable: @escaping (String) -> Bool = { _ in false },
         scheduleRetry: @escaping (TimeInterval, @escaping @Sendable () -> Void) -> () -> Void = AppUpdater.liveScheduleRetry(delay:work:),
         log: UpdateLog = .standard
     ) {
@@ -125,6 +143,8 @@ public final class AppUpdater: ObservableObject {
             AppUpdater.liveRunInstaller(tag: tag, log: log, completion: completion)
         }
         self.isAutoUpdateEnabled = isAutoUpdateEnabled
+        self.installsWithoutAsking = installsWithoutAsking
+        self.onUpdateAvailable = onUpdateAvailable
         self.scheduleRetry = scheduleRetry
         self.log = log
     }
@@ -156,6 +176,12 @@ public final class AppUpdater: ObservableObject {
 
     public func installAvailable() {
         guard case .available(let tag) = state else { return }
+        install(tag: tag)
+    }
+
+    /// Installs only the release the caller showed to the user.
+    public func installAvailable(tag: String) {
+        guard case .available(let current) = state, current == tag else { return }
         install(tag: tag)
     }
 
@@ -208,8 +234,16 @@ public final class AppUpdater: ObservableObject {
         }
         send(.checkFinished(outcome, at: Date()))
         if case .failed(let failure) = outcome { log.append("update check failed: \(failure.logLabel)") }
-        if installIfAvailable, case .available(let tag) = state { install(tag: tag) }
+        if installIfAvailable, case .available(let tag) = state { handleAutomaticallyFound(tag: tag) }
         return outcome
+    }
+
+    private func handleAutomaticallyFound(tag: String) {
+        if installsWithoutAsking() {
+            install(tag: tag)
+        } else if !announcedTags.contains(tag), onUpdateAvailable(tag) {
+            announcedTags.insert(tag)
+        }
     }
 
     private func install(tag: String) {
