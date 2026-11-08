@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Install the Tauri macOS release. No sudo or Gatekeeper bypasses.
+# Ad hoc releases are not Apple-verified; macOS may require Open Anyway.
 set -euo pipefail
 
 fail() { printf 'T3 Code Bar: %s\n' "$*" >&2; exit 1; }
@@ -30,6 +31,9 @@ fetch() {
     --retry 2 --connect-timeout 10 --max-time 180 "$1" --output "$2"
 }
 
+printf '%s\n' 'This release is ad hoc signed and not notarized by Apple.' \
+  'If macOS blocks it: System Settings → Privacy & Security → Open Anyway.'
+
 repository='https://github.com/eliophan/t3code-bar'
 fetch 'https://raw.githubusercontent.com/eliophan/t3code-bar/main/desktop/src-tauri/tauri.conf.json' "$work/config.json" || fail 'Could not read the current Tauri version.'
 version="$(plutil -extract version raw -o - "$work/config.json")"
@@ -59,9 +63,9 @@ plist="$app/Contents/Info.plist"
 [[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$plist")" == com.t3code.bar.tauri ]] || fail 'Unexpected app identity.'
 [[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$plist")" == "$version" ]] || fail 'Unexpected app version.'
 codesign --verify --deep --strict "$app" || fail 'App signature verification failed.'
-codesign -dv --verbose=2 "$app" 2> "$work/signature.txt"
-grep -q '^Authority=Developer ID Application:' "$work/signature.txt" || fail 'A Developer ID signed release is required.'
-spctl --assess --type execute "$app" || fail 'Gatekeeper did not accept this release; nothing installed.'
+# curl does not set browser download quarantine. Preserve the macOS first-open check.
+quarantine_time="$(printf '%x' "$(date +%s)")"
+xattr -w com.apple.quarantine "0081;${quarantine_time};T3 Code Bar Installer;" "$app"
 
 applications="$HOME/Applications"
 destination="$applications/$app_name"
@@ -74,4 +78,5 @@ mv -n "$staging/$app_name" "$applications/"
 [[ ! -e "$staging/$app_name" ]] || fail 'An installation appeared during copy; nothing replaced.'
 printf 'Installed %s at %s\n' "$version" "$destination"
 printf 'Open the app and enter a pairing key from T3 Code.\n'
-open "$destination"
+printf '%s\n' 'If blocked: try opening the app, then System Settings → Privacy & Security → Open Anyway.'
+open "$destination" || printf '%s\n' 'Open the app from Applications after allowing it in Privacy & Security.'

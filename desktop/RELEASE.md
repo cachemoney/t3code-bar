@@ -6,7 +6,7 @@ The current version is an alpha. Build and test the actual packages before distr
 
 The Tauri package lane is separate from the Swift release and installer. It does not publish or install anything. Use a Mac with Xcode command line tools, the Rust target, `npm ci` in `desktop/`, and Tauri CLI 2.12.4. Each command uses a fresh temporary Cargo target directory and refuses an existing output path. Select `darwin-aarch64` or `darwin-x86_64` and install its Rust target first.
 
-Build an ad hoc package for local development. This package has no updater endpoint and is not notarized.
+Build an ad hoc package for manual GitHub distribution. This creates `.app.zip`, `.app.tar.gz` and SHA-256 sidecars. It has no updater endpoint and is not notarized. The current downloadable alpha supports Apple Silicon.
 
 ```sh
 python3 scripts/package-macos.py adhoc --target darwin-aarch64 --output /tmp/bar-adhoc
@@ -35,6 +35,14 @@ Release packaging requires a valid Developer ID identity and notarization profil
 
 To test the metadata checks with temporary synthetic keys, install `minisign` and run `python3 scripts/test-package-macos.py`. The test does not use the release key or install an update.
 
+## Manual GitHub release
+
+Publish the ad hoc ZIP, tar archive and both `.sha256` sidecars as a GitHub prerelease matching the configured version. Keep the release marked as a prerelease while the version is alpha. Include this warning in the release notes:
+
+> This app is ad hoc signed and not notarized by Apple. Download the ZIP, unzip and move the app to Applications. If macOS blocks it, try opening the app, then go to **System Settings → Privacy & Security → Open Anyway** and confirm. Managed Macs may restrict this option.
+
+Verify the extracted app with `codesign --verify --deep --strict` and confirm its bundle version and architecture before publishing. This checks integrity, not Apple verification. Do not publish an updater manifest for this manual-release lane.
+
 ## Homebrew (macOS)
 
 Distribution uses a custom `eliophan/tap` cask backed by versioned GitHub Release assets. It does not require an entry in the official Homebrew cask repository. The tap and Tauri release assets are not published yet; the installation command below is the intended interface after publication.
@@ -59,12 +67,12 @@ A non-zero exit from either command is a failure. A successful generation is rep
 
 ## Command-line installer (macOS)
 
-`scripts/install-macos.sh` installs the current Tauri version from GitHub Releases into `~/Applications/T3 Code Bar Tauri.app`. It detects Apple Silicon (including Rosetta) or Intel, verifies the archive SHA-256, bundle identity/version, Developer ID signature and Gatekeeper assessment, then opens the app. It refuses to replace an existing install and does not change Swift settings or credentials. No Node.js, Rust, Python or Homebrew is needed on the user's Mac.
+`scripts/install-macos.sh` installs the current Tauri version from GitHub Releases into `~/Applications/T3 Code Bar Tauri.app`. It detects Apple Silicon (including Rosetta) or Intel, verifies the archive SHA-256, bundle identity/version and code-signature integrity, then opens the app. The current alpha is ad hoc signed; it does not authenticate the developer with Apple. It refuses to replace an existing install and does not change Swift settings or credentials. No Node.js, Rust, Python or Homebrew is needed on the user's Mac.
 
-Publish the release archive and its generated `.sha256` sidecar together. The sidecar detects corruption; Developer ID and Gatekeeper supply the macOS trust checks. Missing assets or failed verification stop installation. The installer never removes quarantine or disables Gatekeeper.
+Publish the release archive and its generated `.sha256` sidecar together. The sidecar detects corruption, but is not independent proof of publisher identity. Missing assets or failed verification stop installation. The installer sets download quarantine because curl does not do so, and never removes quarantine or disables Gatekeeper. If macOS blocks the app, try opening it, then use **System Settings → Privacy & Security → Open Anyway** and confirm.
 
 ```sh
 curl -fsSL https://eliophan.github.io/t3code-bar/install.sh | bash
 ```
 
-This command becomes usable after the version in `tauri.conf.json` has matching notarized GitHub Release assets. Changing that version before publishing its packages makes the installer stop at the missing release.
+This command becomes usable after the version in `tauri.conf.json` has matching GitHub Release assets. Changing that version before publishing its packages makes the installer stop at the missing release.

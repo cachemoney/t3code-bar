@@ -263,6 +263,21 @@ def package(mode, target, output, cli):
             (staging / 'metadata.json').write_text(json.dumps(metadata, indent=2) + '\n')
             verify(staging, public_key)
             write_checksum(archive)
+        if mode == 'adhoc':
+            archive = staging / f'T3-Code-Bar-{version}-{target}.app.tar.gz'
+            run('tar', '-czf', str(archive), '-C', str(staging), APP,
+                env=dict(env, COPYFILE_DISABLE='1'))
+            verify_bundle_archive(archive, version, target)
+            write_checksum(archive)
+            zip_path = staging / f'T3-Code-Bar-{version}-{target}.app.zip'
+            run('ditto', '-c', '-k', '--keepParent', str(app), str(zip_path))
+            write_checksum(zip_path)
+            (staging / 'metadata.json').write_text(json.dumps({
+                'version': version, 'target': target, 'signing': 'adhoc',
+                'notarized': False, 'updater': False,
+                'archive': archive.name, 'archive_sha256': digest(archive),
+                'zip': zip_path.name, 'zip_sha256': digest(zip_path),
+            }, indent=2) + '\n')
         staging.rename(output)
     print(f'{mode} package written to {output}')
 

@@ -23,19 +23,15 @@ Your [T3 Code](https://github.com/pingdotgg/t3code) inbox and usage in the menu 
 
 ## Install on macOS
 
-Homebrew:
+[Download for Apple Silicon](https://github.com/eliophan/t3code-bar/releases/download/v2.0.0-alpha.1/T3-Code-Bar-2.0.0-alpha.1-darwin-aarch64.app.zip), unzip and move the app to Applications.
 
-```sh
-brew install --cask eliophan/tap/t3-code-bar
-```
-
-Or with curl:
+Or install with curl:
 
 ```sh
 curl -fsSL https://eliophan.github.io/t3code-bar/install.sh | bash
 ```
 
-*Both methods require the Tauri release packages to be published.*
+**Not notarized by Apple.** If macOS blocks the app, try opening it, then go to **System Settings → Privacy & Security → Open Anyway** and confirm. Managed Macs may restrict this option.
 
 ## Get started
 
