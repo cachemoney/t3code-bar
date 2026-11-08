@@ -32,7 +32,7 @@ brew install --cask eliophan/tap/t3-code-bar
 Or with curl:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/eliophan/t3code-bar/main/scripts/install-macos.sh | bash
+curl -fsSL https://eliophan.github.io/t3code-bar/install.sh | bash
 ```
 
 *Both methods require the Tauri release packages to be published.*

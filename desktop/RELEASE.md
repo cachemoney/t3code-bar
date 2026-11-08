@@ -64,7 +64,7 @@ A non-zero exit from either command is a failure. A successful generation is rep
 Publish the release archive and its generated `.sha256` sidecar together. The sidecar detects corruption; Developer ID and Gatekeeper supply the macOS trust checks. Missing assets or failed verification stop installation. The installer never removes quarantine or disables Gatekeeper.
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/eliophan/t3code-bar/main/scripts/install-macos.sh | bash
+curl -fsSL https://eliophan.github.io/t3code-bar/install.sh | bash
 ```
 
 This command becomes usable after the version in `tauri.conf.json` has matching notarized GitHub Release assets. Changing that version before publishing its packages makes the installer stop at the missing release.
