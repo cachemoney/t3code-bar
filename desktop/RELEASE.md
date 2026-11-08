@@ -51,6 +51,8 @@ The public [eliophan/homebrew-tap](https://github.com/eliophan/homebrew-tap) cas
 brew install --cask eliophan/tap/t3-code-bar
 ```
 
+If Homebrew requests trust, run `brew trust --cask eliophan/tap/t3-code-bar`, then retry.
+
 For future Developer ID releases, generate the cask from signed updater packages:
 
 1. Build and verify a release package using the commands above. Each architecture must use a GitHub asset URL of the form `https://github.com/eliophan/t3code-bar/releases/download/vVERSION/T3-Code-Bar-VERSION-darwin-aarch64.app.tar.gz` (or `darwin-x86_64`).

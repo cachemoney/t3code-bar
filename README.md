@@ -27,6 +27,8 @@ Your [T3 Code](https://github.com/pingdotgg/t3code) inbox and usage in the menu 
 brew install --cask eliophan/tap/t3-code-bar
 ```
 
+If Homebrew requests trust, run `brew trust --cask eliophan/tap/t3-code-bar`, then retry.
+
 Or [download for Apple Silicon](https://github.com/eliophan/t3code-bar/releases/download/v2.0.0-alpha.1/T3-Code-Bar-2.0.0-alpha.1-darwin-aarch64.app.zip), unzip and move the app to Applications.
 
 Or install with curl:
