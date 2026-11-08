@@ -14,3 +14,29 @@ xcuserdata/
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+
+# Private planning, acceptance receipts and retired migration tooling
+.audit/
+contracts/
+evidence/
+plans/
+prototypes/
+scripts/migration/
+scripts/phase1/
+desktop/integration/
+docs/assets/
+docs/images/
+scripts/worktree_setup.sh
+scripts/worktree_dev.sh
+__pycache__/
+*.pyc
+
+# Local release artifacts and signing material
+*.app/
+*.dmg
+*.AppImage
+*.deb
+*.key
+*.p12
+*.p8
+*.mobileprovision

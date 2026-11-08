@@ -1,0 +1,12 @@
+{
+  "instanceId": "fixture-codex", "driver": "codex", "enabled": true, "installed": true,
+  "auth": {"status": "authenticated", "label": "Fixture Pro", "email": "demo@fixture.invalid"},
+  "usageLimits": {
+    "checkedAt": "2026-11-06T09:00:00Z",
+    "windows": [
+      {"id": "primary", "kind": "session", "label": "Session", "usedPercent": 24, "windowDurationMins": 300, "resetsAt": "2026-11-06T12:00:00Z"},
+      {"id": "secondary", "kind": "weekly", "label": "Weekly", "usedPercent": 61, "windowDurationMins": 10080, "resetsAt": "2026-11-10T12:00:00Z"}
+    ],
+    "resetCredits": {"availableCount": 1, "nextExpiresAt": "2026-12-01T00:00:00Z"}
+  }
+}

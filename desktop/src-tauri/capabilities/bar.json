@@ -1,0 +1,8 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "bar",
+  "description": "Bundled desktop UI. Files, destinations and credentials are managed by typed Rust commands.",
+  "windows": ["main"],
+  "webviews": ["main"],
+  "permissions": ["core:default"]
+}

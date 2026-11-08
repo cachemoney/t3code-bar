@@ -1,54 +1,55 @@
-name: Swift checks
+name: Desktop checks
 
 on:
   push:
-    branches:
-      - "**"
-    tags-ignore:
-      - "**"
-    paths-ignore:
-      - "**/*.md"
-      - "LICENSE"
-      - ".gitignore"
+    branches: ["**"]
+    tags-ignore: ["**"]
   pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
 
-# One run per ref, and a superseded commit never keeps a runner slot while the
-# newer push waits for capacity.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   test-and-build:
-    # macOS arm64 hosted capacity is the slow part, so cap the job itself and
-    # keep the work identical across every ref.
-    runs-on: macos-15
-    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           persist-credentials: false
-      - name: Toolchain
-        run: swift --version
-      - name: Cache SwiftPM build
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      - uses: actions/setup-node@v4
         with:
-          path: .build
-          # Keyed on the manifest only, so a source change still reuses the
-          # dependency build instead of starting from an empty .build.
-          key: ${{ runner.os }}-${{ runner.arch }}-swift-${{ hashFiles('Package.swift') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-swift-
-      - name: Release build and tests
-        run: swift test -c release
-      - name: Packaged app launches
-        # Catches resources that only resolve on the build machine, as in v1.0.0.
+          node-version: 22
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - name: Linux native dependencies
+        if: runner.os == 'Linux'
         run: |
-          bash scripts/build_app.sh
-          bash scripts/smoke_test_app.sh
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential libssl-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+      - name: Pinned Rust toolchain
+        working-directory: desktop
+        run: |
+          rustup show
+          cargo --version
+      - name: Tests and frontend build
+        run: bash scripts/check.sh
+      - name: Build macOS app
+        if: runner.os == 'macOS'
+        working-directory: desktop
+        run: npm run tauri -- build --bundles app
+      - name: Build Linux deb
+        if: runner.os == 'Linux'
+        working-directory: desktop
+        run: npm run tauri -- build --config src-tauri/tauri.linux.conf.json --bundles deb
       - name: Script syntax
-        run: bash -n scripts/build_app.sh scripts/install.sh scripts/install-release.sh scripts/package_release.sh scripts/smoke_test_app.sh scripts/setup_hooks.sh
+        run: bash -n scripts/check.sh scripts/setup_hooks.sh

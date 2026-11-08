@@ -1,15 +1,5 @@
 #!/usr/bin/env bash
-# Mirrors the CI check locally so a broken commit never needs a macOS runner
-# slot to be discovered. Skip with: git push --no-verify
 set -euo pipefail
-
-if ! command -v swift >/dev/null 2>&1; then
-  echo "pre-push: swift not found, skipping local Swift checks" >&2
-  exit 0
-fi
-
-echo "pre-push: swift test -c release"
-swift test -c release
-
-echo "pre-push: scripts syntax"
-bash -n scripts/build_app.sh scripts/install.sh scripts/install-release.sh scripts/package_release.sh scripts/smoke_test_app.sh
+# Run the same checks as CI before publishing a change.
+bash scripts/check.sh
+bash -n scripts/check.sh scripts/setup_hooks.sh

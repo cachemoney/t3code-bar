@@ -1,68 +1,71 @@
 # T3 Code Bar
 
-[![Swift checks](https://github.com/eliophan/t3code-bar/actions/workflows/ci.yml/badge.svg)](https://github.com/eliophan/t3code-bar/actions/workflows/ci.yml)
+[![Desktop checks](https://github.com/eliophan/t3code-bar/actions/workflows/ci.yml/badge.svg)](https://github.com/eliophan/t3code-bar/actions/workflows/ci.yml)
 ![macOS 14+](https://img.shields.io/badge/macOS-14%2B-blue)
+![Linux](https://img.shields.io/badge/Linux-Wayland%20%2F%20X11-blue)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-Keep your [T3 Code](https://github.com/pingdotgg/t3code) inbox in the macOS menu bar. Check running threads, spot requests that need your attention, and jump back into a conversation with one click.
+Your [T3 Code](https://github.com/pingdotgg/t3code) inbox and usage in the menu bar. Built with Tauri for macOS and Linux.
 
-An independent companion app built with SwiftUI, not affiliated with or endorsed by T3 Tools.
-
-![T3 Code Bar on macOS](docs/images/screenshot.png)
-
-*Some status labels in the screenshot may differ from the current version.*
-
-![Opening a thread from the menu bar popover](docs/assets/demo.gif)
-
-## Installation
-
-Requires macOS 14 or later and T3 Code opened at least once. In Terminal:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/eliophan/t3code-bar/main/scripts/install-release.sh | bash
-```
-
-This downloads the latest release, checks its checksum, installs it at `~/Applications/T3 Code Bar.app`, and opens it. No Swift, build step, or `sudo` is needed.
-
-From v1.0.2 the app updates itself. It checks GitHub for a new release about 10 seconds after launch and every 6 hours. A release counts only when it carries the macOS zip, `T3-Code-Bar-<version>-universal.zip`. Older installs run the command above once to get the updater.
-
-By default the app asks before it installs. When an automatic check finds a newer release, a window offers **Install and Restart** or **Later**. Return chooses **Later**, and Escape does not close the window. Choosing **Install and Restart** quits the app, swaps it, and reopens it. The window appears once per version for each launch.
-
-The right-click menu on the menu bar icon shows the running version and a status line, such as "Up to date, checked 14:05" or "Version 1.2.3 is available". Below them is one button.
-
-- **Check for Updates…** checks now and never installs by itself.
-- **Install v1.2.3 and Restart** appears after a check finds a release and installs it.
-- **Update Automatically** turns the launch and 6 hour checks on or off. It is on by default.
-- **Install Without Asking** skips the window and installs a release as soon as an automatic check finds it. It is off by default.
-
-Updates run only for release builds at `~/Applications/T3 Code Bar.app`. Builds from source and copies in other folders show a status line that says why updates are off. For other status lines, see [Troubleshooting](docs/USAGE.md#troubleshooting).
-
-Apple Silicon is the tested architecture. Releases are universal and include an untested Intel build. The app is ad hoc signed and not notarized. To build from source, see the [development guide](docs/DEVELOPMENT.md).
+<p align="center">
+  <img src="docs/screenshots/macos-preview.png" width="350" alt="T3 Code Bar running on macOS, showing thread statuses and a last reply hover preview beneath the menu bar">
+  <img src="docs/screenshots/macos-usage.png" width="408" alt="T3 Code Bar Usage on macOS, showing 90-day estimated cost, sessions, provider breakdown and daily chart">
+</p>
 
 ## Features
 
-- View your local T3 Code inbox without switching windows.
-- See Working, Approval, Input, Failed, and other thread states.
-- Spot unread completions with **Done**; read threads show a relative timestamp.
-- Keep pinned threads and manual inbox ordering.
-- Bring snoozed threads back when something needs attention.
-- Open threads in T3 Code or your browser, or copy their links.
-- See what T3 Code's Usage page shows, in three tabs. Cost and Tokens cover the past 24 hours, 7, 30 or 90 days with a chart, providers, models and cache savings. Limits shows each provider's remaining quota, pace and reset times.
+- **Threads:** project badges, branches, provider icons, timestamps and attention states.
+- **Hover previews:** read the latest assistant reply after 500 ms, enabled by default.
+- **Quick actions:** open a thread in T3 Code or your browser, or copy its link.
+- **Usage:** Cost, Tokens and Limits, with provider/model breakdowns and charts for 24h, 7d, 30d and 90d. Costs are API estimates.
+- **Pairing:** saved reconnect through macOS Keychain or Linux Secret Service.
+- **Desktop:** native notifications, persistent settings, macOS menu bar and Linux tray with a window fallback.
 
-## Usage
+## macOS (Homebrew · coming soon)
 
-Click the menu bar icon to view your inbox, and click a thread to open it in T3 Code. Right-click a thread for **Open in T3 Code**, **Open in Browser**, or **Copy Link**. Right-click the menu bar icon to quit.
+```sh
+brew install --cask eliophan/tap/t3-code-bar
+```
 
-See the [usage guide](docs/USAGE.md) for thread states, launching at login, custom data directories, troubleshooting, and known limitations. T3 Code Bar reads T3 Code's internal database schema and usage cache, which can change between versions. See the [compatibility notes](docs/COMPATIBILITY.md).
+## Get started
+
+Requires T3 Code, Node.js 22+, Rust and the native [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/). macOS requires version 14+ and Xcode command line tools. Rust is pinned in `desktop/rust-toolchain.toml`.
+
+```sh
+git clone https://github.com/eliophan/t3code-bar.git
+cd t3code-bar/desktop
+npm ci
+npm run tauri -- dev
+```
+
+Open T3 Code, generate a pairing key and enter it in the Bar.
+
+## Build
+
+From `desktop/`:
+
+```sh
+# macOS
+npm run tauri -- build --bundles app
+
+# Linux: deb and AppImage
+npm run tauri -- build --config src-tauri/tauri.linux.conf.json
+```
+
+Packages are written under `desktop/src-tauri/target/release/bundle/`, unless `CARGO_TARGET_DIR` is configured.
+
+**Alpha 2.0.0-alpha.1.** macOS builds are ad hoc signed and not notarized. Linux integration varies by desktop.
 
 ## Privacy
 
-T3 Code Bar collects no telemetry and never calls AI services or provider APIs. It opens T3 Code's SQLite database read-only and never modifies it. A required Limits connection uses a read-only access token to read provider and CLI Proxy snapshots from `127.0.0.1`. You can generate the token from the app with the local T3 CLI; it is stored in Bar's Keychain for reconnects. The other network request is the update check against GitHub's releases API, which **Update Automatically** controls. It is a conditional request, so GitHub answers "not modified" when nothing changed. Installing an update downloads the install script and the release zip from GitHub. The update log stays on your machine at `~/Library/Logs/T3 Code Bar/update.log`. It holds update events, exit codes, and the installer's output, and the app never uploads it. When sharing screenshots or bug reports, check for private thread names, project names, and paths.
+Reads T3 Code data read-only. No telemetry or direct provider API calls. Pairing uses loopback; credentials stay in the OS credential store. Configured builds may check for updates.
 
-## Contributing
+## Development
 
-See the [development guide](docs/DEVELOPMENT.md). To report a bug, [open an issue](https://github.com/eliophan/t3code-bar/issues) with your macOS version, T3 Code version, and steps to reproduce. Redact private information.
+Run `bash scripts/check.sh` from the repository root.
+
+[Development](docs/DEVELOPMENT.md) · [Usage and troubleshooting](docs/USAGE.md) · [Compatibility](docs/COMPATIBILITY.md) · [Release packaging](desktop/RELEASE.md)
 
 ## License
 
-[MIT](LICENSE). T3 Code-derived logic and artwork, and adapted Lucide icon geometry, are documented in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). T3 Code, OpenAI, Anthropic, Google, and xAI names and logos belong to their respective owners.
+[MIT](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.md). Independent companion, not affiliated with or endorsed by T3 Tools.

@@ -1,148 +1,31 @@
-# Using T3 Code Bar
+# Usage
 
-Reference for thread states, configuration, troubleshooting, and known limitations. For installation, see the [README](../README.md).
+Start T3 Code, then launch the Bar. Enter a pairing key from T3 Code to connect. The key is saved in the Bar's own OS credential namespace for later reconnects.
 
-## Thread states
+## Threads and usage
 
-| State | Meaning |
-| --- | --- |
-| Approval / Input | The thread is waiting for you to approve an action or answer a question. |
-| Request | A guest on a shared link has a message waiting for you to send or dismiss. |
-| Working / Goal | A run is starting, running or paused on a wait. T3 Code shows all of these as Working. |
-| Waiting | The thread has never run, or its run is only waiting on other threads (`t3_thread_wait`, or `delegate_task` in wait mode). Gray, and not counted as running. |
-| Failed | The latest visible run failed. |
-| Limited | The latest visible run failed because the provider's usage limit was reached. Shown in amber, as in T3 Code, and not as a failure. When the failure records a reset time, the row shows it (for example `Limited · 2h`) and the tooltip says when it resets; many failures record none. |
-| Woke | A snoozed thread has woken and its wake timestamp is newer than the persisted last visit, or no valid visit is available. |
-| Done | The latest visible run completed after the last valid visit saved by T3 Code. |
-| Relative time | No higher-priority status applies; the row shows time based on the latest user message. |
+Click the tray/menu bar icon to show the thread list. Click a row to open its thread in T3 Code. Right-click a row to open it in a browser or copy its link. Hover for 500 ms to view the latest assistant reply. Enable this in Settings if a previous choice turned it off.
 
-Done clears when T3 Code saves a newer visit timestamp. If no valid visit timestamp is available, the app shows time rather than assuming a completion is unread. Clicking a link in Bar does not itself mark a thread as read.
+The footer's Usage button opens Cost, Tokens and Limits. Cost and Tokens support 24h, 7d, 30d and 90d periods. Limits shows T3 Code's provider quota snapshots; the Bar does not call providers directly.
 
-Archived, deleted, and settled threads, side chats, and separate subagent threads are excluded. Snoozed threads stay hidden until the timer expires or a new attention event wakes them. An error or completion that already existed when the thread was snoozed does not wake it early.
+## Settings
 
-## Usage
+- Notifications and hover previews are enabled by default.
+- Connected installations hide the pairing form. When disconnected, use Reconnect or Pair again.
+- Disconnect asks for confirmation before removing the saved key.
+- Update controls are unavailable when the build has no updater configuration.
+- Quit is available from Settings or the tray menu.
 
-Click **Usage** at the bottom of the thread list to see what T3 Code's own Usage page shows. Click the back arrow or press Esc to return to the threads. The popover always opens on the threads.
-
-Three tabs sit under the header, in T3 Code's order. **Cost** and **Tokens** combine T3 Code's transcript cache with local OpenCode and Antigravity usage and Cursor's saved account cache. **Limits** reads the connected local T3 Code provider and CLI Proxy snapshots. A read-only T3 connection is required before the main popover opens. Bar remembers the tab you left open. On first launch it opens on Limits and 30 days, as T3 Code does.
-
-The period control on Cost and Tokens offers Past 24h, 7 days, 30 days and 90 days. Limits has no period, so the control is hidden there. Past 24h is a sliding window. The other periods are whole calendar days in your time zone, with today counted in full. Bar remembers your choice. Hover a period for its full name.
-
-### Cost
-
-- The headline is the estimated cost, with the number of sessions and "API estimate" under it. When some records have no price, hover the info icon. It says what share of records the estimate leaves out.
-- Each provider row shows its cost, its sessions, its share of the cost and its tokens.
-- The chart shows daily cost per provider. Past 24h shows hourly cost. Hover it for the numbers of one day or hour.
-- **Totals** lists processed tokens, cached input, uncached input, output and cache savings. Cache savings is what the cached reads would have cost at the full input price.
-- **Cost by type** splits the cost into input, cache read, cache write, output and other. Other is cost that has no split, and it hides below half a cent.
-- **Cost by speed** appears only when something ran fast or ultrafast. It shows what the faster tiers added as the premium.
-- **Breakdown** ranks models by cost. A model whose records all lack a price reads "Unpriced". The list shows the first five models. Click "Show all N models" for the rest.
-
-### Tokens
-
-- The headline is processed tokens, which is uncached input, cached input, cache writes and output added together, with the number of sessions below it.
-- **Tokens by type** splits the total into input, cache read, cache write and output.
-- **Totals**, **By provider**, the chart and the **Breakdown** follow the same rules as on Cost. Models rank by tokens here.
-
-The small footer shows only warnings and the transcript cache age. OpenCode and Antigravity refresh locally in the background while this tab is open. Transcript providers update when T3 Code's Usage page scans. Cursor uses only its saved account cache, which Bar never fetches. Costs are API estimates from T3 Code's price list. They are not what a plan bills.
-
-### Limits
-
-- Each provider has a section with one line per signed-in account. The line shows the plan and when T3 Code last checked that account.
-- Each window pool has a card with the share left, the pace, and a bar of what is left. The line on the bar is where even spending would be. The hatched stretch is what the reset will restore.
-- Under the bar, Bar writes when the window resets, the share that even pace would leave by now, what the reset restores, and any banked reset credits.
-- When two accounts share a pool, each one gets its own bar.
-- A card for an external usage page, such as ChatGPT, has a **Manage usage** button that opens the page in your browser. Bar does not fetch that page or contact the provider.
-- If the newest check is more than 30 minutes old, a line above the cards says so. T3 Code probes providers only while it runs, so old numbers usually mean T3 Code is closed.
-
-Limits do not need the transcript usage cache. The first launch needs a local T3 access token with `orchestration:read`.
-
-1. In Bar, open **Usage → Limits → Connect T3 Code…**.
-2. Click **Auto-Generate Token via T3 CLI**. Bar runs `t3 auth session issue --scope orchestration:read --ttl 3650d --token-only`, stores the token in its own Keychain item, and connects automatically.
-3. If the CLI is unavailable, paste an existing **Access Token** and click **Connect**. Bar sends it as a Bearer token to `127.0.0.1` only.
-
-The connection is read-only and limited to this local environment. Bar never reads T3 Code's credential stores or contacts provider APIs. If the token expires or is revoked, generate a new one from the same button.
-
-### How Bar reads the data
-
-Bar checks the files about every 5 seconds while the screen is open and decodes the usage cache again only when it changes. It scans local providers at launch and keeps their snapshot between visits. The live Limits subscription stays open while Bar runs.
-
-If T3 Code has never scanned, Cost and Tokens can still show local provider usage and explain that transcript usage is missing. Without any local sources, they ask you to open T3 Code's Usage page once. If T3 Code writes a newer cache format than this build understands, they say so and show no numbers. Update Bar in that case. While T3 Code is rewriting the cache, Bar keeps the last numbers and retries. A warning appears when entries or lines could not be read, because the totals may then read low. A period with no usage says "No usage in this period".
-
-### What is missing
-
-- Usage for a provider without a readable local source or a T3 Code cache. Missing and unreadable OpenCode, Antigravity and Cursor sources are identified below the totals. Bar does not contact provider APIs or read their credentials. The required Limits connection handles only Bar’s own access token.
-- Remote and linked environments. Bar reads this Mac only.
-- T3 Code's own list of hidden providers. It lives in T3 Code's renderer storage, which Bar does not read.
-- Freshness beyond T3 Code’s last scan, saved Cursor fetch, or provider/source probe. The live Limits stream delivers T3’s snapshots without forcing a new probe. Local OpenCode and Antigravity sources are checked separately.
-- The table of cost by day or hour, and the model dialog with its price per million tokens. The popover has no room for them.
-- Setting a price, refreshing prices or limits, and using a reset credit. Bar never changes provider data or contacts a provider.
-
-## Opening threads
-
-Click a thread to open it in T3 Code. Right-click a thread for **Open in T3 Code**, **Open in Browser**, or **Copy Link**.
-
-## Previews and the menu bar icon menu
-
-Rest the pointer on a thread for half a second and its row expands to show the start of the thread's last assistant reply (up to five lines, code blocks left out) and how long ago it was sent. Moving away closes it. Previews read only the `messages` table, never the large turn items, and show real message text, so turn them off with **Show Previews** in the menu you get by right-clicking the menu bar icon. The same menu has **Mute Notifications**, **Update Automatically**, and **Install Without Asking**.
-
-The top of the menu shows the app version, a status line, and one update button. The button reads **Check for Updates…**, **Checking…**, **Install v1.2.3 and Restart**, or **Installing…**. It is dimmed while a check or install runs and when updates are off. **Install Without Asking** sits under **Update Automatically** and only matters while that item is on. Both are described in the [README](../README.md#installation).
-
-Browser links use `127.0.0.1` and the port configured by your local T3 Code instance. Your browser session may need sign-in. Opening links in T3 Code requires its `t3code://` URL scheme to be registered.
-
-## Launch at login
-
-The app has no Dock icon. To launch it at login, add `~/Applications/T3 Code Bar.app` under **System Settings → General → Login Items → Open at Login**.
-
-## Configuration
-
-By default, the app reads `~/.t3/userdata`. Override it using one of these environment variables, in priority order:
-
-| Variable | Expected directory |
-| --- | --- |
-| `T3_CODE_BAR_STATE_DIR` | Contains `statev2.sqlite`, `server-runtime.json`, `environment-id`, and the usage files directly. |
-| `T3CODE_HOME` | T3 Code's root directory; Bar appends `/userdata`. |
-
-For example, from the source directory:
-
-```bash
-T3CODE_HOME="$HOME/.t3-custom" swift run T3CodeBar
-```
-
-Apps opened from Finder or Login Items do not automatically inherit your terminal's environment. For custom data directories, launch from Terminal or configure a launcher that passes these variables.
+The app stores settings in `tauri-bar-settings.json` under the selected T3 state directory. It does not import Swift settings or credentials.
 
 ## Troubleshooting
 
-| Problem | What to check |
-| --- | --- |
-| Data not found | Open T3 Code at least once and check the configured data directory. |
-| Usage says "Open T3 Code's Usage page once" | T3 Code has not written `usage-scan-cache-vN.json` in the data directory yet. Open its Usage page. |
-| Usage says "T3 Code changed its usage format" | T3 Code writes a cache version newer than 11. Update T3 Code Bar. |
-| Usage numbers differ from T3 Code's page | Compare the same period and time zone, check each source's freshness, and allow a local refresh. Open T3 Code's Usage page to refresh transcript and Cursor caches. Remote environments and unsupported local sources are excluded. |
-| Limits say "No limits data yet" | T3 Code has not written its provider files to `caches` yet. Open T3 Code once. |
-| Limits say T3 Code last checked hours ago | T3 Code probes providers only while it runs. Open T3 Code and the numbers refresh within minutes. |
-| Unsupported schema | Your T3 Code version may use a different database structure. See the [compatibility notes](COMPATIBILITY.md). Bar does not repair the database. |
-| Offline | Reopen T3 Code. Saved threads remain visible, but live activity indicators are disabled. |
-| Busy/read error | The app retries every second. Use **Retry** to retry immediately when no read is in progress. |
-| Links do not open | Check the T3 Code installation, URL scheme registration, and local runtime configuration. |
-| Update status says "Updates are off for builds run from source" | Only release builds update themselves. Install a release with the command in the README. |
-| Update status says "Move the app to ~/Applications to enable updates" | The installer replaces `~/Applications/T3 Code Bar.app`, so a copy elsewhere never updates. Move the app there. |
-| Update status says "Version unknown; updates are off" | The app's `Info.plist` has no version. Reinstall a release. |
-| Update status says "Could not reach GitHub" | The check had no network or no answer. The app retries an automatic check after 5 minutes, 15 minutes, and 1 hour, then waits for the 6 hour check. **Check for Updates…** tries again now. |
-| Update status says "Unexpected response from GitHub" | GitHub answered with something the app could not read. It retries like "Could not reach GitHub". |
-| Update status says "GitHub rate limit reached, try again later" | GitHub limits unauthenticated requests. Wait, then use **Check for Updates…**. |
-| Update status says "Installer failed (exit n)" | The install script ended with exit code n. The app does not retry it. Read `~/Library/Logs/T3 Code Bar/update.log`, which holds the installer's output, then use **Check for Updates…** or run the install command from the README. |
-| A new release does not show up | A release is offered only after its `T3-Code-Bar-<version>-universal.zip` asset is uploaded. Check again later. |
-| Installation fails | Check `swift --version` for Swift 6 or later and read the Terminal error. If the destination app already exists, quit it and move it aside. |
+Open T3 Code if the Bar reports offline. If reconnect fails because a key has expired or been revoked, pair again using a fresh key. On Linux ensure Secret Service is available and unlocked. Without a tray host, the app restores a normal window so it stays accessible.
 
-For a bug report, [open an issue](https://github.com/eliophan/t3code-bar/issues) with your macOS version, architecture, T3 Code version, and steps to reproduce. Redact private information; do not attach your database or credentials.
+If AppImage extraction fails on a quota-limited `/tmp`, prefer direct FUSE launch. Where extraction mode is required, choose a writable temporary directory with sufficient quota:
 
-## Known limitations
+```sh
+APPIMAGE_EXTRACT_AND_RUN=1 TMPDIR=/var/tmp '/path/to/T3 Code Bar Tauri.AppImage'
+```
 
-- Monitors one local T3 Code instance, not remote machines. Usage excludes remote environments. OpenCode and Antigravity refresh from local sources, while other usage depends on T3 Code's saved caches. Limits are only as fresh as T3 Code's last provider check.
-- Some background activity exists only in T3 Code's memory and cannot be inferred from SQLite. Working/Monitoring indicators after the main run ends may be incomplete.
-- Unread completion and wake indicators depend on visit timestamps persisted by T3 Code; Bar does not read browser localStorage or call the sidebar's acknowledgment API.
-- Server availability uses the runtime PID, not an HTTP health check. After a read error, the last successful list remains visible with live status disabled.
-- Full sidebar parity is not guaranteed. Running on Intel, Gatekeeper behavior, and notarized distribution have not been verified.
-- Releases are ad hoc signed and not notarized. The `.sha256` file sits in the same GitHub Release as the zip. It detects a corrupt download but not a tampered release.
-- If a recheck fails while an update is waiting, the status line shows the failure instead of the available version until the next check succeeds. Escape does not close the install window. Choose **Later**.
+No launch-at-login setting is currently provided; configure it through the operating system if needed.

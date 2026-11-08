@@ -1,0 +1,48 @@
+{
+  "schemaVersion" : 1,
+  "snapshot" : {
+    "accounts" : [
+      {
+        "checkedAt" : "2026-11-06T09:00:00Z",
+        "driver" : "codex",
+        "id" : "fixture-codex",
+        "plan" : "Fixture Pro",
+        "windows" : [
+          {
+            "id" : "primary",
+            "leftPercent" : 76,
+            "usedPercent" : 24
+          },
+          {
+            "id" : "secondary",
+            "leftPercent" : 39,
+            "usedPercent" : 61
+          }
+        ]
+      }
+    ],
+    "groups" : [
+      {
+        "driver" : "codex",
+        "rows" : [
+          {
+            "id" : "session",
+            "pace" : "under",
+            "remainingPercent" : 76,
+            "usedPercent" : 24
+          },
+          {
+            "id" : "weekly",
+            "pace" : "ahead",
+            "remainingPercent" : 39,
+            "usedPercent" : 61
+          }
+        ]
+      }
+    ],
+    "notices" : [
+
+    ],
+    "skippedFiles" : 0
+  }
+}

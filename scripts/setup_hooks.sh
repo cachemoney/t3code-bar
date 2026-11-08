@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Point Git at the tracked hooks so `swift test -c release` runs before every
+# Point Git at the tracked hooks so the desktop test suite runs before every
 # push. Run once per clone. Skip a single push with: git push --no-verify
 set -euo pipefail
 

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "T3 Code Bar Tauri",
+  "version": "2.0.0-alpha.1",
+  "identifier": "com.t3code.bar.tauri",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "T3 Code Bar",
+        "width": 320,
+        "height": 560,
+        "resizable": true,
+        "decorations": false,
+        "skipTaskbar": true,
+        "alwaysOnTop": true,
+        "visible": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src ipc: http://ipc.localhost; object-src 'none'; frame-src 'none'; base-uri 'none'",
+      "capabilities": [
+        "bar"
+      ]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "app"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "shortDescription": "Your local T3 Code inbox and usage in the menu bar",
+    "category": "Productivity",
+    "macOS": {
+      "minimumSystemVersion": "14.0",
+      "signingIdentity": "-"
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": ""
+    }
+  }
+}

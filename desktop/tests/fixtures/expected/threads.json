@@ -1,0 +1,173 @@
+{
+  "preview" : "Fixture reply\nThe proposed change is ready for review.\nNo personal data is present.",
+  "schemaVersion" : 1,
+  "summary" : {
+    "attentionCount" : 5,
+    "badgeCount" : 1,
+    "runningCount" : 1,
+    "status" : "Approval"
+  },
+  "threads" : [
+    {
+      "activeOrderKey" : null,
+      "hasRuns" : false,
+      "id" : "approval",
+      "isAttention" : true,
+      "isBlockedOnThreadWait" : false,
+      "isPinned" : true,
+      "isRunning" : false,
+      "isSnoozed" : false,
+      "isWoke" : false,
+      "pendingApprovalCount" : 1,
+      "pendingGuestMessageCount" : 0,
+      "pendingUserInputCount" : 0,
+      "pinOrderKey" : "a",
+      "priority" : 8,
+      "projectId" : "fixture-project",
+      "projectTitle" : "Fixture project",
+      "providers" : [
+
+      ],
+      "status" : "Approval",
+      "title" : "Review a proposed action"
+    },
+    {
+      "activeOrderKey" : "a",
+      "hasRuns" : false,
+      "id" : "input",
+      "isAttention" : true,
+      "isBlockedOnThreadWait" : false,
+      "isPinned" : false,
+      "isRunning" : false,
+      "isSnoozed" : false,
+      "isWoke" : false,
+      "pendingApprovalCount" : 0,
+      "pendingGuestMessageCount" : 0,
+      "pendingUserInputCount" : 1,
+      "pinOrderKey" : null,
+      "priority" : 7,
+      "projectId" : "fixture-project",
+      "projectTitle" : "Fixture project",
+      "providers" : [
+
+      ],
+      "status" : "Input",
+      "title" : "Answer a question"
+    },
+    {
+      "activeOrderKey" : "b",
+      "hasRuns" : false,
+      "id" : "request",
+      "isAttention" : true,
+      "isBlockedOnThreadWait" : false,
+      "isPinned" : false,
+      "isRunning" : false,
+      "isSnoozed" : false,
+      "isWoke" : false,
+      "pendingApprovalCount" : 0,
+      "pendingGuestMessageCount" : 1,
+      "pendingUserInputCount" : 0,
+      "pinOrderKey" : null,
+      "priority" : 7,
+      "projectId" : "fixture-project",
+      "projectTitle" : "Fixture project",
+      "providers" : [
+
+      ],
+      "status" : "Request",
+      "title" : "Guest message"
+    },
+    {
+      "activeOrderKey" : "c",
+      "hasRuns" : true,
+      "id" : "working",
+      "isAttention" : true,
+      "isBlockedOnThreadWait" : false,
+      "isPinned" : false,
+      "isRunning" : true,
+      "isSnoozed" : false,
+      "isWoke" : false,
+      "pendingApprovalCount" : 0,
+      "pendingGuestMessageCount" : 0,
+      "pendingUserInputCount" : 0,
+      "pinOrderKey" : null,
+      "priority" : 5,
+      "projectId" : "fixture-project",
+      "projectTitle" : "Fixture project",
+      "providers" : [
+        "codex"
+      ],
+      "status" : "Working",
+      "title" : "Working thread"
+    },
+    {
+      "activeOrderKey" : "d",
+      "hasRuns" : true,
+      "id" : "limited",
+      "isAttention" : true,
+      "isBlockedOnThreadWait" : false,
+      "isPinned" : false,
+      "isRunning" : false,
+      "isSnoozed" : false,
+      "isWoke" : false,
+      "pendingApprovalCount" : 0,
+      "pendingGuestMessageCount" : 0,
+      "pendingUserInputCount" : 0,
+      "pinOrderKey" : null,
+      "priority" : 4,
+      "projectId" : "fixture-project",
+      "projectTitle" : "Fixture project",
+      "providers" : [
+        "codex"
+      ],
+      "status" : "Limited",
+      "title" : "Usage limit reached"
+    },
+    {
+      "activeOrderKey" : "e",
+      "hasRuns" : true,
+      "id" : "waiting",
+      "isAttention" : false,
+      "isBlockedOnThreadWait" : true,
+      "isPinned" : false,
+      "isRunning" : false,
+      "isSnoozed" : false,
+      "isWoke" : false,
+      "pendingApprovalCount" : 0,
+      "pendingGuestMessageCount" : 0,
+      "pendingUserInputCount" : 0,
+      "pinOrderKey" : null,
+      "priority" : 0,
+      "projectId" : "fixture-project",
+      "projectTitle" : "Fixture project",
+      "providers" : [
+        "codex"
+      ],
+      "status" : "Waiting",
+      "title" : "Waiting on another thread"
+    },
+    {
+      "activeOrderKey" : "f",
+      "hasRuns" : true,
+      "id" : "done",
+      "isAttention" : false,
+      "isBlockedOnThreadWait" : false,
+      "isPinned" : false,
+      "isRunning" : false,
+      "isSnoozed" : false,
+      "isWoke" : false,
+      "pendingApprovalCount" : 0,
+      "pendingGuestMessageCount" : 0,
+      "pendingUserInputCount" : 0,
+      "pinOrderKey" : null,
+      "priority" : 1,
+      "projectId" : "fixture-project",
+      "projectTitle" : "Fixture project",
+      "providers" : [
+        "codex"
+      ],
+      "status" : "Done",
+      "title" : "Unread completion"
+    }
+  ]
+}
