@@ -21,9 +21,13 @@ Your [T3 Code](https://github.com/pingdotgg/t3code) inbox and usage in the menu 
 - **Pairing:** saved reconnect through macOS Keychain or Linux Secret Service.
 - **Desktop:** native notifications, persistent settings, macOS menu bar and Linux tray with a window fallback.
 
-## Install on macOS
+## macOS (Homebrew)
 
-[Download for Apple Silicon](https://github.com/eliophan/t3code-bar/releases/download/v2.0.0-alpha.1/T3-Code-Bar-2.0.0-alpha.1-darwin-aarch64.app.zip), unzip and move the app to Applications.
+```sh
+brew install --cask eliophan/tap/t3-code-bar
+```
+
+Or [download for Apple Silicon](https://github.com/eliophan/t3code-bar/releases/download/v2.0.0-alpha.1/T3-Code-Bar-2.0.0-alpha.1-darwin-aarch64.app.zip), unzip and move the app to Applications.
 
 Or install with curl:
 

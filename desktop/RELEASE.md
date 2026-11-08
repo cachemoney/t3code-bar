@@ -45,7 +45,13 @@ Verify the extracted app with `codesign --verify --deep --strict` and confirm it
 
 ## Homebrew (macOS)
 
-Distribution uses a custom `eliophan/tap` cask backed by versioned GitHub Release assets. It does not require an entry in the official Homebrew cask repository. The tap and Tauri release assets are not published yet; the installation command below is the intended interface after publication.
+The public [eliophan/homebrew-tap](https://github.com/eliophan/homebrew-tap) cask installs the Apple Silicon alpha from its versioned GitHub Release archive and verifies SHA-256. It requires macOS 14 or later. Its caveat explains **System Settings → Privacy & Security → Open Anyway** for the current ad hoc build; it does not remove quarantine or disable Gatekeeper.
+
+```sh
+brew install --cask eliophan/tap/t3-code-bar
+```
+
+For future Developer ID releases, generate the cask from signed updater packages:
 
 1. Build and verify a release package using the commands above. Each architecture must use a GitHub asset URL of the form `https://github.com/eliophan/t3code-bar/releases/download/vVERSION/T3-Code-Bar-VERSION-darwin-aarch64.app.tar.gz` (or `darwin-x86_64`).
 2. Generate the cask from the verified package directories:
