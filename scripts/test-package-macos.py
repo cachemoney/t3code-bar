@@ -45,6 +45,18 @@ class ArchivePayloadTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'target mismatch'):
                 packaging.verify_bundle_archive(archive, '2.0.0-alpha.1', 'darwin-x86_64')
 
+    def test_checksum_sidecar_matches_archive_and_rejects_modified_bytes(self):
+        with tempfile.TemporaryDirectory() as temp:
+            archive = Path(temp) / 'T3-Code-Bar-demo.app.tar.gz'
+            app_archive(archive)
+            sidecar = packaging.write_checksum(archive)
+            checked = subprocess.run(['shasum', '-a', '256', '-c', sidecar.name], cwd=temp, capture_output=True)
+            self.assertEqual(checked.returncode, 0, checked.stderr)
+            self.assertIn(b'OK', checked.stdout)
+            archive.write_bytes(b'tampered')
+            checked = subprocess.run(['shasum', '-a', '256', '-c', sidecar.name], cwd=temp, capture_output=True)
+            self.assertNotEqual(checked.returncode, 0)
+
     def test_unknown_cpu_payload_is_rejected(self):
         with tempfile.TemporaryDirectory() as temp:
             archive = Path(temp) / 'app.tar.gz'

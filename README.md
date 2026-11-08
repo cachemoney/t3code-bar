@@ -21,11 +21,21 @@ Your [T3 Code](https://github.com/pingdotgg/t3code) inbox and usage in the menu 
 - **Pairing:** saved reconnect through macOS Keychain or Linux Secret Service.
 - **Desktop:** native notifications, persistent settings, macOS menu bar and Linux tray with a window fallback.
 
-## macOS (Homebrew · coming soon)
+## Install on macOS
+
+Homebrew:
 
 ```sh
 brew install --cask eliophan/tap/t3-code-bar
 ```
+
+Or with curl:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/eliophan/t3code-bar/main/scripts/install-macos.sh | bash
+```
+
+*Both methods require the Tauri release packages to be published.*
 
 ## Get started
 

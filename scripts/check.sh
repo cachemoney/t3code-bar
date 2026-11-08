@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+bash -n "$(dirname "${BASH_SOURCE[0]}")/install-macos.sh"
 cd "$(dirname "${BASH_SOURCE[0]}")/../desktop"
 npm ci
 npm test

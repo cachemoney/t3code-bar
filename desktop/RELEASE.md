@@ -56,3 +56,15 @@ brew install --cask eliophan/tap/t3-code-bar
 ```
 
 A non-zero exit from either command is a failure. A successful generation is reported as `Wrote ...; nothing installed or published.` A successful Homebrew install still needs native app checks. Keep macOS quarantine protections enabled; do not add an installer that removes quarantine or disables Gatekeeper. Uninstalling the cask leaves user settings and credentials intact.
+
+## Command-line installer (macOS)
+
+`scripts/install-macos.sh` installs the current Tauri version from GitHub Releases into `~/Applications/T3 Code Bar Tauri.app`. It detects Apple Silicon (including Rosetta) or Intel, verifies the archive SHA-256, bundle identity/version, Developer ID signature and Gatekeeper assessment, then opens the app. It refuses to replace an existing install and does not change Swift settings or credentials. No Node.js, Rust, Python or Homebrew is needed on the user's Mac.
+
+Publish the release archive and its generated `.sha256` sidecar together. The sidecar detects corruption; Developer ID and Gatekeeper supply the macOS trust checks. Missing assets or failed verification stop installation. The installer never removes quarantine or disables Gatekeeper.
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/eliophan/t3code-bar/main/scripts/install-macos.sh | bash
+```
+
+This command becomes usable after the version in `tauri.conf.json` has matching notarized GitHub Release assets. Changing that version before publishing its packages makes the installer stop at the missing release.

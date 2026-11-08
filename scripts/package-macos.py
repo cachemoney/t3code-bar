@@ -50,6 +50,13 @@ def digest(path):
     return h.hexdigest()
 
 
+
+def write_checksum(archive):
+    sidecar = archive.with_name(archive.name + '.sha256')
+    sidecar.write_text(f'{digest(archive)}  {archive.name}\n')
+    return sidecar
+
+
 def check_signature(archive, signature, public_key):
     with tempfile.TemporaryDirectory(prefix='bar-signature-') as tmp:
         key = Path(tmp) / 'public.key'
@@ -255,6 +262,7 @@ def package(mode, target, output, cli):
             metadata = {'version': version, 'target': target, 'archive': name, 'archive_sha256': digest(archive), 'signature_sha256': digest(sig_path), 'manifest_sha256': digest(manifest_path)}
             (staging / 'metadata.json').write_text(json.dumps(metadata, indent=2) + '\n')
             verify(staging, public_key)
+            write_checksum(archive)
         staging.rename(output)
     print(f'{mode} package written to {output}')
 
