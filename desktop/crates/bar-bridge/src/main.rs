@@ -274,9 +274,203 @@ fn parse_cli_state_dir(args: &[String]) -> Option<&str> {
     None
 }
 
+fn get_positional_args(args: &[String]) -> Vec<&str> {
+    let mut positional = Vec::new();
+    let mut i = 1;
+    while i < args.len() {
+        if args[i] == "--state-dir" {
+            i += 2;
+            continue;
+        }
+        if args[i].starts_with("--state-dir=") {
+            i += 1;
+            continue;
+        }
+        positional.push(args[i].as_str());
+        i += 1;
+    }
+    positional
+}
+
+fn get_snapshot_context(
+    state_dir: &Path,
+) -> Result<(bool, std::collections::HashSet<String>, Configuration), String> {
+    let config = Configuration::from_environment(Some(bar_core::host::state_path()));
+    let state_file = state_dir.join("state.json");
+    if state_file.exists() {
+        if let Ok(content) = fs::read_to_string(&state_file) {
+            if let Ok(val) = serde_json::from_str::<serde_json::Value>(&content) {
+                if val.get("loading").and_then(|v| v.as_bool()) != Some(true) {
+                    let shows_previews = val
+                        .get("settings")
+                        .and_then(|s| s.get("showsPreviews"))
+                        .and_then(|v| v.as_bool())
+                        .unwrap_or(true);
+                    let mut ids = std::collections::HashSet::new();
+                    if let Some(arr) = val.get("threads").and_then(|t| t.as_array()) {
+                        for item in arr {
+                            if let Some(tid) = item.get("id").and_then(|i| i.as_str()) {
+                                ids.insert(tid.to_string());
+                            }
+                        }
+                    }
+                    return Ok((shows_previews, ids, config));
+                }
+            }
+        }
+    }
+
+    let favicons_dir = state_dir.join("favicons");
+    let timezone = parse_tz();
+    let frozen_now = parse_now();
+    let runtime = HostRuntime::new(
+        config.clone(),
+        SnapshotMode::HostBridge,
+        frozen_now,
+        timezone,
+        env::var("T3_BAR_FIXTURE_STATE").is_ok(),
+        false,
+        favicons_dir,
+        Arc::new(NoopEventSink),
+    );
+    runtime.refresh_threads_sync();
+    let snap = runtime.snapshot();
+    let shows_previews = snap.settings.shows_previews;
+    let ids = runtime.ids.lock().unwrap().clone();
+    Ok((shows_previews, ids, config))
+}
+
+fn run_preview(state_dir: &Path, id: &str) -> Result<(), String> {
+    let (shows_previews, ids, config) = get_snapshot_context(state_dir)?;
+    if !shows_previews {
+        println!("null");
+        return Ok(());
+    }
+    if !ids.contains(id) {
+        return Err("Unknown thread".to_string());
+    }
+
+    if let Ok(delay_str) = env::var("T3_BAR_FIXTURE_PREVIEW_DELAY_MS") {
+        if let Ok(ms) = delay_str.parse::<u64>() {
+            let delay = ms.min(5000);
+            if delay > 0 {
+                thread::sleep(Duration::from_millis(delay));
+            }
+        }
+    }
+
+    let preview = bar_core::threads::read_preview(&config, id).map_err(|e| e.to_string())?;
+    let json_str = serde_json::to_string(&preview).map_err(|e| e.to_string())?;
+    println!("{}", json_str);
+    Ok(())
+}
+
+fn open_system_url(url: &str) -> Result<(), String> {
+    if let Ok(opener) = env::var("T3_BAR_FIXTURE_OPENER") {
+        if opener == "noop" || opener.trim().is_empty() {
+            return Ok(());
+        }
+        std::process::Command::new(opener)
+            .arg(url)
+            .spawn()
+            .map_err(|e| format!("Failed to spawn fixture opener: {e}"))?;
+        return Ok(());
+    }
+
+    let res = std::process::Command::new("xdg-open").arg(url).spawn();
+    match res {
+        Ok(_) => Ok(()),
+        Err(e) => {
+            if env::var("T3_BAR_FIXTURE_STATE").is_ok() {
+                Ok(())
+            } else {
+                Err(format!("Failed to open URL: {e}"))
+            }
+        }
+    }
+}
+
+fn copy_to_clipboard(text: &str) {
+    if env::var("T3_BAR_FIXTURE_OPENER").as_deref() == Ok("noop")
+        || env::var("T3_BAR_FIXTURE_STATE").is_ok()
+    {
+        return;
+    }
+
+    if env::var("WAYLAND_DISPLAY").is_ok() {
+        if let Ok(mut child) = std::process::Command::new("wl-copy")
+            .stdin(std::process::Stdio::piped())
+            .spawn()
+        {
+            if let Some(mut stdin) = child.stdin.take() {
+                let _ = stdin.write_all(text.as_bytes());
+                let _ = stdin.flush();
+                drop(stdin);
+            }
+            return;
+        }
+    }
+    if let Ok(mut child) = std::process::Command::new("xclip")
+        .arg("-selection")
+        .arg("clipboard")
+        .stdin(std::process::Stdio::piped())
+        .spawn()
+    {
+        if let Some(mut stdin) = child.stdin.take() {
+            let _ = stdin.write_all(text.as_bytes());
+            let _ = stdin.flush();
+            drop(stdin);
+        }
+    }
+}
+
+fn run_thread(state_dir: &Path, id: &str, action: &str) -> Result<(), String> {
+    if action != "open" && action != "browser" && action != "copy" {
+        return Err("Unknown thread action".to_string());
+    }
+
+    let (_shows_previews, ids, config) = get_snapshot_context(state_dir)?;
+    if !ids.contains(id) {
+        return Err("Unknown thread".to_string());
+    }
+
+    let url = config
+        .thread_url(id, action == "browser")
+        .map_err(|e| e.to_string())?;
+
+    match action {
+        "copy" => {
+            copy_to_clipboard(&url);
+        }
+        "open" | "browser" => {
+            open_system_url(&url)?;
+        }
+        _ => unreachable!(),
+    }
+
+    let res = serde_json::json!({
+        "ok": true,
+        "url": url,
+    });
+    println!("{}", res);
+    Ok(())
+}
+
+fn run_new_thread() -> Result<(), String> {
+    let url = "t3code://new";
+    open_system_url(url)?;
+    let res = serde_json::json!({
+        "ok": true,
+        "url": url,
+    });
+    println!("{}", res);
+    Ok(())
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
-    if args.len() < 2 {
+    let positional = get_positional_args(&args);
+    if positional.is_empty() {
         eprintln!("Usage: t3code-bar-bridge <subcommand> [options]");
         std::process::exit(1);
     }
@@ -284,7 +478,7 @@ fn main() {
     let cli_state_dir = parse_cli_state_dir(&args);
     let state_dir = resolve_state_dir(cli_state_dir);
 
-    match args[1].as_str() {
+    match positional[0] {
         "snapshot" => {
             if let Err(e) = run_snapshot(&state_dir) {
                 eprintln!("Error running snapshot: {}", e);
@@ -294,6 +488,32 @@ fn main() {
         "watch" => {
             if let Err(e) = run_watch(&state_dir) {
                 eprintln!("Error running watch: {}", e);
+                std::process::exit(1);
+            }
+        }
+        "preview" => {
+            if positional.len() < 2 {
+                eprintln!("Usage: t3code-bar-bridge preview <thread-id>");
+                std::process::exit(1);
+            }
+            if let Err(e) = run_preview(&state_dir, positional[1]) {
+                eprintln!("{}", e);
+                std::process::exit(1);
+            }
+        }
+        "thread" => {
+            if positional.len() < 3 {
+                eprintln!("Usage: t3code-bar-bridge thread <id> <open|browser|copy>");
+                std::process::exit(1);
+            }
+            if let Err(e) = run_thread(&state_dir, positional[1], positional[2]) {
+                eprintln!("{}", e);
+                std::process::exit(1);
+            }
+        }
+        "new-thread" => {
+            if let Err(e) = run_new_thread() {
+                eprintln!("{}", e);
                 std::process::exit(1);
             }
         }
