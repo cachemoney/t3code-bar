@@ -317,8 +317,9 @@ impl Notification {
         self
     }
 
+    /// Get all hints currently set on this notification.
     #[cfg(all(unix, not(target_os = "macos")))]
-    pub(crate) fn get_hints(&self) -> impl Iterator<Item = &Hint> {
+    pub fn get_hints(&self) -> impl Iterator<Item = &Hint> {
         self.hints.iter().chain(self.hints_unique.values())
     }
 

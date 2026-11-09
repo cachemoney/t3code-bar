@@ -3,6 +3,10 @@ name = "bar-bridge"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "bar_bridge"
+path = "src/lib.rs"
+
 [[bin]]
 name = "t3code-bar-bridge"
 path = "src/main.rs"

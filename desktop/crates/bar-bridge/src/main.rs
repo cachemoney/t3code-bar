@@ -76,15 +76,16 @@ fn run_snapshot(state_dir: &Path) -> Result<(), String> {
     let timezone = parse_tz();
     let frozen_now = parse_now();
 
+    let fixture_notifications = env::var("T3_BAR_FIXTURE_NOTIFICATIONS").is_ok();
     let runtime = HostRuntime::new(
         config,
         SnapshotMode::HostBridge,
         frozen_now,
         timezone,
         env::var("T3_BAR_FIXTURE_STATE").is_ok(),
-        false,
+        fixture_notifications,
         favicons_dir,
-        Arc::new(NoopEventSink),
+        Arc::new(bar_bridge::notification::BridgeEventSink),
     );
 
     runtime.refresh_threads_sync();
@@ -135,15 +136,16 @@ fn run_watch(state_dir: &Path) -> Result<(), String> {
     let timezone = parse_tz();
     let frozen_now = parse_now();
 
+    let fixture_notifications = env::var("T3_BAR_FIXTURE_NOTIFICATIONS").is_ok();
     let runtime = HostRuntime::new(
         config,
         SnapshotMode::HostBridge,
         frozen_now,
         timezone,
         env::var("T3_BAR_FIXTURE_STATE").is_ok(),
-        false,
+        fixture_notifications,
         favicons_dir,
-        Arc::new(NoopEventSink),
+        Arc::new(bar_bridge::notification::BridgeEventSink),
     );
 
     let mut projection = StateProjection::new();
