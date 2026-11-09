@@ -209,10 +209,11 @@ fn run_watch(state_dir: &Path) -> Result<(), String> {
         // Refresh limits on tick 0 or every 5th tick
         runtime.refresh_limits_sync(tick == 0 || tick % 5 == 0);
 
-        // Usage gating: read usage reports if visible and on usage screen
+        // Usage gating: read usage reports if visible and on usage screen and metric is not limits
         let view = runtime.view.lock().map(|v| v.clone()).unwrap_or_default();
+        let should_scan_usage = view.visible && view.screen == "usage" && view.metric != "limits";
         let mut usage_reports = HashMap::new();
-        if view.visible && view.screen == "usage" {
+        if should_scan_usage {
             let now = runtime.now();
             if let Ok(mut u) = runtime.usage.lock() {
                 for p in [Period::Day, Period::Week, Period::Month, Period::Quarter] {
@@ -232,10 +233,11 @@ fn run_watch(state_dir: &Path) -> Result<(), String> {
         if projected.dirty_limits {
             let _ = write_atomic(state_dir, "limits.json", &projected.limits_json);
         }
-        if projected.dirty_usage {
+        let usage_path = state_dir.join("usage.json");
+        if should_scan_usage && (projected.dirty_usage || !usage_path.exists()) {
             let _ = write_atomic(state_dir, "usage.json", &projected.usage_json);
         }
-        if projected.dirty_view {
+        if projected.dirty_view && !view_path.exists() {
             let _ = write_atomic(state_dir, "view.json", &projected.view_json);
         }
 
@@ -260,6 +262,199 @@ fn run_watch(state_dir: &Path) -> Result<(), String> {
     }
 
     Ok(())
+}
+
+fn open_system_url(url: &str) -> std::io::Result<()> {
+    if let Ok(cmd) = env::var("T3_BAR_OPENER_COMMAND") {
+        let status = std::process::Command::new(cmd).arg(url).status()?;
+        if !status.success() {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                format!("opener command exited with {:?}", status.code()),
+            ));
+        }
+        return Ok(());
+    }
+    #[cfg(target_os = "macos")]
+    let cmd = "open";
+    #[cfg(not(target_os = "macos"))]
+    let cmd = "xdg-open";
+
+    let mut child = std::process::Command::new(cmd).arg(url).spawn()?;
+    let status = child.wait()?;
+    if !status.success() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::Other,
+            format!("opener command exited with {:?}", status.code()),
+        ));
+    }
+    Ok(())
+}
+
+fn run_set_view(state_dir: &Path, args: &[String]) -> Result<(), String> {
+    let mut visible: Option<bool> = None;
+    let mut screen: Option<String> = None;
+    let mut metric: Option<String> = None;
+    let mut period: Option<String> = None;
+
+    let mut i = 2;
+    while i < args.len() {
+        let arg = &args[i];
+        if arg == "--visible" {
+            visible = Some(true);
+        } else if arg == "--hidden" {
+            visible = Some(false);
+        } else if arg == "--screen" && i + 1 < args.len() {
+            i += 1;
+            screen = Some(args[i].clone());
+        } else if let Some(val) = arg.strip_prefix("--screen=") {
+            screen = Some(val.to_string());
+        } else if arg == "--metric" && i + 1 < args.len() {
+            i += 1;
+            metric = Some(args[i].clone());
+        } else if let Some(val) = arg.strip_prefix("--metric=") {
+            metric = Some(val.to_string());
+        } else if arg == "--period" && i + 1 < args.len() {
+            i += 1;
+            period = Some(args[i].clone());
+        } else if let Some(val) = arg.strip_prefix("--period=") {
+            period = Some(val.to_string());
+        } else if arg == "--state-dir" && i + 1 < args.len() {
+            i += 1;
+        } else if arg.starts_with("--state-dir=") {
+            // skip
+        } else {
+            return Err(format!("Unknown option: {}", arg));
+        }
+        i += 1;
+    }
+
+    if let Some(ref s) = screen {
+        if !["threads", "usage", "settings"].contains(&s.as_str()) {
+            return Err(format!("Invalid screen: {}", s));
+        }
+    }
+    if let Some(ref m) = metric {
+        if !["cost", "tokens", "limits"].contains(&m.as_str()) {
+            return Err(format!("Invalid metric: {}", m));
+        }
+    }
+    if let Some(ref p) = period {
+        if !["24h", "7d", "30d", "90d"].contains(&p.as_str()) {
+            return Err(format!("Invalid period: {}", p));
+        }
+    }
+
+    let view_path = state_dir.join("view.json");
+    let (cur_vis, cur_scr, cur_met, cur_per, cur_gen) = if view_path.exists() {
+        if let Ok(content) = fs::read_to_string(&view_path) {
+            if let Ok(v) = serde_json::from_str::<serde_json::Value>(&content) {
+                (
+                    v.get("visible").and_then(|x| x.as_bool()).unwrap_or(false),
+                    v.get("screen").and_then(|x| x.as_str()).unwrap_or("threads").to_string(),
+                    v.get("metric").and_then(|x| x.as_str()).unwrap_or("cost").to_string(),
+                    v.get("period").and_then(|x| x.as_str()).unwrap_or("24h").to_string(),
+                    v.get("generation").and_then(|x| x.as_u64()).unwrap_or(0),
+                )
+            } else {
+                (false, "threads".to_string(), "cost".to_string(), "24h".to_string(), 0)
+            }
+        } else {
+            (false, "threads".to_string(), "cost".to_string(), "24h".to_string(), 0)
+        }
+    } else {
+        (false, "threads".to_string(), "cost".to_string(), "24h".to_string(), 0)
+    };
+
+    let next_vis = visible.unwrap_or(cur_vis);
+    let next_scr = screen.unwrap_or(cur_scr);
+    let next_met = metric.unwrap_or(cur_met);
+    let next_per = period.unwrap_or(cur_per);
+    let next_gen = cur_gen.wrapping_add(1);
+
+    let payload = serde_json::json!({
+        "visible": next_vis,
+        "screen": next_scr,
+        "metric": next_met,
+        "period": next_per,
+        "generation": next_gen,
+    });
+    let json_str = serde_json::to_string_pretty(&payload).map_err(|e| e.to_string())? + "\n";
+    fs::create_dir_all(state_dir).map_err(|e| e.to_string())?;
+    write_atomic(state_dir, "view.json", &json_str).map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+fn run_open_link(state_dir: &Path, args: &[String]) -> Result<(), String> {
+    let mut url = None;
+    let mut i = 2;
+    while i < args.len() {
+        let arg = &args[i];
+        if arg == "--state-dir" && i + 1 < args.len() {
+            i += 2;
+            continue;
+        } else if arg.starts_with("--state-dir=") {
+            i += 1;
+            continue;
+        } else if !arg.starts_with('-') && url.is_none() {
+            url = Some(arg.clone());
+        }
+        i += 1;
+    }
+
+    let url = url.ok_or_else(|| "Usage: t3code-bar-bridge open-link <url>".to_string())?;
+
+    let limits_path = state_dir.join("limits.json");
+    let allowed = if limits_path.exists() {
+        if let Ok(content) = fs::read_to_string(&limits_path) {
+            if let Ok(val) = serde_json::from_str::<serde_json::Value>(&content) {
+                val.get("links")
+                    .and_then(|l| l.as_array())
+                    .map(|links| {
+                        links.iter().any(|item| {
+                            item.get("url").and_then(|u| u.as_str()) == Some(&url)
+                        })
+                    })
+                    .unwrap_or(false)
+            } else {
+                false
+            }
+        } else {
+            false
+        }
+    } else {
+        let favicons_dir = state_dir.join("favicons");
+        let config = Configuration::from_environment(None);
+        let timezone = parse_tz();
+        let frozen_now = parse_now();
+        let runtime = HostRuntime::new(
+            config,
+            SnapshotMode::HostBridge,
+            frozen_now,
+            timezone,
+            env::var("T3_BAR_FIXTURE_STATE").is_ok(),
+            false,
+            favicons_dir,
+            Arc::new(NoopEventSink),
+        );
+        runtime.refresh_limits_sync(true);
+        let snap = runtime.snapshot();
+        snap.limits
+            .as_ref()
+            .map(|l| {
+                l.links.iter().any(|item| {
+                    item.get("url").and_then(|u| u.as_str()) == Some(&url)
+                })
+            })
+            .unwrap_or(false)
+    };
+
+    if !allowed {
+        return Err("Link is not in the current limits snapshot".into());
+    }
+
+    open_system_url(&url).map_err(|e| format!("Failed to open link: {}", e))
 }
 
 fn parse_cli_state_dir(args: &[String]) -> Option<&str> {
@@ -294,6 +489,18 @@ fn main() {
         "watch" => {
             if let Err(e) = run_watch(&state_dir) {
                 eprintln!("Error running watch: {}", e);
+                std::process::exit(1);
+            }
+        }
+        "set-view" => {
+            if let Err(e) = run_set_view(&state_dir, &args) {
+                eprintln!("{}", e);
+                std::process::exit(1);
+            }
+        }
+        "open-link" => {
+            if let Err(e) = run_open_link(&state_dir, &args) {
+                eprintln!("{}", e);
                 std::process::exit(1);
             }
         }
