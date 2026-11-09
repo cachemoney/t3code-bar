@@ -426,7 +426,7 @@ Ui.Panel {
 
     content: Ui.PanelKeyCatcher {
       id: keyCatcher
-      implicitHeight: panelScroll.implicitHeight
+      implicitHeight: contentCol.implicitHeight
       anchors.fill: parent
       onCloseRequested: root.close()
       onTabRequested: function(direction) { root.switchPanel(direction) }
