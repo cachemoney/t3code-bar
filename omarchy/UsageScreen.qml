@@ -59,7 +59,9 @@ Column {
       rows = rows.filter(function(row) { return row.kind === providerFilter })
     }
     if (metric === "tokens") {
-      rows.sort(function(a, b) { return b.tokens - a.tokens || b.costUsd - a.costUsd })
+      rows.sort(function(a, b) { return (b.tokens - a.tokens) || (b.costUsd - a.costUsd) })
+    } else {
+      rows.sort(function(a, b) { return (b.costUsd - a.costUsd) || (b.tokens - a.tokens) })
     }
     return rows
   }
@@ -215,19 +217,27 @@ Column {
     selectProvider(filterOptions[(current + 1) % filterOptions.length].kind)
   }
 
+  function scroll(dy) {
+    if (breakdownScroll.visible) {
+      breakdownScroll.contentY = Math.max(0, Math.min(breakdownScroll.contentHeight - breakdownScroll.height, breakdownScroll.contentY + dy * 40))
+    }
+  }
+
   function selectProvider(kind) {
     providerFilter = kind
     showAllModels = false
     clearInspection()
+    breakdownScroll.contentY = 0
   }
 
   function toggleAllModels() {
     showAllModels = !showAllModels
+    if (!showAllModels) breakdownScroll.contentY = 0
   }
 
-  onMetricChanged: { showAllModels = false; clearInspection() }
-  onPeriodChanged: { showAllModels = false; clearInspection() }
-  onPeriodDataChanged: clearInspection()
+  onMetricChanged: { showAllModels = false; clearInspection(); breakdownScroll.contentY = 0 }
+  onPeriodChanged: { showAllModels = false; clearInspection(); breakdownScroll.contentY = 0 }
+  onPeriodDataChanged: { clearInspection(); breakdownScroll.contentY = 0 }
   onVisibleChanged: if (!visible) clearInspection()
 
   Row {
@@ -497,168 +507,196 @@ Column {
     }
   }
 
-  Ui.PanelSeparator {
-    visible: scr.metric !== "limits" && scr.activeProviders.length > 0
-    foreground: scr.foreground
-  }
-  Ui.PanelSectionHeader {
-    visible: scr.metric !== "limits" && scr.activeProviders.length > 0
-    text: "BY PROVIDER · FILTER APPLIES TO ALL USAGE SURFACES"
-    foreground: scr.foreground
-    fontFamily: Commons.Style.font.family
-  }
-  Repeater {
-    model: scr.metric !== "limits" ? scr.activeProviders : []
-    delegate: Column {
-      id: providerRow
-      required property var modelData
-      width: scr.width
-      spacing: Commons.Style.spacing.xxs
-      Item {
-        width: parent.width
-        height: 18
-        Rectangle {
-          width: 8
-          height: 8
-          radius: 4
-          anchors.left: parent.left
-          anchors.verticalCenter: parent.verticalCenter
-          color: scr.providerColor(providerRow.modelData.kind)
-        }
-        PlainText {
-          anchors.left: parent.left
-          anchors.leftMargin: 14
-          color: scr.foreground
-          font.family: Commons.Style.font.family
-          font.pixelSize: Commons.Style.font.bodySmall
-          text: scr.providerLabel(providerRow.modelData.kind, providerRow.modelData.label) + " · " + providerRow.modelData.sessions + " sessions"
-        }
-        PlainText {
-          anchors.right: parent.right
-          color: scr.foreground
-          font.family: Commons.Style.font.family
-          font.pixelSize: Commons.Style.font.bodySmall
-          font.bold: true
-          text: scr.valueText(scr.metricValue(providerRow.modelData))
-        }
-      }
-      PlainText {
-        x: 14
-        width: parent.width - 14
-        elide: Text.ElideRight
-        color: scr.dim
-        font.family: Commons.Style.font.family
-        font.pixelSize: Commons.Style.font.caption
-        text: scr.providerDetail(providerRow.modelData)
-      }
-      Rectangle {
-        x: 14
-        width: parent.width - 14
-        height: 4
-        radius: 2
-        color: Qt.rgba(scr.foreground.r, scr.foreground.g, scr.foreground.b, 0.10)
-        Rectangle {
-          width: parent.width * (scr.largestProviderValue > 0 ? scr.metricValue(providerRow.modelData) / scr.largestProviderValue : 0)
-          height: parent.height
-          radius: 2
-          color: scr.providerColor(providerRow.modelData.kind)
-        }
-      }
-    }
-  }
+  Flickable {
+    id: breakdownScroll
+    visible: scr.metric !== "limits" && (scr.activeProviders.length > 0 || scr.orderedModels.length > 0)
+    width: scr.width
+    height: Math.min(contentHeight, Commons.Style.space(260))
+    contentWidth: width
+    contentHeight: breakdownCol.implicitHeight
+    clip: true
+    focus: true
+    interactive: contentHeight > height
+    boundsBehavior: Flickable.StopAtBounds
 
-  Ui.PanelSeparator {
-    visible: scr.metric !== "limits" && scr.orderedModels.length > 0
-    foreground: scr.foreground
-  }
-  Ui.PanelSectionHeader {
-    visible: scr.metric !== "limits" && scr.orderedModels.length > 0
-    text: "MODEL BREAKDOWN" + (scr.showAllModels ? " · ALL" : " · TOP 5")
-    foreground: scr.foreground
-    fontFamily: Commons.Style.font.family
-  }
-  Repeater {
-    model: scr.metric !== "limits" ? scr.visibleModelRows : []
-    delegate: Column {
-      id: modelRow
-      required property var modelData
-      required property int index
-      width: scr.width
-      spacing: Commons.Style.spacing.xxs
-      Item {
-        width: parent.width
-        height: 18
-        PlainText {
-          id: rank
-          anchors.left: parent.left
-          width: 20
-          color: scr.dim
-          font.family: Commons.Style.font.family
-          font.pixelSize: Commons.Style.font.caption
-          text: String(modelRow.index + 1).padStart(2, "0")
-        }
-        Rectangle {
-          id: modelSwatch
-          anchors.left: rank.right
-          anchors.verticalCenter: parent.verticalCenter
-          width: 7
-          height: 7
-          radius: 3.5
-          color: scr.providerColor(modelRow.modelData.kind)
-        }
-        PlainText {
-          anchors.left: modelSwatch.right
-          anchors.leftMargin: 7
-          anchors.right: modelValue.left
-          anchors.rightMargin: 8
-          elide: Text.ElideMiddle
-          color: scr.foreground
-          font.family: Commons.Style.font.family
-          font.pixelSize: Commons.Style.font.bodySmall
-          text: modelRow.modelData.name
-        }
-        PlainText {
-          id: modelValue
-          anchors.right: parent.right
-          color: scr.modelUnpriced(modelRow.modelData) && scr.metric === "cost" ? scr.dim : scr.foreground
-          font.family: Commons.Style.font.family
-          font.pixelSize: Commons.Style.font.bodySmall
-          font.bold: true
-          text: scr.modelPrimaryText(modelRow.modelData)
+    Keys.onUpPressed: function(event) {
+      scr.scroll(-1)
+      event.accepted = true
+    }
+    Keys.onDownPressed: function(event) {
+      scr.scroll(1)
+      event.accepted = true
+    }
+
+    Column {
+      id: breakdownCol
+      width: breakdownScroll.width
+      spacing: Commons.Style.spacing.sm
+
+      Ui.PanelSeparator {
+        visible: scr.activeProviders.length > 0
+        foreground: scr.foreground
+      }
+      Ui.PanelSectionHeader {
+        visible: scr.activeProviders.length > 0
+        text: "BY PROVIDER · FILTER APPLIES TO ALL USAGE SURFACES"
+        foreground: scr.foreground
+        fontFamily: Commons.Style.font.family
+      }
+      Repeater {
+        model: scr.activeProviders
+        delegate: Column {
+          id: providerRow
+          required property var modelData
+          width: breakdownCol.width
+          spacing: Commons.Style.spacing.xxs
+          Item {
+            width: parent.width
+            height: 18
+            Rectangle {
+              width: 8
+              height: 8
+              radius: 4
+              anchors.left: parent.left
+              anchors.verticalCenter: parent.verticalCenter
+              color: scr.providerColor(providerRow.modelData.kind)
+            }
+            PlainText {
+              anchors.left: parent.left
+              anchors.leftMargin: 14
+              color: scr.foreground
+              font.family: Commons.Style.font.family
+              font.pixelSize: Commons.Style.font.bodySmall
+              text: scr.providerLabel(providerRow.modelData.kind, providerRow.modelData.label) + " · " + providerRow.modelData.sessions + " sessions"
+            }
+            PlainText {
+              anchors.right: parent.right
+              color: scr.foreground
+              font.family: Commons.Style.font.family
+              font.pixelSize: Commons.Style.font.bodySmall
+              font.bold: true
+              text: scr.valueText(scr.metricValue(providerRow.modelData))
+            }
+          }
+          PlainText {
+            x: 14
+            width: parent.width - 14
+            elide: Text.ElideRight
+            color: scr.dim
+            font.family: Commons.Style.font.family
+            font.pixelSize: Commons.Style.font.caption
+            text: scr.providerDetail(providerRow.modelData)
+          }
+          Rectangle {
+            x: 14
+            width: parent.width - 14
+            height: 4
+            radius: 2
+            color: Qt.rgba(scr.foreground.r, scr.foreground.g, scr.foreground.b, 0.10)
+            Rectangle {
+              width: parent.width * (scr.largestProviderValue > 0 ? scr.metricValue(providerRow.modelData) / scr.largestProviderValue : 0)
+              height: parent.height
+              radius: 2
+              color: scr.providerColor(providerRow.modelData.kind)
+            }
+          }
         }
       }
-      PlainText {
-        x: 34
-        width: parent.width - 34
-        elide: Text.ElideRight
-        color: scr.dim
-        font.family: Commons.Style.font.family
-        font.pixelSize: Commons.Style.font.caption
-        text: scr.providerLabel(modelRow.modelData.kind, "") + " · " + scr.modelDetail(modelRow.modelData)
+
+      Ui.PanelSeparator {
+        visible: scr.orderedModels.length > 0
+        foreground: scr.foreground
       }
-      Rectangle {
-        x: 34
-        width: parent.width - 34
-        height: 4
-        radius: 2
-        visible: scr.modelBarShare(modelRow.modelData) > 0
-        color: Qt.rgba(scr.foreground.r, scr.foreground.g, scr.foreground.b, 0.10)
-        Rectangle {
-          width: parent.width * scr.modelBarShare(modelRow.modelData)
-          height: parent.height
-          radius: 2
-          color: scr.providerColor(modelRow.modelData.kind)
+      Ui.PanelSectionHeader {
+        visible: scr.orderedModels.length > 0
+        text: "MODEL BREAKDOWN" + (scr.showAllModels ? " · ALL" : " · TOP 5")
+        foreground: scr.foreground
+        fontFamily: Commons.Style.font.family
+      }
+      Repeater {
+        model: scr.visibleModelRows
+        delegate: Column {
+          id: modelRow
+          required property var modelData
+          required property int index
+          width: breakdownCol.width
+          spacing: Commons.Style.spacing.xxs
+          Item {
+            width: parent.width
+            height: 18
+            PlainText {
+              id: rank
+              anchors.left: parent.left
+              width: 20
+              color: scr.dim
+              font.family: Commons.Style.font.family
+              font.pixelSize: Commons.Style.font.caption
+              text: String(modelRow.index + 1).padStart(2, "0")
+            }
+            Rectangle {
+              id: modelSwatch
+              anchors.left: rank.right
+              anchors.verticalCenter: parent.verticalCenter
+              width: 7
+              height: 7
+              radius: 3.5
+              color: scr.providerColor(modelRow.modelData.kind)
+            }
+            PlainText {
+              anchors.left: modelSwatch.right
+              anchors.leftMargin: 7
+              anchors.right: modelValue.left
+              anchors.rightMargin: 8
+              elide: Text.ElideMiddle
+              color: scr.foreground
+              font.family: Commons.Style.font.family
+              font.pixelSize: Commons.Style.font.bodySmall
+              text: modelRow.modelData.name
+            }
+            PlainText {
+              id: modelValue
+              anchors.right: parent.right
+              color: scr.modelUnpriced(modelRow.modelData) && scr.metric === "cost" ? scr.dim : scr.foreground
+              font.family: Commons.Style.font.family
+              font.pixelSize: Commons.Style.font.bodySmall
+              font.bold: true
+              text: scr.modelPrimaryText(modelRow.modelData)
+            }
+          }
+          PlainText {
+            x: 34
+            width: parent.width - 34
+            elide: Text.ElideRight
+            color: scr.dim
+            font.family: Commons.Style.font.family
+            font.pixelSize: Commons.Style.font.caption
+            text: scr.providerLabel(modelRow.modelData.kind, "") + " · " + scr.modelDetail(modelRow.modelData)
+          }
+          Rectangle {
+            x: 34
+            width: parent.width - 34
+            height: 4
+            radius: 2
+            visible: scr.modelBarShare(modelRow.modelData) > 0
+            color: Qt.rgba(scr.foreground.r, scr.foreground.g, scr.foreground.b, 0.10)
+            Rectangle {
+              width: parent.width * scr.modelBarShare(modelRow.modelData)
+              height: parent.height
+              radius: 2
+              color: scr.providerColor(modelRow.modelData.kind)
+            }
+          }
         }
+      }
+      Ui.Button {
+        visible: scr.orderedModels.length > 5
+        text: scr.showAllModels ? "Show fewer" : "Show all " + scr.orderedModels.length + " models"
+        fontSize: Commons.Style.font.caption
+        horizontalPadding: Commons.Style.spacing.md
+        verticalPadding: Commons.Style.spacing.xxs
+        onClicked: scr.toggleAllModels()
       }
     }
-  }
-  Ui.Button {
-    visible: scr.metric !== "limits" && scr.orderedModels.length > 5
-    text: scr.showAllModels ? "Show fewer" : "Show all " + scr.orderedModels.length + " models"
-    fontSize: Commons.Style.font.caption
-    horizontalPadding: Commons.Style.spacing.md
-    verticalPadding: Commons.Style.spacing.xxs
-    onClicked: scr.toggleAllModels()
   }
 
   PlainText {

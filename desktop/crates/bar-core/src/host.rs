@@ -213,20 +213,15 @@ impl Default for ViewState {
 }
 
 pub trait HostEventSink: Send + Sync + 'static {
-    fn on_snapshot_changed(&self, snapshot: &AppSnapshot);
-    fn on_tray_summary(&self, summary: &ThreadSummary);
-    fn on_attention_alerts(&self, alerts: &[AttentionAlert]);
-    fn on_settings_changed(&self, settings: &Settings);
-}
-
-#[derive(Default)]
-pub struct NoopEventSink;
-impl HostEventSink for NoopEventSink {
     fn on_snapshot_changed(&self, _snapshot: &AppSnapshot) {}
     fn on_tray_summary(&self, _summary: &ThreadSummary) {}
     fn on_attention_alerts(&self, _alerts: &[AttentionAlert]) {}
     fn on_settings_changed(&self, _settings: &Settings) {}
 }
+
+#[derive(Default)]
+pub struct NoopEventSink;
+impl HostEventSink for NoopEventSink {}
 
 type FaviconKey = (Option<String>, Option<String>, FaviconMode);
 type FaviconCache = HashMap<FaviconKey, Option<String>>;

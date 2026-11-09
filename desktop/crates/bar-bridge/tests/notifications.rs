@@ -1,8 +1,7 @@
 use bar_bridge::notification::{build_attention_notification, BridgeEventSink};
 use bar_core::attention::{AttentionAlert, AttentionTracker};
-use bar_core::host::{AppSnapshot, HostEventSink, HostRuntime, SnapshotMode};
-use bar_core::settings::Settings;
-use bar_core::threads::{Configuration, ThreadStatus, ThreadSummary};
+use bar_core::host::{HostEventSink, HostRuntime, SnapshotMode};
+use bar_core::threads::{Configuration, ThreadStatus};
 use notify_rust::{Hint, Urgency};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
@@ -38,12 +37,12 @@ fn test_notification_construction_and_omarchy_hints() {
         Some(r#"["t3code-bar-bridge","thread","thread-42","open"]"#)
     );
 
-    // Verify omarchy-glyph hint
+    // Verify omarchy-glyph hint is not present
     let glyph = hints.iter().find_map(|h| match h {
         Hint::Custom(k, v) if k == "omarchy-glyph" => Some(v.as_str()),
         _ => None,
     });
-    assert_eq!(glyph, Some("!"));
+    assert_eq!(glyph, None, "omarchy-glyph hint should not be set");
 
     // Status: Failed -> Critical
     let alert_failed = AttentionAlert {
@@ -96,10 +95,6 @@ struct AlertCounterSink {
 }
 
 impl HostEventSink for AlertCounterSink {
-    fn on_snapshot_changed(&self, _snapshot: &AppSnapshot) {}
-    fn on_tray_summary(&self, _summary: &ThreadSummary) {}
-    fn on_settings_changed(&self, _settings: &Settings) {}
-
     fn on_attention_alerts(&self, alerts: &[AttentionAlert]) {
         self.alert_count.fetch_add(alerts.len(), Ordering::SeqCst);
     }

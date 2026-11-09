@@ -92,7 +92,7 @@ fn run_snapshot(state_dir: &Path) -> Result<(), String> {
     runtime.refresh_limits_sync(true);
 
     let snapshot = runtime.snapshot();
-    let json_str = serde_json::to_string_pretty(&snapshot).map_err(|e| e.to_string())?;
+    let json_str = serde_json::to_string(&snapshot).map_err(|e| e.to_string())?;
     println!("{}", json_str);
     Ok(())
 }
@@ -527,6 +527,11 @@ fn run_set_view(state_dir: &Path, args: &[String]) -> Result<(), String> {
     fs::create_dir_all(state_dir).map_err(|e| e.to_string())?;
     write_atomic(state_dir, "view.json", &json_str).map_err(|e| e.to_string())?;
 
+    let res = serde_json::json!({
+        "ok": true,
+    });
+    println!("{}", serde_json::to_string(&res).map_err(|e| e.to_string())?);
+
     Ok(())
 }
 
@@ -598,7 +603,13 @@ fn run_open_link(state_dir: &Path, args: &[String]) -> Result<(), String> {
         return Err("Link is not in the current limits snapshot".into());
     }
 
-    open_system_url(&url).map_err(|e| format!("Failed to open link: {}", e))
+    open_system_url(&url).map_err(|e| format!("Failed to open link: {}", e))?;
+    let res = serde_json::json!({
+        "ok": true,
+        "url": url,
+    });
+    println!("{}", serde_json::to_string(&res).map_err(|e| e.to_string())?);
+    Ok(())
 }
 
 fn parse_cli_state_dir(args: &[String]) -> Option<&str> {

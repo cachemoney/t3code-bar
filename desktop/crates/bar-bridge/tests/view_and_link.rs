@@ -23,6 +23,8 @@ fn set_view_updates_view_json_atomically_with_validation_and_generations() {
         .expect("run set-view");
 
     assert!(output.status.success(), "set-view should succeed: {:?}", output);
+    let out1: serde_json::Value = serde_json::from_slice(&output.stdout).expect("set-view stdout should be valid JSON");
+    assert_eq!(out1, serde_json::json!({"ok": true}));
 
     let view_path = state_dir.join("view.json");
     assert!(view_path.exists(), "view.json should be created");
@@ -132,6 +134,8 @@ fn open_link_validates_against_limits_snapshot_links() {
         .expect("run open-link with allowed url");
 
     assert!(good_output.status.success(), "open-link should succeed: {:?}", good_output);
+    let out_link: serde_json::Value = serde_json::from_slice(&good_output.stdout).expect("open-link stdout should be valid JSON");
+    assert_eq!(out_link, serde_json::json!({"ok": true, "url": "https://example.invalid/limits"}));
 }
 
 #[test]

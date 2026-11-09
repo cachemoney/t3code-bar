@@ -67,8 +67,17 @@ Ui.Panel {
       var parsed = JSON.parse(raw)
       stateData = parsed
       var parsedNow = parsed.now ? Date.parse(parsed.now) : NaN
-      lastFreshMs = !isNaN(parsedNow) ? Math.max(parsedNow, Date.now()) : Date.now()
-      backoffSec = 1
+      if (!isNaN(parsedNow)) {
+        lastFreshMs = parsedNow
+        if (Date.now() - parsedNow > 10000) {
+          triggerRespawn()
+        } else {
+          backoffSec = 1
+        }
+      } else {
+        lastFreshMs = Date.now()
+        backoffSec = 1
+      }
     } catch (e) {
       console.warn("t3code.bar: bad state.json", e)
     }
@@ -323,6 +332,16 @@ Ui.Panel {
     onFileChanged: reload()
   }
 
+  function triggerRespawn() {
+    var nowMs = Date.now()
+    if (nowMs - root.lastRespawnMs >= root.backoffSec * 1000) {
+      root.lastRespawnMs = nowMs
+      root.backoffSec = Math.min(30, root.backoffSec * 2)
+      if (watchProcess.running) watchProcess.running = false
+      watchProcess.running = true
+    }
+  }
+
   // 10s staleness crash recovery with exponential backoff (1s doubling to 30s)
   Timer {
     id: stalenessTimer
@@ -332,13 +351,7 @@ Ui.Panel {
     onTriggered: {
       var staleAge = (Date.now() - root.lastFreshMs) / 1000
       if (staleAge > 10) {
-        var nowMs = Date.now()
-        if (nowMs - root.lastRespawnMs >= root.backoffSec * 1000) {
-          root.lastRespawnMs = nowMs
-          root.backoffSec = Math.min(30, root.backoffSec * 2)
-          if (watchProcess.running) watchProcess.running = false
-          watchProcess.running = true
-        }
+        root.triggerRespawn()
       }
     }
   }
@@ -382,9 +395,7 @@ Ui.Panel {
     bar: root.bar
     iconComponent: statusDot
     labelText: root.summary.badgeCount > 0 ? String(root.summary.badgeCount) : ""
-    tooltipText: "T3 Code — " + (root.summary.status || "Settled")
-      + (root.summary.attentionCount > 0 ? " · " + root.summary.attentionCount + " attention" : "")
-      + (root.summary.runningCount > 0 ? " · " + root.summary.runningCount + " running" : "")
+    tooltipText: root.summary.status ? ("T3 Code — " + root.summary.status) : "T3 Code Bar"
     onClicked: root.toggle()
     onPressed: function(buttonCode) {
       if (buttonCode === Qt.RightButton) {
@@ -416,7 +427,10 @@ Ui.Panel {
       onMoveRequested: function(dx, dy) {
         if (root.currentScreen === "usage") {
           if (dx !== 0) usageScreen.moveInspection(dx)
-          else if (dy !== 0) panelScroll.contentY = Math.max(0, Math.min(panelScroll.contentHeight - panelScroll.height, panelScroll.contentY + dy * 44))
+          else if (dy !== 0) {
+            usageScreen.scroll(dy)
+            panelScroll.contentY = Math.max(0, Math.min(panelScroll.contentHeight - panelScroll.height, panelScroll.contentY + dy * 44))
+          }
         } else if (root.currentScreen === "threads") {
           if (dy !== 0) root.moveThreadCursor(dy)
         }
