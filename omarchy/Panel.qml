@@ -53,7 +53,9 @@ Ui.Panel {
   readonly property var summary: stateData && stateData.summary ? stateData.summary : ({ status: "Settled", attentionCount: 0, runningCount: 0, badgeCount: 0 })
   readonly property var connection: stateData && stateData.connection ? stateData.connection : ({ status: "unavailable", message: "", connected: false, paired: false, hasData: false, port: 0 })
   readonly property var threads: stateData && stateData.threads ? stateData.threads : []
-  readonly property var settings: stateData && stateData.settings ? stateData.settings : ({ notificationsMuted: false, showsPreviews: true })
+  // App settings projected from state.json. Named `appSettings` so it never
+  // shadows the `settings` property Omarchy's bar injects from shell.json.
+  readonly property var appSettings: stateData && stateData.settings ? stateData.settings : ({ notificationsMuted: false, showsPreviews: true })
 
   property string currentScreen: viewData && viewData.screen ? viewData.screen : "threads"
   property string currentMetric: viewData && viewData.metric ? viewData.metric : "cost"
@@ -236,7 +238,7 @@ Ui.Panel {
     interval: 500
     repeat: false
     onTriggered: {
-      if (!root.settings.showsPreviews || root.hoveredId === "") return
+      if (!root.appSettings.showsPreviews || root.hoveredId === "") return
       var reqGen = root.previewGen
       var reqId = root.hoveredId
       previewProc.targetGen = reqGen
@@ -254,7 +256,7 @@ Ui.Panel {
     stdout: SplitParser {
       onRead: function(line) {
         if (previewProc.targetGen !== root.previewGen || root.hoveredId !== previewProc.targetId) return
-        if (!root.opened || root.currentScreen !== "threads" || !root.settings.showsPreviews) return
+        if (!root.opened || root.currentScreen !== "threads" || !root.appSettings.showsPreviews) return
         var raw = String(line || "").trim()
         if (raw === "" || raw === "null") {
           root.previewVisible = false
@@ -277,7 +279,7 @@ Ui.Panel {
   }
 
   function requestPreview(id, rowY) {
-    if (!root.settings.showsPreviews) return
+    if (!root.appSettings.showsPreviews) return
     root.previewGen++
     root.hoveredId = id
     root.hoverRowY = rowY
@@ -294,7 +296,7 @@ Ui.Panel {
   }
 
   onCurrentScreenChanged: cancelPreview()
-  onSettingsChanged: if (!settings || !settings.showsPreviews) cancelPreview()
+  onAppSettingsChanged: if (!appSettings || !appSettings.showsPreviews) cancelPreview()
   onOpenedChanged: {
     if (!opened) cancelPreview()
     updateView({ visible: opened })
@@ -526,7 +528,7 @@ Ui.Panel {
             fontFamily: root.fontFamily
             cursor: root.threadCursor
             cursorActive: root.threadCursorActive
-            previewsEnabled: root.settings.showsPreviews !== false
+            previewsEnabled: root.appSettings.showsPreviews !== false
             previewVisible: root.previewVisible
             previewText: root.previewText
             previewUpdatedAt: root.previewUpdatedAt
@@ -568,7 +570,7 @@ Ui.Panel {
             id: settingsScreen
             visible: root.currentScreen === "settings"
             connection: root.connection
-            settings: root.settings
+            settings: root.appSettings
             foreground: root.foreground
             dim: root.dim
             accent: root.accent

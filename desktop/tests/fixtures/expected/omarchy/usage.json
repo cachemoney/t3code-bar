@@ -268,7 +268,35 @@
           "records": 3,
           "unpricedRecords": 0
         }
-      ]
+      ],
+      "tokensBreakdown": {
+        "uncachedInput": 315343,
+        "cachedInput": 1502226,
+        "cacheCreation": 63935,
+        "output": 30566,
+        "processed": 1912070
+      },
+      "costByType": {
+        "input": 1.055706,
+        "cacheRead": 0.5608029999999999,
+        "cacheWrite": 0.16237800000000002,
+        "output": 0.41804399999999997,
+        "other": 0.32999960000000006
+      },
+      "costBySpeed": {
+        "standard": 1.4864975999999999,
+        "fast": 0.47035799999999994,
+        "ultrafast": 0.570075,
+        "premium": 0.516146
+      },
+      "cacheSavingsUsd": 3.2104134,
+      "records": 11,
+      "unpricedRecords": 0,
+      "malformedRecords": 3,
+      "rejectedFiles": 0,
+      "cacheModified": null,
+      "scanCacheMissing": false,
+      "localSourcesPartial": false
     },
     "7d": {
       "costUsd": 6.0384665,
@@ -545,7 +573,35 @@
           "records": 1,
           "unpricedRecords": 1
         }
-      ]
+      ],
+      "tokensBreakdown": {
+        "uncachedInput": 1176625,
+        "cachedInput": 2194491,
+        "cacheCreation": 219497,
+        "output": 75614,
+        "processed": 3666227
+      },
+      "costByType": {
+        "input": 2.567911,
+        "cacheRead": 1.204816,
+        "cacheWrite": 0.8149289999999998,
+        "output": 1.120811,
+        "other": 0.3299995000000002
+      },
+      "costBySpeed": {
+        "standard": 3.715061500000001,
+        "fast": 1.428429,
+        "ultrafast": 0.894976,
+        "premium": 0.785618
+      },
+      "cacheSavingsUsd": 4.82600855,
+      "records": 44,
+      "unpricedRecords": 2,
+      "malformedRecords": 3,
+      "rejectedFiles": 0,
+      "cacheModified": null,
+      "scanCacheMissing": false,
+      "localSourcesPartial": false
     },
     "30d": {
       "costUsd": 14.84943745,
@@ -1190,7 +1246,35 @@
           "records": 1,
           "unpricedRecords": 1
         }
-      ]
+      ],
+      "tokensBreakdown": {
+        "uncachedInput": 1926003,
+        "cachedInput": 7230386,
+        "cacheCreation": 1242810,
+        "output": 288966,
+        "processed": 10688165
+      },
+      "costByType": {
+        "input": 4.224858999999999,
+        "cacheRead": 3.723852,
+        "cacheWrite": 3.4160920000000004,
+        "output": 3.154638000000001,
+        "other": 0.3299964499999999
+      },
+      "costBySpeed": {
+        "standard": 10.414572450000001,
+        "fast": 1.99368,
+        "ultrafast": 2.441185,
+        "premium": 1.493239
+      },
+      "cacheSavingsUsd": 12.9252839,
+      "records": 96,
+      "unpricedRecords": 6,
+      "malformedRecords": 3,
+      "rejectedFiles": 0,
+      "cacheModified": null,
+      "scanCacheMissing": false,
+      "localSourcesPartial": false
     },
     "90d": {
       "costUsd": 64.4601674,
@@ -2752,7 +2836,35 @@
           "records": 1,
           "unpricedRecords": 1
         }
-      ]
+      ],
+      "tokensBreakdown": {
+        "uncachedInput": 5756710,
+        "cachedInput": 18654662,
+        "cacheCreation": 3845615,
+        "output": 889436,
+        "processed": 29146423
+      },
+      "costByType": {
+        "input": 17.03614400000001,
+        "cacheRead": 23.915659000000016,
+        "cacheWrite": 11.253236999999995,
+        "output": 11.925140999999995,
+        "other": 0.32998639999999035
+      },
+      "costBySpeed": {
+        "standard": 55.57714240000001,
+        "fast": 4.437340000000001,
+        "ultrafast": 4.445685,
+        "premium": 3.0375739999999998
+      },
+      "cacheSavingsUsd": 31.917933749999992,
+      "records": 227,
+      "unpricedRecords": 15,
+      "malformedRecords": 4,
+      "rejectedFiles": 0,
+      "cacheModified": null,
+      "scanCacheMissing": false,
+      "localSourcesPartial": false
     }
   }
 }

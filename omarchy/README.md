@@ -8,15 +8,15 @@ Native Omarchy shell status bar plugin (`t3code.bar`) and headless Rust Host Bri
 
 T3 Code Bar for Omarchy provides seamless, native integration with Omarchy's bar and keyboard-driven desktop environment without running a heavy Tauri/WebKitGTK webview:
 
-- **Native Bar Widget (`bar-widget`)**: Renders a compact bar pill with a 7-hue semantic status dot (indicating attention states such as unread replies, action required, running tasks, settled/idle, offline, or errors) alongside an active/attention badge count.
+- **Native Bar Widget (`bar-widget`)**: Renders a compact bar pill with a 7-hue semantic status dot (indicating attention states such as running tasks, approvals needed, limited, failed, waiting, or settled) alongside an active/attention badge count.
 - **Plain-Text Status Tooltip**: Displays the current summary status word on mouse hover.
 - **Native KeyboardPanel**: Opens via mouse click or `omarchy-shell shell toggle t3code.bar`, featuring outside-click dismissal and automatic keyboard focus priming.
-- **Threads Inbox**: Two-line thread cards with project badges, Git branch tags, provider icons, timestamps, quick actions (open in T3 Code app, open in browser, copy link), and an anchored 500ms hover reply preview.
-- **Usage & Limits View**: Interactive stacked provider charts (daily cost, token counts, and limits across 24h, 7d, 30d, and 90d spans), slot hover and keyboard inspection, single-provider isolation, per-model breakdowns, and rate-limit documentation links.
-- **Pairing & Shared Settings**: Loopback pairing flow with T3 Code, automatic reconnect via Linux Secret Service credentials, notification toggling, and configurable hover preview delays.
+- **Threads Inbox**: Two-line thread cards with project badges, Git branch tags, provider labels, status suffixes (run duration, limit-reset countdown, waiting time), quick actions (open in T3 Code app, open in browser, copy link), and an anchored 500ms hover reply preview.
+- **Usage & Limits View**: Interactive stacked provider charts (daily cost, token counts, and limits across 24h, 7d, 30d, and 90d spans) with y-axis scale labels, usage totals, cost-by-type, cost-by-speed and token-type breakdowns, cache savings, slot hover and keyboard inspection, single-provider isolation, per-model breakdowns, per-account limit member bars with even-pace markers and refill segments, and rate-limit documentation links.
+- **Pairing & Shared Settings**: Loopback pairing flow with T3 Code, automatic reconnect via Linux Secret Service credentials, notification muting, and a hover preview preference.
 - **Omarchy Desktop Notifications**: Attention notifications powered by `notify-rust` with Omarchy click hints.
 - **Multi-Monitor & Self-Healing Watchdog**: A single resident `t3code-bar-bridge watch` daemon is shared across all monitors via `flock` serialization on the state directory. Its lifecycle is anchored to the parent `omarchy-shell` process (plus stdin-EOF). If the state heartbeat becomes stale (>10s), the QML plugin automatically respawns the bridge with exponential backoff (1s to 30s).
-- **Plain-Text Discipline & Localization**: Strict adherence to Omarchy's Plain-Text UI safety discipline (`Text.PlainText`) and dynamic locale catalogs in `i18n/`.
+- **Plain-Text Discipline**: Strict adherence to Omarchy's Plain-Text UI safety discipline (`Text.PlainText`), enforced by the plugin's check script.
 
 ---
 
@@ -25,7 +25,7 @@ T3 Code Bar for Omarchy provides seamless, native integration with Omarchy's bar
 The Omarchy integration consists of two decoupled components:
 
 1. **Host Bridge (`t3code-bar-bridge`)**:
-   A headless Rust binary (compiled from `desktop/crates/bar-bridge` using shared domain logic in `bar-core`). It polls T3 Code, synchronizes settings and pairing credentials via loopback, writes state projections into `~/.cache/t3code-bar/state.json`, and emits desktop notifications. Zero Tauri, WebKit, or GTK dependencies.
+   A headless Rust binary (compiled from `desktop/crates/bar-bridge` using shared domain logic in `bar-core`). It polls T3 Code, synchronizes settings and pairing credentials via loopback, writes state projections into `~/.local/state/t3code-bar/state.json` (respects `XDG_STATE_HOME`), and emits desktop notifications. Zero Tauri, WebKit, or GTK dependencies.
 2. **QML Plugin (`t3code.bar`)**:
    Located in `~/.config/omarchy/plugins/t3code.bar/`. Loaded directly by `omarchy-shell` (Quickshell). It watches `state.json` via `FileView` and dispatches user actions by executing `t3code-bar-bridge` subcommands.
 
@@ -275,7 +275,7 @@ The Host Bridge and plugin support the following runtime environment overrides:
 
 | Variable | Description | Default |
 |---|---|---|
-| `T3_CODE_BAR_STATE_DIR` | Directory where `state.json`, `view.json`, and bridge lockfiles are stored | `~/.cache/t3code-bar` |
+| `T3_CODE_BAR_STATE_DIR` | Directory where `state.json`, `usage.json`, `limits.json`, `view.json`, and bridge lockfiles are stored | `~/.local/state/t3code-bar` |
 | `T3_BAR_FIXTURE_STATE` | Path to a fixture JSON file to force synthetic state (for development / offline demos) | *(None)* |
 | `T3_BAR_FIXTURE_PREVIEW_DELAY_MS` | Override the 500ms hover preview timer (useful for automated testing) | `500` |
 
@@ -311,7 +311,7 @@ This verifies:
 
 - **State file inspection**:
   ```bash
-  cat ~/.cache/t3code-bar/state.json | jq .summary
+  cat ~/.local/state/t3code-bar/state.json | jq .summary
   ```
 - **Live Omarchy shell logs**:
   ```bash
@@ -363,5 +363,5 @@ sudo pacman -R t3code-bar-omarchy
 ```bash
 rm -f ~/.local/bin/t3code-bar-bridge
 rm -rf ~/.config/omarchy/plugins/t3code.bar
-rm -rf ~/.cache/t3code-bar
+rm -rf ~/.local/state/t3code-bar
 ```

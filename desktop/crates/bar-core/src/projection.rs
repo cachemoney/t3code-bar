@@ -31,6 +31,8 @@ pub struct LimitsFilePayload {
     pub notices: Vec<String>,
     pub links: Vec<serde_json::Value>,
     pub checked_at: Option<String>,
+    pub read_failed: bool,
+    pub skipped_files: usize,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
@@ -80,6 +82,35 @@ pub struct UsageModelPayload {
     pub unpriced_records: usize,
 }
 
+#[derive(Clone, Serialize, Deserialize, Default, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct UsageTokensPayload {
+    pub uncached_input: i64,
+    pub cached_input: i64,
+    pub cache_creation: i64,
+    pub output: i64,
+    pub processed: i64,
+}
+
+#[derive(Clone, Serialize, Deserialize, Default, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct UsageCostByTypePayload {
+    pub input: f64,
+    pub cache_read: f64,
+    pub cache_write: f64,
+    pub output: f64,
+    pub other: f64,
+}
+
+#[derive(Clone, Serialize, Deserialize, Default, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct UsageCostBySpeedPayload {
+    pub standard: f64,
+    pub fast: f64,
+    pub ultrafast: f64,
+    pub premium: f64,
+}
+
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct UsagePeriodPayload {
@@ -89,6 +120,17 @@ pub struct UsagePeriodPayload {
     pub timeline: Vec<UsageTimelineSlotPayload>,
     pub providers: Vec<UsageProviderPayload>,
     pub models: Vec<UsageModelPayload>,
+    pub tokens_breakdown: UsageTokensPayload,
+    pub cost_by_type: UsageCostByTypePayload,
+    pub cost_by_speed: UsageCostBySpeedPayload,
+    pub cache_savings_usd: f64,
+    pub records: usize,
+    pub unpriced_records: usize,
+    pub malformed_records: i64,
+    pub rejected_files: usize,
+    pub cache_modified: Option<String>,
+    pub scan_cache_missing: bool,
+    pub local_sources_partial: bool,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
@@ -165,6 +207,8 @@ impl StateProjection {
                 notices: l.notices.clone(),
                 links: l.links.clone(),
                 checked_at: l.checked_at.clone(),
+                read_failed: l.read_failed,
+                skipped_files: l.skipped_files,
             }
         } else {
             LimitsFilePayload::default()
@@ -323,5 +367,33 @@ fn project_period(r: &UsageReport, period: Period, timezone: Tz) -> UsagePeriodP
         timeline,
         providers,
         models,
+        tokens_breakdown: UsageTokensPayload {
+            uncached_input: r.tokens.uncached_input,
+            cached_input: r.tokens.cached_input,
+            cache_creation: r.tokens.cache_creation,
+            output: r.tokens.output,
+            processed: r.tokens.processed,
+        },
+        cost_by_type: UsageCostByTypePayload {
+            input: r.cost_by_type.input,
+            cache_read: r.cost_by_type.cache_read,
+            cache_write: r.cost_by_type.cache_write,
+            output: r.cost_by_type.output,
+            other: r.cost_by_type.other,
+        },
+        cost_by_speed: UsageCostBySpeedPayload {
+            standard: r.cost_by_speed.standard,
+            fast: r.cost_by_speed.fast,
+            ultrafast: r.cost_by_speed.ultrafast,
+            premium: r.cost_by_speed.premium,
+        },
+        cache_savings_usd: r.cache_savings_usd,
+        records: r.records,
+        unpriced_records: r.unpriced_records,
+        malformed_records: r.malformed_records,
+        rejected_files: r.rejected_files,
+        cache_modified: r.cache_modified.map(|dt| dt.to_rfc3339()),
+        scan_cache_missing: r.scan_cache_missing,
+        local_sources_partial: r.local_sources.iter().any(|s| s.failed_files > 0),
     }
 }

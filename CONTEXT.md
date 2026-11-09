@@ -24,6 +24,14 @@ _Avoid_: Dashboard, billing view, metrics tab
 The loopback handshake using a T3 Code pairing key to authenticate live limit/state queries and persist credentials in the OS credential store (Secret Service / Keychain).
 _Avoid_: Login, OAuth, API key setup
 
+**App Settings**:
+The user preferences carried in the shared snapshot (notification muting, hover previews), persisted once and honored by every surface — desktop app and Omarchy plugin alike.
+_Avoid_: Widget settings, plugin config
+
+**Widget Settings**:
+The per-widget configuration Omarchy's bar supplies to a mounted widget from the user's bar layout; distinct from the app's own settings.
+_Avoid_: App settings, preferences
+
 **Omarchy Bar Plugin**:
 The native Quickshell (`omarchy-shell`) `bar-widget` plugin written in QML that coexists in this repository alongside the Tauri desktop app.
 _Avoid_: Tray widget, Waybar module, standalone QML app

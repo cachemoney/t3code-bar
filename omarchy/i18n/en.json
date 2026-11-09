@@ -1,9 +1,0 @@
-{
-  "plugin.title": "T3 Code",
-  "status.settled": "Settled",
-  "status.approval": "Approval",
-  "status.working": "Working",
-  "status.failed": "Failed",
-  "status.done": "Done",
-  "status.waiting": "Waiting"
-}

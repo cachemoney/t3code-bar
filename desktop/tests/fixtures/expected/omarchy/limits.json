@@ -2,5 +2,7 @@
   "groups": [],
   "notices": [],
   "links": [],
-  "checkedAt": null
+  "checkedAt": null,
+  "readFailed": false,
+  "skippedFiles": 0
 }

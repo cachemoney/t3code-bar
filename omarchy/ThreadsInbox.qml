@@ -70,6 +70,46 @@ Item {
     return Math.floor(s / 86400) + "d"
   }
 
+  // Elapsed time since `iso`, desktop "duration" format: 12s · 5m · 3h 12m
+  function durationSince(iso) {
+    if (!iso) return ""
+    var s = Math.max(0, Math.floor((Date.now() - Date.parse(iso)) / 1000))
+    if (isNaN(s)) return ""
+    if (s < 60) return s + "s"
+    if (s < 3600) return Math.floor(s / 60) + "m"
+    return Math.floor(s / 3600) + "h " + (Math.floor(s / 60) % 60) + "m"
+  }
+
+  // Time remaining until `iso`, desktop "until" format: 12m · 5h · 3d
+  function untilStr(iso) {
+    if (!iso) return ""
+    var minutes = Math.ceil((Date.parse(iso) - Date.now()) / 60000)
+    if (isNaN(minutes) || minutes <= 0) return ""
+    if (minutes < 60) return minutes + "m"
+    var hours = Math.ceil(minutes / 60)
+    return hours < 24 ? hours + "h" : Math.ceil(hours / 24) + "d"
+  }
+
+  // Desktop suffix: run duration while working, reset countdown when
+  // limited, elapsed since completion while waiting.
+  function statusSuffix(t) {
+    if (!t) return ""
+    if (t.status === "Working" || t.status === "Goal") return durationSince(t.activeRunStartedAt)
+    if (t.status === "Limited") return untilStr(t.usageLimitResetAt)
+    if (t.status === "Waiting") return durationSince(t.latestRunCompletedAt)
+    return ""
+  }
+
+  // Desktop status line: relative time only once settled; otherwise the
+  // attention state with its suffix (Limited suffix reads "· 2h").
+  function statusLine(t) {
+    if (!t) return ""
+    if (!t.status || t.status === "Settled") return relTime(t.latestUserMessageAt || t.updatedAt)
+    var suffix = statusSuffix(t)
+    if (suffix === "") return t.status
+    return t.status === "Limited" ? t.status + " · " + suffix : t.status + " " + suffix
+  }
+
   function fileUrl(path) {
     if (!path) return ""
     if (Commons && Commons.Util && Commons.Util.fileUrl) {
@@ -289,13 +329,20 @@ Item {
                   }
                 }
 
-                // Relative timestamp
+                // Status line: relative time once settled, otherwise the
+                // attention state with run/reset/wait suffix (desktop parity).
+                // Attention states already name themselves in the pill above,
+                // so only their suffix lands here.
                 PlainText {
                   anchors.verticalCenter: parent.verticalCenter
-                  color: root.dim
+                  color: row.modelData.status && row.modelData.status !== "Settled" && !root.isAttentionStatus(row.modelData.status)
+                    ? root.statusColor(row.modelData.status)
+                    : root.dim
                   font.family: root.fontFamily
                   font.pixelSize: Commons.Style.font.caption
-                  text: root.relTime(row.modelData.updatedAt)
+                  text: root.isAttentionStatus(row.modelData.status)
+                    ? root.statusSuffix(row.modelData)
+                    : root.statusLine(row.modelData)
                 }
               }
             }
