@@ -1,0 +1,63 @@
+name: Omarchy checks
+
+on:
+  push:
+    branches: ["**"]
+    tags-ignore: ["**"]
+    paths:
+      - 'omarchy/**'
+      - 'desktop/crates/bar-bridge/**'
+      - 'packaging/**'
+      - 'scripts/check-omarchy.sh'
+      - '.github/workflows/omarchy.yml'
+  pull_request:
+    paths:
+      - 'omarchy/**'
+      - 'desktop/crates/bar-bridge/**'
+      - 'packaging/**'
+      - 'scripts/check-omarchy.sh'
+      - '.github/workflows/omarchy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  omarchy-verify:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    timeout-minutes: 30
+    steps:
+      - name: Configure Omarchy pacman repository
+        run: |
+          cat << 'EOF' >> /etc/pacman.conf
+
+          [omarchy]
+          SigLevel = Optional TrustAll
+          Server = https://pkgs.omarchy.org/stable/$arch
+          EOF
+      - name: Install dependencies
+        run: |
+          pacman -Syu --noconfirm --needed \
+            base-devel \
+            git \
+            rust \
+            cargo \
+            jq \
+            omarchy
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - name: Configure build user
+        run: |
+          useradd -m -s /bin/bash builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+      - name: Run Omarchy verification checks
+        run: |
+          su builder -c "git config --global --add safe.directory '$GITHUB_WORKSPACE' && bash scripts/check-omarchy.sh"

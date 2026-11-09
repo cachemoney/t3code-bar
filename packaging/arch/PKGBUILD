@@ -1,0 +1,40 @@
+# Maintainer: Omarchy <pkgs@omarchy.org>
+pkgname=t3code-bar-omarchy
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="T3 Code threads, usage and limits in the Omarchy bar"
+arch=('x86_64' 'aarch64')
+url="https://github.com/cachemoney/t3code-bar"
+license=('MIT')
+depends=('omarchy')
+makedepends=('cargo' 'rust')
+options=(!lto)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+  local _dir="t3code-bar-$pkgver"
+  if [ ! -d "$srcdir/$_dir" ] && [ -d "$srcdir/$pkgname-$pkgver" ]; then
+    _dir="$pkgname-$pkgver"
+  fi
+  cd "$srcdir/$_dir"
+  cargo build --release --frozen --manifest-path desktop/crates/bar-bridge/Cargo.toml
+}
+
+package() {
+  local _dir="t3code-bar-$pkgver"
+  if [ ! -d "$srcdir/$_dir" ] && [ -d "$srcdir/$pkgname-$pkgver" ]; then
+    _dir="$pkgname-$pkgver"
+  fi
+  cd "$srcdir/$_dir"
+
+  # Host bridge binary
+  install -Dm755 desktop/crates/bar-bridge/target/release/t3code-bar-bridge "$pkgdir/usr/bin/t3code-bar-bridge"
+
+  # User-space enable helper
+  install -Dm755 packaging/arch/t3code-bar-omarchy-install "$pkgdir/usr/bin/t3code-bar-omarchy-install"
+
+  # QML plugin payload
+  install -d "$pkgdir/usr/share/t3code-bar/omarchy"
+  cp -r omarchy/* "$pkgdir/usr/share/t3code-bar/omarchy/"
+}

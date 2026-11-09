@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PAYLOAD_DIR="${OMARCHY_PAYLOAD_DIR:-/usr/share/t3code-bar/omarchy}"
+CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
+TARGET_DIR="${OMARCHY_PLUGIN_DIR:-${CONFIG_HOME}/omarchy/plugins/t3code.bar}"
+
+CLEAN=0
+ENABLE=0
+
+usage() {
+  cat << EOF
+Usage: $(basename "$0") [OPTIONS]
+
+Syncs the packaged T3 Code Bar plugin payload from $PAYLOAD_DIR
+into the user's Omarchy plugins directory ($TARGET_DIR) as real files.
+
+Options:
+  --clean       Remove destination directory before installing
+  --enable      Enable the plugin in Omarchy bar after installation
+  -h, --help    Show this help message
+EOF
+  exit 0
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --clean)
+      CLEAN=1
+      shift
+      ;;
+    --enable)
+      ENABLE=1
+      shift
+      ;;
+    -h|--help)
+      usage
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
+if [ ! -d "$PAYLOAD_DIR" ]; then
+  echo "Error: Payload directory not found at $PAYLOAD_DIR" >&2
+  exit 1
+fi
+
+if [ ! -f "$PAYLOAD_DIR/manifest.json" ]; then
+  echo "Error: manifest.json not found in $PAYLOAD_DIR" >&2
+  exit 1
+fi
+
+if [ "$CLEAN" -eq 1 ] && [ -e "$TARGET_DIR" ]; then
+  echo "=== Cleaning existing plugin directory ($TARGET_DIR) ==="
+  rm -rf "$TARGET_DIR"
+fi
+
+mkdir -p "$TARGET_DIR"
+
+echo "=== Syncing packaged plugin payload to $TARGET_DIR ==="
+if command -v rsync >/dev/null 2>&1; then
+  rsync -a --delete "$PAYLOAD_DIR/" "$TARGET_DIR/"
+else
+  # Fallback to cp when rsync is unavailable
+  cp -r "$PAYLOAD_DIR/"* "$TARGET_DIR/"
+fi
+
+# Ensure all files are real files, never symlinks
+find "$TARGET_DIR" -type l -exec rm -f {} +
+
+if command -v omarchy >/dev/null 2>&1; then
+  echo "=== Validating plugin manifest ==="
+  omarchy plugin validate "$TARGET_DIR"
+else
+  echo "Notice: 'omarchy' CLI not found; skipping plugin validate"
+fi
+
+if [ "$ENABLE" -eq 1 ]; then
+  if command -v omarchy >/dev/null 2>&1; then
+    echo "=== Enabling t3code.bar in Omarchy bar ==="
+    omarchy plugin enable t3code.bar
+  else
+    echo "Notice: 'omarchy' CLI not found; cannot auto-enable"
+  fi
+else
+  echo "Plugin installed. To enable in your Omarchy bar run:"
+  echo "  omarchy plugin enable t3code.bar"
+fi
+
+echo "=== Installation complete ==="
