@@ -774,6 +774,11 @@ pub struct HostRuntime {
     pub fixture: bool,
     pub fixture_notifications: bool,
     pub connection: limits::LimitsConnection,
+    /// Persistent runtime for the live limits stream. `resume()` spawns an
+    /// eternal websocket task; spawning it on a short-lived runtime would
+    /// cancel the task the moment that runtime is dropped, leaving the
+    /// connection stuck in `Connecting` forever.
+    pub connection_rt: tokio::runtime::Runtime,
     pub last_port: AtomicU16,
     pub connection_generation: AtomicU64,
     pub connection_gate: tokio::sync::Mutex<()>,
@@ -805,6 +810,12 @@ impl HostRuntime {
 
         let connection = limits::LimitsConnection::with_default_transport(creds);
         let _ = connection.restore_saved();
+        let connection_rt = tokio::runtime::Builder::new_multi_thread()
+            .worker_threads(1)
+            .thread_name("t3code-bar-connection")
+            .enable_all()
+            .build()
+            .expect("failed to build connection runtime");
         let settings_file = settings_path(&config.base_dir);
         let settings = SettingsStore::load(settings_file.clone())
             .unwrap_or_else(|_| SettingsStore::defaults(settings_file));
@@ -824,6 +835,7 @@ impl HostRuntime {
             fixture,
             fixture_notifications,
             connection,
+            connection_rt,
             last_port: AtomicU16::new(0),
             connection_generation: AtomicU64::new(1),
             connection_gate: tokio::sync::Mutex::new(()),
@@ -1089,39 +1101,31 @@ impl HostRuntime {
             // In synchronous/blocking or async runtime, gate the connection reconnect
             // We spawn a thread to handle reconnecting under gate
             let conn = self.connection.clone();
+            let rt_handle = self.connection_rt.handle().clone();
             let last_gen = Arc::new(self.connection_generation.load(Ordering::Acquire));
             let _ = thread::spawn(move || {
-                let rt = tokio::runtime::Builder::new_current_thread()
-                    .enable_all()
-                    .build();
-                if let Ok(rt) = rt {
-                    rt.block_on(async {
-                        if *last_gen != generation {
-                            return;
-                        }
-                        if port == 0 {
+                rt_handle.block_on(async {
+                    if *last_gen != generation {
+                        return;
+                    }
+                    if port == 0 {
+                        conn.pause().await;
+                    } else {
+                        if previous != 0 {
                             conn.pause().await;
-                        } else {
-                            if previous != 0 {
-                                conn.pause().await;
-                            }
-                            let _ = conn.sync_saved(port).await;
                         }
-                    });
-                }
+                        let _ = conn.sync_saved(port).await;
+                    }
+                });
             });
         } else {
             // Port unchanged: check if external CLI mutated saved credentials
             let conn = self.connection.clone();
+            let rt_handle = self.connection_rt.handle().clone();
             let _ = thread::spawn(move || {
-                let rt = tokio::runtime::Builder::new_current_thread()
-                    .enable_all()
-                    .build();
-                if let Ok(rt) = rt {
-                    rt.block_on(async {
-                        let _ = conn.sync_saved(port).await;
-                    });
-                }
+                rt_handle.block_on(async {
+                    let _ = conn.sync_saved(port).await;
+                })
             });
         }
     }
