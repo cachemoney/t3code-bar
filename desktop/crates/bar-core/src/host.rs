@@ -690,6 +690,35 @@ impl limits::CredentialStore for FixtureCredentials {
     }
 }
 
+pub struct FixtureFileCredentials(pub PathBuf);
+impl limits::CredentialStore for FixtureFileCredentials {
+    fn load(&self) -> Result<Option<limits::Credential>, limits::ConnectionError> {
+        match std::fs::read(&self.0) {
+            Ok(bytes) => serde_json::from_slice(&bytes)
+                .map(Some)
+                .map_err(|_| limits::ConnectionError::Storage),
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
+            Err(_) => Err(limits::ConnectionError::Storage),
+        }
+    }
+    fn save(&self, cred: &limits::Credential) -> Result<(), limits::ConnectionError> {
+        if let Some(parent) = self.0.parent() {
+            let _ = std::fs::create_dir_all(parent);
+        }
+        let bytes = serde_json::to_vec(cred).map_err(|_| limits::ConnectionError::Storage)?;
+        let tmp = self.0.with_extension("json.tmp");
+        std::fs::write(&tmp, &bytes).map_err(|_| limits::ConnectionError::Storage)?;
+        std::fs::rename(&tmp, &self.0).map_err(|_| limits::ConnectionError::Storage)
+    }
+    fn delete(&self) -> Result<(), limits::ConnectionError> {
+        match std::fs::remove_file(&self.0) {
+            Ok(()) => Ok(()),
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(()),
+            Err(_) => Err(limits::ConnectionError::Storage),
+        }
+    }
+}
+
 pub fn credential_store(
     fixture: bool,
     namespace: Option<&str>,
@@ -702,6 +731,11 @@ pub fn credential_store(
                 .map_err(|_| "Fixture keyring namespace must be a UUID")?;
             if id.to_string() != raw || id.is_nil() {
                 return Err("Fixture keyring namespace must be a nonzero canonical UUID".into());
+            }
+            if let Some(dir) = fixture_or_env("T3_CODE_BAR_STATE_DIR") {
+                return Ok(Arc::new(FixtureFileCredentials(
+                    PathBuf::from(dir).join(format!(".fixture-keyring-{id}.json")),
+                )));
             }
             Ok(Arc::new(limits::KeyringStore::new(
                 format!("com.t3codebar.migration-probe.{id}"),

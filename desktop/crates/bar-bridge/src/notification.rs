@@ -1,30 +1,38 @@
 use bar_core::attention::AttentionAlert;
 use bar_core::host::HostEventSink;
+#[cfg(all(unix, not(target_os = "macos")))]
 use bar_core::threads::ThreadStatus;
-use notify_rust::{Hint, Notification, Urgency};
+use notify_rust::Notification;
+#[cfg(all(unix, not(target_os = "macos")))]
+use notify_rust::{Hint, Urgency};
 
 pub fn build_attention_notification(alert: &AttentionAlert) -> Notification {
     let mut notification = Notification::new();
 
-    let exec_argv = serde_json::to_string(&[
-        "t3code-bar-bridge",
-        "thread",
-        alert.thread_id.as_str(),
-        "open",
-    ])
-    .unwrap_or_else(|_| "[]".to_string());
-
-    let urgency = match alert.status {
-        ThreadStatus::Approval | ThreadStatus::Failed => Urgency::Critical,
-        _ => Urgency::Normal,
-    };
-
     notification
         .appname("T3 Code Bar")
         .summary(alert.title())
-        .body(&alert.body)
-        .urgency(urgency)
-        .hint(Hint::Custom("omarchy-exec-argv".into(), exec_argv));
+        .body(&alert.body);
+
+    #[cfg(all(unix, not(target_os = "macos")))]
+    {
+        let exec_argv = serde_json::to_string(&[
+            "t3code-bar-bridge",
+            "thread",
+            alert.thread_id.as_str(),
+            "open",
+        ])
+        .unwrap_or_else(|_| "[]".to_string());
+
+        let urgency = match alert.status {
+            ThreadStatus::Approval | ThreadStatus::Failed => Urgency::Critical,
+            _ => Urgency::Normal,
+        };
+
+        notification
+            .urgency(urgency)
+            .hint(Hint::Custom("omarchy-exec-argv".into(), exec_argv));
+    }
 
     notification
 }

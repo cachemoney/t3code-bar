@@ -2,6 +2,7 @@ use bar_bridge::notification::{build_attention_notification, BridgeEventSink};
 use bar_core::attention::{AttentionAlert, AttentionTracker};
 use bar_core::host::{HostEventSink, HostRuntime, SnapshotMode};
 use bar_core::threads::{Configuration, ThreadStatus};
+#[cfg(all(unix, not(target_os = "macos")))]
 use notify_rust::{Hint, Urgency};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
@@ -21,28 +22,33 @@ fn test_notification_construction_and_omarchy_hints() {
     assert_eq!(notification.summary, "Approval needed");
     assert_eq!(notification.body, "Review PR #12 changes");
 
-    let hints: Vec<&Hint> = notification.get_hints().collect();
+    #[cfg(all(unix, not(target_os = "macos")))]
+    {
+        let hints: Vec<&Hint> = notification.get_hints().collect();
 
-    // Verify urgency is Critical for Approval
-    let has_critical = hints.iter().any(|h| matches!(h, Hint::Urgency(Urgency::Critical)));
-    assert!(has_critical, "Expected Urgency::Critical for Approval status");
+        // Verify urgency is Critical for Approval
+        let has_critical = hints
+            .iter()
+            .any(|h| matches!(h, Hint::Urgency(Urgency::Critical)));
+        assert!(has_critical, "Expected Urgency::Critical for Approval status");
 
-    // Verify omarchy-exec-argv hint
-    let exec_argv = hints.iter().find_map(|h| match h {
-        Hint::Custom(k, v) if k == "omarchy-exec-argv" => Some(v.as_str()),
-        _ => None,
-    });
-    assert_eq!(
-        exec_argv,
-        Some(r#"["t3code-bar-bridge","thread","thread-42","open"]"#)
-    );
+        // Verify omarchy-exec-argv hint
+        let exec_argv = hints.iter().find_map(|h| match h {
+            Hint::Custom(k, v) if k == "omarchy-exec-argv" => Some(v.as_str()),
+            _ => None,
+        });
+        assert_eq!(
+            exec_argv,
+            Some(r#"["t3code-bar-bridge","thread","thread-42","open"]"#)
+        );
 
-    // Verify omarchy-glyph hint is not present
-    let glyph = hints.iter().find_map(|h| match h {
-        Hint::Custom(k, v) if k == "omarchy-glyph" => Some(v.as_str()),
-        _ => None,
-    });
-    assert_eq!(glyph, None, "omarchy-glyph hint should not be set");
+        // Verify omarchy-glyph hint is not present
+        let glyph = hints.iter().find_map(|h| match h {
+            Hint::Custom(k, v) if k == "omarchy-glyph" => Some(v.as_str()),
+            _ => None,
+        });
+        assert_eq!(glyph, None, "omarchy-glyph hint should not be set");
+    }
 
     // Status: Failed -> Critical
     let alert_failed = AttentionAlert {
@@ -52,8 +58,13 @@ fn test_notification_construction_and_omarchy_hints() {
     };
     let n_failed = build_attention_notification(&alert_failed);
     assert_eq!(n_failed.summary, "Failed needed");
-    let has_critical = n_failed.get_hints().any(|h| matches!(h, Hint::Urgency(Urgency::Critical)));
-    assert!(has_critical, "Expected Urgency::Critical for Failed status");
+    #[cfg(all(unix, not(target_os = "macos")))]
+    {
+        let has_critical = n_failed
+            .get_hints()
+            .any(|h| matches!(h, Hint::Urgency(Urgency::Critical)));
+        assert!(has_critical, "Expected Urgency::Critical for Failed status");
+    }
 
     // Status: Input -> Normal
     let alert_input = AttentionAlert {
@@ -63,8 +74,13 @@ fn test_notification_construction_and_omarchy_hints() {
     };
     let n_input = build_attention_notification(&alert_input);
     assert_eq!(n_input.summary, "Input needed");
-    let has_normal = n_input.get_hints().any(|h| matches!(h, Hint::Urgency(Urgency::Normal)));
-    assert!(has_normal, "Expected Urgency::Normal for Input status");
+    #[cfg(all(unix, not(target_os = "macos")))]
+    {
+        let has_normal = n_input
+            .get_hints()
+            .any(|h| matches!(h, Hint::Urgency(Urgency::Normal)));
+        assert!(has_normal, "Expected Urgency::Normal for Input status");
+    }
 }
 
 #[test]
