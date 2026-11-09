@@ -6,7 +6,7 @@ use std::collections::{HashMap, HashSet};
 
 const HOUR: f64 = 3_600_000.0;
 const DAY: f64 = 86_400_000.0;
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum Period {
     Day,

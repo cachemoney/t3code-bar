@@ -1,0 +1,2758 @@
+{
+  "periods": {
+    "24h": {
+      "costUsd": 2.5269306,
+      "processedTokens": 1912070,
+      "sessions": 7,
+      "timeline": [
+        {
+          "label": "9a",
+          "costUsd": 0.8307250000000002,
+          "tokens": 167700,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.8307250000000002,
+              "tokens": 167700
+            }
+          ]
+        },
+        {
+          "label": "10a",
+          "costUsd": 0.21286799999999997,
+          "tokens": 92702,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.21286799999999997,
+              "tokens": 92702
+            }
+          ]
+        },
+        {
+          "label": "11a",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "12p",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "1p",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "2p",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "3p",
+          "costUsd": 0.2020746,
+          "tokens": 162005,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.2020746,
+              "tokens": 162005
+            }
+          ]
+        },
+        {
+          "label": "4p",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "5p",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "6p",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "7p",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "8p",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "9p",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "10p",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "11p",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "12a",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "1a",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "2a",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "3a",
+          "costUsd": 0.33,
+          "tokens": 5500,
+          "providers": [
+            {
+              "kind": "muse",
+              "costUsd": 0.33,
+              "tokens": 5500
+            }
+          ]
+        },
+        {
+          "label": "4a",
+          "costUsd": 0.00018,
+          "tokens": 20,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.00018,
+              "tokens": 20
+            }
+          ]
+        },
+        {
+          "label": "5a",
+          "costUsd": 0.102,
+          "tokens": 453000,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.102,
+              "tokens": 453000
+            }
+          ]
+        },
+        {
+          "label": "6a",
+          "costUsd": 0.204,
+          "tokens": 453000,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.204,
+              "tokens": 453000
+            }
+          ]
+        },
+        {
+          "label": "7a",
+          "costUsd": 0.634358,
+          "tokens": 574443,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.634358,
+              "tokens": 574443
+            }
+          ]
+        },
+        {
+          "label": "8a",
+          "costUsd": 0.010725,
+          "tokens": 3700,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.010725,
+              "tokens": 3700
+            }
+          ]
+        }
+      ],
+      "providers": [
+        {
+          "kind": "codex",
+          "label": "Codex",
+          "costUsd": 1.3553005999999996,
+          "tokens": 1735150,
+          "sessions": 3
+        },
+        {
+          "kind": "claude",
+          "label": "Claude",
+          "costUsd": 0.8416300000000001,
+          "tokens": 171420,
+          "sessions": 3
+        },
+        {
+          "kind": "muse",
+          "label": "muse",
+          "costUsd": 0.33,
+          "tokens": 5500,
+          "sessions": 1
+        }
+      ],
+      "models": [
+        {
+          "kind": "codex",
+          "name": "gpt-6-stella",
+          "costUsd": 0.8760745999999999,
+          "tokens": 1521005,
+          "records": 4,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "custom-model",
+          "costUsd": 0.8200000000000002,
+          "tokens": 164000,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "codex",
+          "name": "gpt-6.1-sol",
+          "costUsd": 0.47922599999999993,
+          "tokens": 214145,
+          "records": 2,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "muse",
+          "name": "muse-unpriced-x",
+          "costUsd": 0.33,
+          "tokens": 5500,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "claude-sonnet-5-5",
+          "costUsd": 0.02163,
+          "tokens": 7420,
+          "records": 3,
+          "unpricedRecords": 0
+        }
+      ]
+    },
+    "7d": {
+      "costUsd": 6.0384665,
+      "processedTokens": 3666227,
+      "sessions": 12,
+      "timeline": [
+        {
+          "label": "Sat",
+          "costUsd": 0.32490129999999995,
+          "tokens": 188571,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.32490129999999995,
+              "tokens": 188571
+            }
+          ]
+        },
+        {
+          "label": "Sun",
+          "costUsd": 0.6395352999999999,
+          "tokens": 182849,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.23969655,
+              "tokens": 86443
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.39783874999999996,
+              "tokens": 94656
+            },
+            {
+              "kind": "pi",
+              "costUsd": 0.002,
+              "tokens": 1750
+            }
+          ]
+        },
+        {
+          "label": "Mon",
+          "costUsd": 0.062217999999999996,
+          "tokens": 182707,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.062217999999999996,
+              "tokens": 182707
+            }
+          ]
+        },
+        {
+          "label": "Tue",
+          "costUsd": 0.88473785,
+          "tokens": 538939,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.55933385,
+              "tokens": 391105
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.325404,
+              "tokens": 147834
+            }
+          ]
+        },
+        {
+          "label": "Wed",
+          "costUsd": 0.324216,
+          "tokens": 147636,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.324216,
+              "tokens": 147636
+            }
+          ]
+        },
+        {
+          "label": "Thu",
+          "costUsd": 2.5108700500000003,
+          "tokens": 932162,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 1.9278566500000003,
+              "tokens": 381501
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.4730134,
+              "tokens": 537661
+            },
+            {
+              "kind": "pi",
+              "costUsd": 0.11,
+              "tokens": 13000
+            }
+          ]
+        },
+        {
+          "label": "Fri",
+          "costUsd": 1.291988,
+          "tokens": 1493363,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.02163,
+              "tokens": 7420
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.9403579999999999,
+              "tokens": 1480443
+            },
+            {
+              "kind": "muse",
+              "costUsd": 0.33,
+              "tokens": 5500
+            }
+          ]
+        }
+      ],
+      "providers": [
+        {
+          "kind": "codex",
+          "label": "Codex",
+          "costUsd": 2.3878926999999996,
+          "tokens": 2502145,
+          "sessions": 3
+        },
+        {
+          "kind": "claude",
+          "label": "Claude",
+          "costUsd": 2.81073505,
+          "tokens": 1049176,
+          "sessions": 5
+        },
+        {
+          "kind": "grok",
+          "label": "Grok",
+          "costUsd": 0.39783874999999996,
+          "tokens": 94656,
+          "sessions": 1
+        },
+        {
+          "kind": "pi",
+          "label": "pi",
+          "costUsd": 0.112,
+          "tokens": 14750,
+          "sessions": 2
+        },
+        {
+          "kind": "muse",
+          "label": "muse",
+          "costUsd": 0.33,
+          "tokens": 5500,
+          "sessions": 1
+        }
+      ],
+      "models": [
+        {
+          "kind": "claude",
+          "name": "claude-sonnet-5-5",
+          "costUsd": 1.6385170500000001,
+          "tokens": 537669,
+          "records": 11,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "codex",
+          "name": "gpt-6-stella",
+          "costUsd": 1.2009759,
+          "tokens": 1709576,
+          "records": 5,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "codex",
+          "name": "gpt-6.1-sol",
+          "costUsd": 1.128846,
+          "tokens": 509615,
+          "records": 14,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "custom-model",
+          "costUsd": 0.8200000000000002,
+          "tokens": 164000,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "grok",
+          "name": "grok-5",
+          "costUsd": 0.39783874999999996,
+          "tokens": 94656,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "muse",
+          "name": "muse-unpriced-x",
+          "costUsd": 0.33,
+          "tokens": 5500,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "dual-model",
+          "costUsd": 0.212,
+          "tokens": 52000,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "pi",
+          "name": "anthropic/claude-sonnet-5-5",
+          "costUsd": 0.11,
+          "tokens": 13000,
+          "records": 2,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "gpt-6.1-sol",
+          "costUsd": 0.08621799999999999,
+          "tokens": 39665,
+          "records": 2,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "codex",
+          "name": "gpt-6-luna",
+          "costUsd": 0.05807079999999999,
+          "tokens": 282954,
+          "records": 2,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "bar-model",
+          "costUsd": 0.05399999999999999,
+          "tokens": 52000,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "pi",
+          "name": "grok-5",
+          "costUsd": 0.002,
+          "tokens": 1750,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "loop-x",
+          "costUsd": 0.0,
+          "tokens": 151842,
+          "records": 1,
+          "unpricedRecords": 1
+        },
+        {
+          "kind": "claude",
+          "name": "foo-model",
+          "costUsd": 0.0,
+          "tokens": 52000,
+          "records": 1,
+          "unpricedRecords": 1
+        }
+      ]
+    },
+    "30d": {
+      "costUsd": 14.84943745,
+      "processedTokens": 10688165,
+      "sessions": 13,
+      "timeline": [
+        {
+          "label": "D1",
+          "costUsd": 0.035082999999999996,
+          "tokens": 247338,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.0,
+              "tokens": 100439
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.035082999999999996,
+              "tokens": 146899
+            }
+          ]
+        },
+        {
+          "label": "D2",
+          "costUsd": 0.47605875000000003,
+          "tokens": 211202,
+          "providers": [
+            {
+              "kind": "grok",
+              "costUsd": 0.47605875000000003,
+              "tokens": 211202
+            }
+          ]
+        },
+        {
+          "label": "D3",
+          "costUsd": 0.9278213000000001,
+          "tokens": 404717,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.3384575,
+              "tokens": 164728
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.2766378,
+              "tokens": 89942
+            },
+            {
+              "kind": "muse",
+              "costUsd": 0.31272600000000006,
+              "tokens": 150047
+            }
+          ]
+        },
+        {
+          "label": "D4",
+          "costUsd": 0.40045644999999996,
+          "tokens": 347410,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.31549905,
+              "tokens": 217143
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.08495739999999999,
+              "tokens": 130267
+            }
+          ]
+        },
+        {
+          "label": "D5",
+          "costUsd": 0.79294115,
+          "tokens": 444655,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.23492235,
+              "tokens": 53999
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.1667463,
+              "tokens": 280754
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.3912725,
+              "tokens": 109902
+            }
+          ]
+        },
+        {
+          "label": "D6",
+          "costUsd": 0.27840919999999997,
+          "tokens": 353457,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.2506734,
+              "tokens": 220026
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.027735799999999998,
+              "tokens": 133431
+            }
+          ]
+        },
+        {
+          "label": "D7",
+          "costUsd": 0.49384965000000003,
+          "tokens": 338675,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.23833365,
+              "tokens": 219205
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.255516,
+              "tokens": 119470
+            }
+          ]
+        },
+        {
+          "label": "D8",
+          "costUsd": 0.7888985500000001,
+          "tokens": 412853,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.43011105,
+              "tokens": 266322
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.35878750000000004,
+              "tokens": 146531
+            }
+          ]
+        },
+        {
+          "label": "D9",
+          "costUsd": 0.55080255,
+          "tokens": 203109,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.21674505,
+              "tokens": 104868
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.16931000000000002,
+              "tokens": 52987
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.1647475,
+              "tokens": 45254
+            }
+          ]
+        },
+        {
+          "label": "D10",
+          "costUsd": 0.5296649,
+          "tokens": 239017,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.1974669,
+              "tokens": 91882
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.332198,
+              "tokens": 147135
+            }
+          ]
+        },
+        {
+          "label": "D11",
+          "costUsd": 0.08469055,
+          "tokens": 114057,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.08469055,
+              "tokens": 114057
+            }
+          ]
+        },
+        {
+          "label": "D12",
+          "costUsd": 0.28622290000000006,
+          "tokens": 578092,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.25786410000000004,
+              "tokens": 309004
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.028358799999999997,
+              "tokens": 269088
+            }
+          ]
+        },
+        {
+          "label": "D13",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "D14",
+          "costUsd": 0.36793045,
+          "tokens": 329863,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.35787405,
+              "tokens": 234759
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.0100564,
+              "tokens": 95104
+            }
+          ]
+        },
+        {
+          "label": "D15",
+          "costUsd": 0.0172791,
+          "tokens": 165115,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.0172791,
+              "tokens": 165115
+            }
+          ]
+        },
+        {
+          "label": "D16",
+          "costUsd": 0.14586375000000001,
+          "tokens": 294049,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.14586375000000001,
+              "tokens": 294049
+            }
+          ]
+        },
+        {
+          "label": "D17",
+          "costUsd": 0.08430575,
+          "tokens": 336954,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.08430575,
+              "tokens": 336954
+            }
+          ]
+        },
+        {
+          "label": "D18",
+          "costUsd": 0.7972015,
+          "tokens": 545300,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.4557201,
+              "tokens": 276251
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.3414814,
+              "tokens": 269049
+            }
+          ]
+        },
+        {
+          "label": "D19",
+          "costUsd": 0.4129617,
+          "tokens": 343368,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.4129617,
+              "tokens": 343368
+            }
+          ]
+        },
+        {
+          "label": "D20",
+          "costUsd": 0.5308404,
+          "tokens": 373994,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.5308404,
+              "tokens": 373994
+            }
+          ]
+        },
+        {
+          "label": "D21",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "D22",
+          "costUsd": 0.45185685,
+          "tokens": 546707,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.41954985,
+              "tokens": 259889
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.032306999999999995,
+              "tokens": 286818
+            }
+          ]
+        },
+        {
+          "label": "D23",
+          "costUsd": 0.3578325,
+          "tokens": 192006,
+          "providers": [
+            {
+              "kind": "grok",
+              "costUsd": 0.3578325,
+              "tokens": 192006
+            }
+          ]
+        },
+        {
+          "label": "D24",
+          "costUsd": 0.32490129999999995,
+          "tokens": 188571,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.32490129999999995,
+              "tokens": 188571
+            }
+          ]
+        },
+        {
+          "label": "D25",
+          "costUsd": 0.6395352999999999,
+          "tokens": 182849,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.23969655,
+              "tokens": 86443
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.39783874999999996,
+              "tokens": 94656
+            },
+            {
+              "kind": "pi",
+              "costUsd": 0.002,
+              "tokens": 1750
+            }
+          ]
+        },
+        {
+          "label": "D26",
+          "costUsd": 0.062217999999999996,
+          "tokens": 182707,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.062217999999999996,
+              "tokens": 182707
+            }
+          ]
+        },
+        {
+          "label": "D27",
+          "costUsd": 0.88473785,
+          "tokens": 538939,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.55933385,
+              "tokens": 391105
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.325404,
+              "tokens": 147834
+            }
+          ]
+        },
+        {
+          "label": "D28",
+          "costUsd": 0.324216,
+          "tokens": 147636,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.324216,
+              "tokens": 147636
+            }
+          ]
+        },
+        {
+          "label": "D29",
+          "costUsd": 2.5108700500000003,
+          "tokens": 932162,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 1.9278566500000003,
+              "tokens": 381501
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.4730134,
+              "tokens": 537661
+            },
+            {
+              "kind": "pi",
+              "costUsd": 0.11,
+              "tokens": 13000
+            }
+          ]
+        },
+        {
+          "label": "D30",
+          "costUsd": 1.291988,
+          "tokens": 1493363,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.02163,
+              "tokens": 7420
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.9403579999999999,
+              "tokens": 1480443
+            },
+            {
+              "kind": "muse",
+              "costUsd": 0.33,
+              "tokens": 5500
+            }
+          ]
+        }
+      ],
+      "providers": [
+        {
+          "kind": "codex",
+          "label": "Codex",
+          "costUsd": 5.1093618,
+          "tokens": 5405566,
+          "sessions": 3
+        },
+        {
+          "kind": "claude",
+          "label": "Claude",
+          "costUsd": 6.838812150000001,
+          "tokens": 4312751,
+          "sessions": 5
+        },
+        {
+          "kind": "grok",
+          "label": "Grok",
+          "costUsd": 2.1465375,
+          "tokens": 799551,
+          "sessions": 1
+        },
+        {
+          "kind": "pi",
+          "label": "pi",
+          "costUsd": 0.112,
+          "tokens": 14750,
+          "sessions": 2
+        },
+        {
+          "kind": "muse",
+          "label": "muse",
+          "costUsd": 0.6427260000000001,
+          "tokens": 155547,
+          "sessions": 2
+        }
+      ],
+      "models": [
+        {
+          "kind": "claude",
+          "name": "claude-sonnet-5-5",
+          "costUsd": 4.7811055499999995,
+          "tokens": 2442254,
+          "records": 25,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "codex",
+          "name": "gpt-6.1-sol",
+          "costUsd": 2.52978,
+          "tokens": 1128370,
+          "records": 20,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "codex",
+          "name": "gpt-6-stella",
+          "costUsd": 2.3111487,
+          "tokens": 2466052,
+          "records": 11,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "grok",
+          "name": "grok-5",
+          "costUsd": 2.1465375,
+          "tokens": 799551,
+          "records": 6,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "custom-model",
+          "costUsd": 1.452801,
+          "tokens": 536439,
+          "records": 3,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "muse",
+          "name": "muse-unpriced-x",
+          "costUsd": 0.33,
+          "tokens": 5500,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "muse",
+          "name": "gpt-6.1-sol",
+          "costUsd": 0.31272600000000006,
+          "tokens": 150047,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "codex",
+          "name": "gpt-6-luna",
+          "costUsd": 0.2684330999999999,
+          "tokens": 1811144,
+          "records": 13,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "claude-haiku-4-5",
+          "costUsd": 0.2526876,
+          "tokens": 370767,
+          "records": 3,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "dual-model",
+          "costUsd": 0.212,
+          "tokens": 52000,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "pi",
+          "name": "anthropic/claude-sonnet-5-5",
+          "costUsd": 0.11,
+          "tokens": 13000,
+          "records": 2,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "gpt-6.1-sol",
+          "costUsd": 0.08621799999999999,
+          "tokens": 39665,
+          "records": 2,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "bar-model",
+          "costUsd": 0.05399999999999999,
+          "tokens": 52000,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "pi",
+          "name": "grok-5",
+          "costUsd": 0.002,
+          "tokens": 1750,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "loop-x",
+          "costUsd": 0.0,
+          "tokens": 454979,
+          "records": 3,
+          "unpricedRecords": 3
+        },
+        {
+          "kind": "claude",
+          "name": "opus",
+          "costUsd": 0.0,
+          "tokens": 312647,
+          "records": 2,
+          "unpricedRecords": 2
+        },
+        {
+          "kind": "claude",
+          "name": "foo-model",
+          "costUsd": 0.0,
+          "tokens": 52000,
+          "records": 1,
+          "unpricedRecords": 1
+        }
+      ]
+    },
+    "90d": {
+      "costUsd": 64.4601674,
+      "processedTokens": 29146423,
+      "sessions": 13,
+      "timeline": [
+        {
+          "label": "W1",
+          "costUsd": 3.26125625,
+          "tokens": 450466,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 2.8698,
+              "tokens": 177700
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.39145625,
+              "tokens": 213062
+            },
+            {
+              "kind": "muse",
+              "costUsd": 0.0,
+              "tokens": 59704
+            }
+          ]
+        },
+        {
+          "label": "W2",
+          "costUsd": 2.4632016,
+          "tokens": 275105,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 2.448885,
+              "tokens": 146899
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.0143166,
+              "tokens": 128206
+            }
+          ]
+        },
+        {
+          "label": "W3",
+          "costUsd": 0.1286408,
+          "tokens": 97801,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.1286408,
+              "tokens": 97801
+            }
+          ]
+        },
+        {
+          "label": "W4",
+          "costUsd": 0.44524515,
+          "tokens": 492117,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.19481115000000002,
+              "tokens": 374252
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.250434,
+              "tokens": 117865
+            }
+          ]
+        },
+        {
+          "label": "W5",
+          "costUsd": 0.05913159999999999,
+          "tokens": 245486,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.05913159999999999,
+              "tokens": 245486
+            }
+          ]
+        },
+        {
+          "label": "W6",
+          "costUsd": 0.71357335,
+          "tokens": 539932,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.06991535,
+              "tokens": 259551
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.643658,
+              "tokens": 280381
+            }
+          ]
+        },
+        {
+          "label": "W7",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "W8",
+          "costUsd": 0.32903735000000006,
+          "tokens": 357683,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.0446711,
+              "tokens": 182528
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.28436625000000004,
+              "tokens": 86191
+            },
+            {
+              "kind": "muse",
+              "costUsd": 0.0,
+              "tokens": 88964
+            }
+          ]
+        },
+        {
+          "label": "W9",
+          "costUsd": 1.77633885,
+          "tokens": 319082,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 1.7698690499999998,
+              "tokens": 255656
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.0064697999999999995,
+              "tokens": 63426
+            }
+          ]
+        },
+        {
+          "label": "W10",
+          "costUsd": 0.5388734000000001,
+          "tokens": 462510,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.5265732000000001,
+              "tokens": 343380
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.0123002,
+              "tokens": 119130
+            }
+          ]
+        },
+        {
+          "label": "W11",
+          "costUsd": 0.4377574,
+          "tokens": 272966,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.18894614999999998,
+              "tokens": 204100
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.24881125000000004,
+              "tokens": 68866
+            }
+          ]
+        },
+        {
+          "label": "W12",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "W13",
+          "costUsd": 1.5411439000000002,
+          "tokens": 141904,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 1.5318450000000001,
+              "tokens": 76967
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.009298899999999999,
+              "tokens": 64937
+            }
+          ]
+        },
+        {
+          "label": "W14",
+          "costUsd": 0.6295012,
+          "tokens": 428595,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.1927332,
+              "tokens": 229239
+            },
+            {
+              "kind": "muse",
+              "costUsd": 0.436768,
+              "tokens": 199356
+            }
+          ]
+        },
+        {
+          "label": "W15",
+          "costUsd": 1.790025,
+          "tokens": 105787,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 1.790025,
+              "tokens": 105787
+            }
+          ]
+        },
+        {
+          "label": "W16",
+          "costUsd": 0.9428615,
+          "tokens": 577460,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.7374915,
+              "tokens": 486915
+            },
+            {
+              "kind": "muse",
+              "costUsd": 0.20537,
+              "tokens": 90545
+            }
+          ]
+        },
+        {
+          "label": "W17",
+          "costUsd": 3.7146800000000004,
+          "tokens": 522997,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 2.8370100000000003,
+              "tokens": 158802
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.53981,
+              "tokens": 210801
+            },
+            {
+              "kind": "muse",
+              "costUsd": 0.33785999999999994,
+              "tokens": 153394
+            }
+          ]
+        },
+        {
+          "label": "W18",
+          "costUsd": 1.2019274,
+          "tokens": 802884,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.24267840000000002,
+              "tokens": 162810
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.959249,
+              "tokens": 640074
+            }
+          ]
+        },
+        {
+          "label": "W19",
+          "costUsd": 0.0422679,
+          "tokens": 35619,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.0422679,
+              "tokens": 35619
+            }
+          ]
+        },
+        {
+          "label": "W20",
+          "costUsd": 0.620776,
+          "tokens": 216832,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.27950600000000003,
+              "tokens": 74281
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.34126999999999996,
+              "tokens": 142551
+            }
+          ]
+        },
+        {
+          "label": "W21",
+          "costUsd": 0.45044375000000003,
+          "tokens": 111015,
+          "providers": [
+            {
+              "kind": "grok",
+              "costUsd": 0.45044375000000003,
+              "tokens": 111015
+            }
+          ]
+        },
+        {
+          "label": "W22",
+          "costUsd": 1.21460195,
+          "tokens": 746865,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.3557967,
+              "tokens": 355352
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.08316399999999999,
+              "tokens": 40630
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.7756412500000001,
+              "tokens": 350883
+            }
+          ]
+        },
+        {
+          "label": "W23",
+          "costUsd": 0.6005689999999999,
+          "tokens": 370413,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.17928975,
+              "tokens": 198360
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.124198,
+              "tokens": 46239
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.29708124999999996,
+              "tokens": 125814
+            }
+          ]
+        },
+        {
+          "label": "W24",
+          "costUsd": 0.47626365000000004,
+          "tokens": 328799,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.47626365000000004,
+              "tokens": 328799
+            }
+          ]
+        },
+        {
+          "label": "W25",
+          "costUsd": 0.1466875,
+          "tokens": 302477,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.0760875,
+              "tokens": 284885
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.0706,
+              "tokens": 17592
+            }
+          ]
+        },
+        {
+          "label": "W26",
+          "costUsd": 0.4836408,
+          "tokens": 255215,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.2351468,
+              "tokens": 158780
+            },
+            {
+              "kind": "muse",
+              "costUsd": 0.248494,
+              "tokens": 96435
+            }
+          ]
+        },
+        {
+          "label": "W27",
+          "costUsd": 0.2178987,
+          "tokens": 137328,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.2178987,
+              "tokens": 137328
+            }
+          ]
+        },
+        {
+          "label": "W28",
+          "costUsd": 0.23027745,
+          "tokens": 145375,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.16522755,
+              "tokens": 43108
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.0650499,
+              "tokens": 102267
+            }
+          ]
+        },
+        {
+          "label": "W29",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "W30",
+          "costUsd": 0.58699525,
+          "tokens": 263901,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.23414025,
+              "tokens": 190965
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.352855,
+              "tokens": 72936
+            }
+          ]
+        },
+        {
+          "label": "W31",
+          "costUsd": 0.9215625000000001,
+          "tokens": 392466,
+          "providers": [
+            {
+              "kind": "grok",
+              "costUsd": 0.44058250000000004,
+              "tokens": 174764
+            },
+            {
+              "kind": "muse",
+              "costUsd": 0.48097999999999996,
+              "tokens": 217702
+            }
+          ]
+        },
+        {
+          "label": "W32",
+          "costUsd": 0.16829715,
+          "tokens": 54976,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.16829715,
+              "tokens": 54976
+            }
+          ]
+        },
+        {
+          "label": "W33",
+          "costUsd": 0.1943411,
+          "tokens": 199789,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.1823658,
+              "tokens": 81396
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.011975299999999998,
+              "tokens": 118393
+            }
+          ]
+        },
+        {
+          "label": "W34",
+          "costUsd": 0.058504200000000006,
+          "tokens": 117179,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.058504200000000006,
+              "tokens": 117179
+            }
+          ]
+        },
+        {
+          "label": "W35",
+          "costUsd": 0.0092393,
+          "tokens": 267152,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.0,
+              "tokens": 190983
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.0092393,
+              "tokens": 76169
+            }
+          ]
+        },
+        {
+          "label": "W36",
+          "costUsd": 2.253077,
+          "tokens": 321683,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 1.788405,
+              "tokens": 117507
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.464672,
+              "tokens": 204176
+            }
+          ]
+        },
+        {
+          "label": "W37",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "W38",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "W39",
+          "costUsd": 0.2841458,
+          "tokens": 365638,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.2714663,
+              "tokens": 261831
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.012679499999999998,
+              "tokens": 103807
+            }
+          ]
+        },
+        {
+          "label": "W40",
+          "costUsd": 0.0996886,
+          "tokens": 188050,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.0996886,
+              "tokens": 188050
+            }
+          ]
+        },
+        {
+          "label": "W41",
+          "costUsd": 0.7527191,
+          "tokens": 360928,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.2401371,
+              "tokens": 126549
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.512582,
+              "tokens": 234379
+            }
+          ]
+        },
+        {
+          "label": "W42",
+          "costUsd": 0.0221024,
+          "tokens": 311135,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.0,
+              "tokens": 97267
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.0221024,
+              "tokens": 213868
+            }
+          ]
+        },
+        {
+          "label": "W43",
+          "costUsd": 0.5192713999999999,
+          "tokens": 390256,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.2176236,
+              "tokens": 160658
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.30164779999999997,
+              "tokens": 229598
+            }
+          ]
+        },
+        {
+          "label": "W44",
+          "costUsd": 0.22334579999999998,
+          "tokens": 211880,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.22334579999999998,
+              "tokens": 211880
+            }
+          ]
+        },
+        {
+          "label": "W45",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "W46",
+          "costUsd": 0.3673578,
+          "tokens": 322528,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.3673578,
+              "tokens": 322528
+            }
+          ]
+        },
+        {
+          "label": "W47",
+          "costUsd": 0.1458327,
+          "tokens": 48877,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.1458327,
+              "tokens": 48877
+            }
+          ]
+        },
+        {
+          "label": "W48",
+          "costUsd": 3.6167198000000003,
+          "tokens": 444530,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 3.2745300000000004,
+              "tokens": 200502
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.14469379999999998,
+              "tokens": 168496
+            },
+            {
+              "kind": "muse",
+              "costUsd": 0.197496,
+              "tokens": 75532
+            }
+          ]
+        },
+        {
+          "label": "W49",
+          "costUsd": 0.1809072,
+          "tokens": 220497,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.1809072,
+              "tokens": 220497
+            }
+          ]
+        },
+        {
+          "label": "W50",
+          "costUsd": 0.2940296,
+          "tokens": 111464,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.2940296,
+              "tokens": 111464
+            }
+          ]
+        },
+        {
+          "label": "W51",
+          "costUsd": 0.5717537500000001,
+          "tokens": 272479,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.16676999999999997,
+              "tokens": 162036
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.40498375000000003,
+              "tokens": 110443
+            }
+          ]
+        },
+        {
+          "label": "W52",
+          "costUsd": 0.2943225,
+          "tokens": 97046,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.0714945,
+              "tokens": 22064
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.103716,
+              "tokens": 34654
+            },
+            {
+              "kind": "muse",
+              "costUsd": 0.119112,
+              "tokens": 40328
+            }
+          ]
+        },
+        {
+          "label": "W53",
+          "costUsd": 0.2191467,
+          "tokens": 58210,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.2191467,
+              "tokens": 58210
+            }
+          ]
+        },
+        {
+          "label": "W54",
+          "costUsd": 0.8020796000000001,
+          "tokens": 493154,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.5796612000000001,
+              "tokens": 306354
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.22241840000000002,
+              "tokens": 186800
+            }
+          ]
+        },
+        {
+          "label": "W55",
+          "costUsd": 0.58964625,
+          "tokens": 245003,
+          "providers": [
+            {
+              "kind": "grok",
+              "costUsd": 0.58964625,
+              "tokens": 245003
+            }
+          ]
+        },
+        {
+          "label": "W56",
+          "costUsd": 0.47961899999999996,
+          "tokens": 517511,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.11675310000000001,
+              "tokens": 204740
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.36286589999999996,
+              "tokens": 312771
+            }
+          ]
+        },
+        {
+          "label": "W57",
+          "costUsd": 0.49191650000000003,
+          "tokens": 569332,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.1556583,
+              "tokens": 221019
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.08360069999999999,
+              "tokens": 248357
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.25265750000000003,
+              "tokens": 99956
+            }
+          ]
+        },
+        {
+          "label": "W58",
+          "costUsd": 2.4354643499999997,
+          "tokens": 268111,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 2.4354643499999997,
+              "tokens": 268111
+            }
+          ]
+        },
+        {
+          "label": "W59",
+          "costUsd": 1.05057315,
+          "tokens": 494370,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.5027501999999999,
+              "tokens": 162254
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.0255692,
+              "tokens": 118550
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.5222537500000001,
+              "tokens": 213566
+            }
+          ]
+        },
+        {
+          "label": "W60",
+          "costUsd": 0.02145,
+          "tokens": 7400,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.02145,
+              "tokens": 7400
+            }
+          ]
+        },
+        {
+          "label": "W61",
+          "costUsd": 0.035082999999999996,
+          "tokens": 247338,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.0,
+              "tokens": 100439
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.035082999999999996,
+              "tokens": 146899
+            }
+          ]
+        },
+        {
+          "label": "W62",
+          "costUsd": 0.47605875000000003,
+          "tokens": 211202,
+          "providers": [
+            {
+              "kind": "grok",
+              "costUsd": 0.47605875000000003,
+              "tokens": 211202
+            }
+          ]
+        },
+        {
+          "label": "W63",
+          "costUsd": 0.9278213000000001,
+          "tokens": 404717,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.3384575,
+              "tokens": 164728
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.2766378,
+              "tokens": 89942
+            },
+            {
+              "kind": "muse",
+              "costUsd": 0.31272600000000006,
+              "tokens": 150047
+            }
+          ]
+        },
+        {
+          "label": "W64",
+          "costUsd": 0.40045644999999996,
+          "tokens": 347410,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.31549905,
+              "tokens": 217143
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.08495739999999999,
+              "tokens": 130267
+            }
+          ]
+        },
+        {
+          "label": "W65",
+          "costUsd": 0.79294115,
+          "tokens": 444655,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.23492235,
+              "tokens": 53999
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.1667463,
+              "tokens": 280754
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.3912725,
+              "tokens": 109902
+            }
+          ]
+        },
+        {
+          "label": "W66",
+          "costUsd": 0.27840919999999997,
+          "tokens": 353457,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.2506734,
+              "tokens": 220026
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.027735799999999998,
+              "tokens": 133431
+            }
+          ]
+        },
+        {
+          "label": "W67",
+          "costUsd": 0.49384965000000003,
+          "tokens": 338675,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.23833365,
+              "tokens": 219205
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.255516,
+              "tokens": 119470
+            }
+          ]
+        },
+        {
+          "label": "W68",
+          "costUsd": 0.7888985500000001,
+          "tokens": 412853,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.43011105,
+              "tokens": 266322
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.35878750000000004,
+              "tokens": 146531
+            }
+          ]
+        },
+        {
+          "label": "W69",
+          "costUsd": 0.55080255,
+          "tokens": 203109,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.21674505,
+              "tokens": 104868
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.16931000000000002,
+              "tokens": 52987
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.1647475,
+              "tokens": 45254
+            }
+          ]
+        },
+        {
+          "label": "W70",
+          "costUsd": 0.5296649,
+          "tokens": 239017,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.1974669,
+              "tokens": 91882
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.332198,
+              "tokens": 147135
+            }
+          ]
+        },
+        {
+          "label": "W71",
+          "costUsd": 0.08469055,
+          "tokens": 114057,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.08469055,
+              "tokens": 114057
+            }
+          ]
+        },
+        {
+          "label": "W72",
+          "costUsd": 0.28622290000000006,
+          "tokens": 578092,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.25786410000000004,
+              "tokens": 309004
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.028358799999999997,
+              "tokens": 269088
+            }
+          ]
+        },
+        {
+          "label": "W73",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "W74",
+          "costUsd": 0.36793045,
+          "tokens": 329863,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.35787405,
+              "tokens": 234759
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.0100564,
+              "tokens": 95104
+            }
+          ]
+        },
+        {
+          "label": "W75",
+          "costUsd": 0.0172791,
+          "tokens": 165115,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.0172791,
+              "tokens": 165115
+            }
+          ]
+        },
+        {
+          "label": "W76",
+          "costUsd": 0.14586375000000001,
+          "tokens": 294049,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.14586375000000001,
+              "tokens": 294049
+            }
+          ]
+        },
+        {
+          "label": "W77",
+          "costUsd": 0.08430575,
+          "tokens": 336954,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.08430575,
+              "tokens": 336954
+            }
+          ]
+        },
+        {
+          "label": "W78",
+          "costUsd": 0.7972015,
+          "tokens": 545300,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.4557201,
+              "tokens": 276251
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.3414814,
+              "tokens": 269049
+            }
+          ]
+        },
+        {
+          "label": "W79",
+          "costUsd": 0.4129617,
+          "tokens": 343368,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.4129617,
+              "tokens": 343368
+            }
+          ]
+        },
+        {
+          "label": "W80",
+          "costUsd": 8.0308404,
+          "tokens": 2473994,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 7.5,
+              "tokens": 2100000
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.5308404,
+              "tokens": 373994
+            }
+          ]
+        },
+        {
+          "label": "W81",
+          "costUsd": -0.0,
+          "tokens": 0,
+          "providers": []
+        },
+        {
+          "label": "W82",
+          "costUsd": 0.45185685,
+          "tokens": 546707,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.41954985,
+              "tokens": 259889
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.032306999999999995,
+              "tokens": 286818
+            }
+          ]
+        },
+        {
+          "label": "W83",
+          "costUsd": 0.3578325,
+          "tokens": 192006,
+          "providers": [
+            {
+              "kind": "grok",
+              "costUsd": 0.3578325,
+              "tokens": 192006
+            }
+          ]
+        },
+        {
+          "label": "W84",
+          "costUsd": 0.32490129999999995,
+          "tokens": 188571,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.32490129999999995,
+              "tokens": 188571
+            }
+          ]
+        },
+        {
+          "label": "W85",
+          "costUsd": 0.6395352999999999,
+          "tokens": 182849,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.23969655,
+              "tokens": 86443
+            },
+            {
+              "kind": "grok",
+              "costUsd": 0.39783874999999996,
+              "tokens": 94656
+            },
+            {
+              "kind": "pi",
+              "costUsd": 0.002,
+              "tokens": 1750
+            }
+          ]
+        },
+        {
+          "label": "W86",
+          "costUsd": 0.062217999999999996,
+          "tokens": 182707,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.062217999999999996,
+              "tokens": 182707
+            }
+          ]
+        },
+        {
+          "label": "W87",
+          "costUsd": 0.88473785,
+          "tokens": 538939,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.55933385,
+              "tokens": 391105
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.325404,
+              "tokens": 147834
+            }
+          ]
+        },
+        {
+          "label": "W88",
+          "costUsd": 0.324216,
+          "tokens": 147636,
+          "providers": [
+            {
+              "kind": "codex",
+              "costUsd": 0.324216,
+              "tokens": 147636
+            }
+          ]
+        },
+        {
+          "label": "W89",
+          "costUsd": 2.5108700500000003,
+          "tokens": 932162,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 1.9278566500000003,
+              "tokens": 381501
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.4730134,
+              "tokens": 537661
+            },
+            {
+              "kind": "pi",
+              "costUsd": 0.11,
+              "tokens": 13000
+            }
+          ]
+        },
+        {
+          "label": "W90",
+          "costUsd": 1.291988,
+          "tokens": 1493363,
+          "providers": [
+            {
+              "kind": "claude",
+              "costUsd": 0.02163,
+              "tokens": 7420
+            },
+            {
+              "kind": "codex",
+              "costUsd": 0.9403579999999999,
+              "tokens": 1480443
+            },
+            {
+              "kind": "muse",
+              "costUsd": 0.33,
+              "tokens": 5500
+            }
+          ]
+        }
+      ],
+      "providers": [
+        {
+          "kind": "codex",
+          "label": "Codex",
+          "costUsd": 12.137379899999994,
+          "tokens": 11363214,
+          "sessions": 3
+        },
+        {
+          "kind": "claude",
+          "label": "Claude",
+          "costUsd": 42.38466525000001,
+          "tokens": 13918902,
+          "sessions": 5
+        },
+        {
+          "kind": "grok",
+          "label": "Grok",
+          "costUsd": 7.15731625,
+          "tokens": 2672050,
+          "sessions": 1
+        },
+        {
+          "kind": "pi",
+          "label": "pi",
+          "costUsd": 0.112,
+          "tokens": 14750,
+          "sessions": 2
+        },
+        {
+          "kind": "muse",
+          "label": "muse",
+          "costUsd": 2.668806,
+          "tokens": 1177507,
+          "sessions": 2
+        }
+      ],
+      "models": [
+        {
+          "kind": "claude",
+          "name": "claude-opus-9[1m]",
+          "costUsd": 20.30475,
+          "tokens": 1217374,
+          "records": 9,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "claude-sonnet-5-5",
+          "costUsd": 18.59781345,
+          "tokens": 8699315,
+          "records": 59,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "grok",
+          "name": "grok-5",
+          "costUsd": 7.15731625,
+          "tokens": 2672050,
+          "records": 20,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "codex",
+          "name": "gpt-6.1-sol",
+          "costUsd": 6.720022000000001,
+          "tokens": 2949983,
+          "records": 36,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "codex",
+          "name": "gpt-6-stella",
+          "costUsd": 4.904885499999999,
+          "tokens": 4843454,
+          "records": 28,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "custom-model",
+          "costUsd": 2.5401870000000004,
+          "tokens": 1076430,
+          "records": 7,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "muse",
+          "name": "gpt-6.1-sol",
+          "costUsd": 2.338806,
+          "tokens": 1023339,
+          "records": 9,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "claude-haiku-4-5",
+          "costUsd": 0.5896968,
+          "tokens": 1139410,
+          "records": 8,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "codex",
+          "name": "gpt-6-luna",
+          "costUsd": 0.5124724,
+          "tokens": 3569777,
+          "records": 28,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "muse",
+          "name": "muse-unpriced-x",
+          "costUsd": 0.33,
+          "tokens": 154168,
+          "records": 3,
+          "unpricedRecords": 2
+        },
+        {
+          "kind": "claude",
+          "name": "dual-model",
+          "costUsd": 0.212,
+          "tokens": 52000,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "pi",
+          "name": "anthropic/claude-sonnet-5-5",
+          "costUsd": 0.11,
+          "tokens": 13000,
+          "records": 2,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "gpt-6.1-sol",
+          "costUsd": 0.08621799999999999,
+          "tokens": 39665,
+          "records": 2,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "bar-model",
+          "costUsd": 0.05399999999999999,
+          "tokens": 52000,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "pi",
+          "name": "grok-5",
+          "costUsd": 0.002,
+          "tokens": 1750,
+          "records": 1,
+          "unpricedRecords": 0
+        },
+        {
+          "kind": "claude",
+          "name": "opus",
+          "costUsd": 0.0,
+          "tokens": 950038,
+          "records": 7,
+          "unpricedRecords": 7
+        },
+        {
+          "kind": "claude",
+          "name": "loop-x",
+          "costUsd": 0.0,
+          "tokens": 640670,
+          "records": 5,
+          "unpricedRecords": 5
+        },
+        {
+          "kind": "claude",
+          "name": "foo-model",
+          "costUsd": 0.0,
+          "tokens": 52000,
+          "records": 1,
+          "unpricedRecords": 1
+        }
+      ]
+    }
+  }
+}

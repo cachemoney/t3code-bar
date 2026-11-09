@@ -15,12 +15,12 @@ CREATE TABLE orchestration_v2_projection_turn_items (
  updated_at TEXT, ordinal INTEGER, turn_item_id TEXT);
 INSERT INTO projection_projects VALUES ('fixture-project', 'Fixture project', NULL, NULL, '/fixture/workspace');
 INSERT INTO orchestration_v2_projection_threads VALUES
- ('approval', 'Review a proposed action', 'fixture-project', '2026-11-04T00:00:00Z', '2026-11-06T09:00:00Z', '{"pinnedAt":"2026-11-04T00:00:00Z","pinOrderKey":"a","branch":"feature/fixture"}', 'default', NULL, NULL),
- ('input', 'Answer a question', 'fixture-project', '2026-11-04T00:00:00Z', '2026-11-06T09:00:00Z', '{"activeOrderKey":"a"}', 'default', NULL, NULL),
+ ('approval', 'Review a <b>proposed</b> action', 'fixture-project', '2026-11-04T00:00:00Z', '2026-11-06T09:00:00Z', '{"pinnedAt":"2026-11-04T00:00:00Z","pinOrderKey":"a","branch":"feature/fixture"}', 'default', NULL, NULL),
+ ('input', 'Answer a <img onerror=alert(1)> question', 'fixture-project', '2026-11-04T00:00:00Z', '2026-11-06T09:00:00Z', '{"activeOrderKey":"a"}', 'default', NULL, NULL),
  ('request', 'Guest message', 'fixture-project', '2026-11-04T00:00:00Z', '2026-11-06T09:00:00Z', '{"activeOrderKey":"b","guestShare":{"messages":[{"status":"pending"}]}}', 'default', NULL, NULL),
  ('working', 'Working thread', 'fixture-project', '2026-11-04T00:00:00Z', '2026-11-06T09:00:00Z', '{"activeOrderKey":"c"}', 'default', NULL, NULL),
  ('limited', 'Usage limit reached', 'fixture-project', '2026-11-04T00:00:00Z', '2026-11-06T09:00:00Z', '{"activeOrderKey":"d"}', 'default', NULL, NULL),
- ('waiting', 'Waiting on another thread', 'fixture-project', '2026-11-04T00:00:00Z', '2026-11-06T09:00:00Z', '{"activeOrderKey":"e"}', 'default', NULL, NULL),
+ ('waiting', 'Waiting on ‮another thread', 'fixture-project', '2026-11-04T00:00:00Z', '2026-11-06T09:00:00Z', '{"activeOrderKey":"e"}', 'default', NULL, NULL),
  ('done', 'Unread completion', 'fixture-project', '2026-11-04T00:00:00Z', '2026-11-06T09:00:00Z', '{"activeOrderKey":"f","lastVisitedAt":"2026-11-04T00:00:00Z"}', 'default', NULL, NULL),
  ('archived', 'Excluded archived thread', 'fixture-project', '2026-11-04T00:00:00Z', '2026-11-06T09:00:00Z', '{}', 'default', NULL, '2026-11-06T09:00:00Z'),
  ('subagent', 'Excluded child thread', 'fixture-project', '2026-11-04T00:00:00Z', '2026-11-06T09:00:00Z', '{"lineage":{"relationshipToParent":"subagent"}}', 'default', NULL, NULL),

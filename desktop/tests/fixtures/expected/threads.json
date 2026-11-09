@@ -29,7 +29,7 @@
 
       ],
       "status" : "Approval",
-      "title" : "Review a proposed action"
+      "title" : "Review a <b>proposed</b> action"
     },
     {
       "activeOrderKey" : "a",
@@ -52,7 +52,7 @@
 
       ],
       "status" : "Input",
-      "title" : "Answer a question"
+      "title" : "Answer a <img onerror=alert(1)> question"
     },
     {
       "activeOrderKey" : "b",
@@ -144,7 +144,7 @@
         "codex"
       ],
       "status" : "Waiting",
-      "title" : "Waiting on another thread"
+      "title" : "Waiting on ‮another thread"
     },
     {
       "activeOrderKey" : "f",

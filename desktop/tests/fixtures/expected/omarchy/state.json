@@ -1,0 +1,172 @@
+{
+  "now": "2026-11-06T09:08:00+00:00",
+  "loading": false,
+  "online": false,
+  "startupError": null,
+  "threadError": null,
+  "version": "0.1.0",
+  "summary": {
+    "status": "Settled",
+    "attentionCount": 0,
+    "runningCount": 0,
+    "badgeCount": 0
+  },
+  "connection": {
+    "status": "offline",
+    "message": "Open T3 Code to connect. Showing saved data when present.",
+    "connected": false,
+    "paired": false,
+    "hasData": true,
+    "port": 0,
+    "updatedAt": null
+  },
+  "settings": {
+    "notificationsMuted": false,
+    "showsPreviews": true,
+    "automaticallyChecksForUpdates": true,
+    "installsWithoutAsking": false
+  },
+  "threads": [
+    {
+      "id": "approval",
+      "projectId": "fixture-project",
+      "projectTitle": "Fixture project",
+      "title": "Review a <b>proposed</b> action",
+      "status": "Approval",
+      "isPinned": true,
+      "providers": [],
+      "branch": "feature/fixture",
+      "modelName": null,
+      "prNumber": null,
+      "updatedAt": "2026-11-06T09:00:00.000Z",
+      "latestUserMessageAt": null,
+      "latestRunCompletedAt": null,
+      "activeRunStartedAt": null,
+      "usageLimitResetAt": null,
+      "projectIcon": null,
+      "projectFavicon": null
+    },
+    {
+      "id": "input",
+      "projectId": "fixture-project",
+      "projectTitle": "Fixture project",
+      "title": "Answer a <img onerror=alert(1)> question",
+      "status": "Input",
+      "isPinned": false,
+      "providers": [],
+      "branch": null,
+      "modelName": null,
+      "prNumber": null,
+      "updatedAt": "2026-11-06T09:00:00.000Z",
+      "latestUserMessageAt": null,
+      "latestRunCompletedAt": null,
+      "activeRunStartedAt": null,
+      "usageLimitResetAt": null,
+      "projectIcon": null,
+      "projectFavicon": null
+    },
+    {
+      "id": "request",
+      "projectId": "fixture-project",
+      "projectTitle": "Fixture project",
+      "title": "Guest message",
+      "status": "Request",
+      "isPinned": false,
+      "providers": [],
+      "branch": null,
+      "modelName": null,
+      "prNumber": null,
+      "updatedAt": "2026-11-06T09:00:00.000Z",
+      "latestUserMessageAt": null,
+      "latestRunCompletedAt": null,
+      "activeRunStartedAt": null,
+      "usageLimitResetAt": null,
+      "projectIcon": null,
+      "projectFavicon": null
+    },
+    {
+      "id": "working",
+      "projectId": "fixture-project",
+      "projectTitle": "Fixture project",
+      "title": "Working thread",
+      "status": "Working",
+      "isPinned": false,
+      "providers": [
+        "codex"
+      ],
+      "branch": null,
+      "modelName": null,
+      "prNumber": null,
+      "updatedAt": "2026-11-06T09:00:00.000Z",
+      "latestUserMessageAt": null,
+      "latestRunCompletedAt": null,
+      "activeRunStartedAt": "2026-11-06T09:00:00.000Z",
+      "usageLimitResetAt": null,
+      "projectIcon": null,
+      "projectFavicon": null
+    },
+    {
+      "id": "limited",
+      "projectId": "fixture-project",
+      "projectTitle": "Fixture project",
+      "title": "Usage limit reached",
+      "status": "Limited",
+      "isPinned": false,
+      "providers": [
+        "codex"
+      ],
+      "branch": null,
+      "modelName": null,
+      "prNumber": null,
+      "updatedAt": "2026-11-06T09:00:00.000Z",
+      "latestUserMessageAt": null,
+      "latestRunCompletedAt": "2026-11-06T09:01:00.000Z",
+      "activeRunStartedAt": null,
+      "usageLimitResetAt": "2026-11-06T11:00:00.000Z",
+      "projectIcon": null,
+      "projectFavicon": null
+    },
+    {
+      "id": "waiting",
+      "projectId": "fixture-project",
+      "projectTitle": "Fixture project",
+      "title": "Waiting on ‮another thread",
+      "status": "Waiting",
+      "isPinned": false,
+      "providers": [
+        "codex"
+      ],
+      "branch": null,
+      "modelName": null,
+      "prNumber": null,
+      "updatedAt": "2026-11-06T09:00:00.000Z",
+      "latestUserMessageAt": null,
+      "latestRunCompletedAt": null,
+      "activeRunStartedAt": "2026-11-06T09:00:00.000Z",
+      "usageLimitResetAt": null,
+      "projectIcon": null,
+      "projectFavicon": null
+    },
+    {
+      "id": "done",
+      "projectId": "fixture-project",
+      "projectTitle": "Fixture project",
+      "title": "Unread completion",
+      "status": "Done",
+      "isPinned": false,
+      "providers": [
+        "codex"
+      ],
+      "branch": null,
+      "modelName": null,
+      "prNumber": null,
+      "updatedAt": "2026-11-06T09:00:00.000Z",
+      "latestUserMessageAt": null,
+      "latestRunCompletedAt": "2026-11-06T09:01:00.000Z",
+      "activeRunStartedAt": null,
+      "usageLimitResetAt": null,
+      "projectIcon": null,
+      "projectFavicon": null
+    }
+  ]
+}
