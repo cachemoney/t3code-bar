@@ -33,6 +33,10 @@ Ui.Panel {
   Process {
     id: watchProcess
     command: ["t3code-bar-bridge", "watch"]
+    // Keep stdin open: the bridge treats stdin EOF as "parent shell died"
+    // and exits. Without this, Quickshell's Process leaves stdin closed and
+    // the bridge dies immediately.
+    stdinEnabled: true
     running: true
   }
 
@@ -396,7 +400,8 @@ Ui.Panel {
     iconComponent: statusDot
     labelText: root.summary.badgeCount > 0 ? String(root.summary.badgeCount) : ""
     tooltipText: root.summary.status ? ("T3 Code — " + root.summary.status) : "T3 Code Bar"
-    onClicked: root.toggle()
+    // WidgetButton has no `clicked` signal — use `pressed(int button)`, which
+    // below already handles left (toggle) and right (usage screen) buttons.
     onPressed: function(buttonCode) {
       if (buttonCode === Qt.RightButton) {
         root.setScreen("usage")

@@ -40,3 +40,9 @@ __pycache__/
 *.p12
 *.p8
 *.mobileprovision
+
+# Arch package build artifacts (makepkg)
+packaging/arch/src/
+packaging/arch/pkg/
+packaging/arch/*.tar.gz
+packaging/arch/*.pkg.tar.*
