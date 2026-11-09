@@ -775,6 +775,7 @@ impl HostRuntime {
         .unwrap_or_else(|_| Arc::new(FixtureCredentials::default()));
 
         let connection = limits::LimitsConnection::with_default_transport(creds);
+        let _ = connection.restore_saved();
         let settings_file = settings_path(&config.base_dir);
         let settings = SettingsStore::load(settings_file.clone())
             .unwrap_or_else(|_| SettingsStore::defaults(settings_file));
@@ -818,6 +819,21 @@ impl HostRuntime {
 
     pub fn snapshot(&self) -> AppSnapshot {
         self.snapshot.lock().unwrap().clone()
+    }
+
+    pub fn reload_settings(&self) {
+        let settings_file = settings_path(&self.config.base_dir);
+        if let Ok(store) = SettingsStore::load(settings_file) {
+            let value = store.value().clone();
+            *self.settings.lock().unwrap() = store;
+            if let Ok(mut snap) = self.snapshot.lock() {
+                if snap.settings != value {
+                    snap.settings = value.clone();
+                    self.sink.on_settings_changed(&value);
+                    self.sink.on_snapshot_changed(&snap);
+                }
+            }
+        }
     }
 
     pub fn set_setting(&self, key: SettingKey, value: bool) -> Result<(), String> {
@@ -872,6 +888,7 @@ impl HostRuntime {
         if self.thread_busy.swap(true, Ordering::AcqRel) {
             return;
         }
+        self.reload_settings();
         let now = self.now();
         let result = threads::read_threads(&self.config, now);
         match &result {
@@ -1038,34 +1055,46 @@ impl HostRuntime {
             0
         };
         let previous = self.last_port.swap(port, Ordering::AcqRel);
-        if previous == port {
-            return;
-        }
-        let generation = self.connection_generation.fetch_add(1, Ordering::AcqRel) + 1;
-        // In synchronous/blocking or async runtime, gate the connection reconnect
-        // We spawn a thread to handle reconnecting under gate
-        let conn = self.connection.clone();
-        let last_gen = Arc::new(self.connection_generation.load(Ordering::Acquire));
-        let _ = thread::spawn(move || {
-            let rt = tokio::runtime::Builder::new_current_thread()
-                .enable_all()
-                .build();
-            if let Ok(rt) = rt {
-                rt.block_on(async {
-                    if *last_gen != generation {
-                        return;
-                    }
-                    if port == 0 {
-                        conn.pause().await;
-                    } else {
-                        if previous != 0 {
-                            conn.pause().await;
+        if previous != port {
+            let generation = self.connection_generation.fetch_add(1, Ordering::AcqRel) + 1;
+            // In synchronous/blocking or async runtime, gate the connection reconnect
+            // We spawn a thread to handle reconnecting under gate
+            let conn = self.connection.clone();
+            let last_gen = Arc::new(self.connection_generation.load(Ordering::Acquire));
+            let _ = thread::spawn(move || {
+                let rt = tokio::runtime::Builder::new_current_thread()
+                    .enable_all()
+                    .build();
+                if let Ok(rt) = rt {
+                    rt.block_on(async {
+                        if *last_gen != generation {
+                            return;
                         }
-                        let _ = conn.reconnect_saved_if_available(port).await;
-                    }
-                });
-            }
-        });
+                        if port == 0 {
+                            conn.pause().await;
+                        } else {
+                            if previous != 0 {
+                                conn.pause().await;
+                            }
+                            let _ = conn.sync_saved(port).await;
+                        }
+                    });
+                }
+            });
+        } else {
+            // Port unchanged: check if external CLI mutated saved credentials
+            let conn = self.connection.clone();
+            let _ = thread::spawn(move || {
+                let rt = tokio::runtime::Builder::new_current_thread()
+                    .enable_all()
+                    .build();
+                if let Ok(rt) = rt {
+                    rt.block_on(async {
+                        let _ = conn.sync_saved(port).await;
+                    });
+                }
+            });
+        }
     }
 
     pub fn tick(&self, tick_count: u64) {

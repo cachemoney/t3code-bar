@@ -3,6 +3,10 @@ name = "bar-bridge"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "bar_bridge"
+path = "src/lib.rs"
+
 [[bin]]
 name = "t3code-bar-bridge"
 path = "src/main.rs"
@@ -16,6 +20,7 @@ chrono-tz = "0.10"
 iana-time-zone = "0.1"
 notify-rust = { path = "../../vendor/notify-rust", default-features = false, features = ["d"] }
 libc = "0.2"
+tokio = { version = "1", features = ["rt", "macros"] }
 
 [dev-dependencies]
 tempfile = "3"

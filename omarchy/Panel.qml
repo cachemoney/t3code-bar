@@ -174,6 +174,42 @@ Ui.Panel {
     }
   }
 
+  function setSetting(key, val) {
+    var argv = ["t3code-bar-bridge", "set-setting", key, val ? "true" : "false"]
+    if (Commons.Util && Commons.Util.execArgv) {
+      Commons.Util.execArgv(argv)
+    } else {
+      Quickshell.execDetached(argv)
+    }
+  }
+
+  function connectPairing(token) {
+    var argv = ["t3code-bar-bridge", "connect", token]
+    if (Commons.Util && Commons.Util.execArgv) {
+      Commons.Util.execArgv(argv)
+    } else {
+      Quickshell.execDetached(argv)
+    }
+  }
+
+  function reconnectPairing() {
+    var argv = ["t3code-bar-bridge", "reconnect"]
+    if (Commons.Util && Commons.Util.execArgv) {
+      Commons.Util.execArgv(argv)
+    } else {
+      Quickshell.execDetached(argv)
+    }
+  }
+
+  function disconnectPairing() {
+    var argv = ["t3code-bar-bridge", "disconnect"]
+    if (Commons.Util && Commons.Util.execArgv) {
+      Commons.Util.execArgv(argv)
+    } else {
+      Quickshell.execDetached(argv)
+    }
+  }
+
   // ---- 500ms Anchored Hover Preview with generation tracking ---------------
   property string hoveredId: ""
   property int previewGen: 0
@@ -246,7 +282,6 @@ Ui.Panel {
 
   onCurrentScreenChanged: cancelPreview()
   onSettingsChanged: if (!settings || !settings.showsPreviews) cancelPreview()
-
   onOpenedChanged: {
     if (!opened) cancelPreview()
     updateView({ visible: opened })
@@ -397,6 +432,7 @@ Ui.Panel {
       onTextKey: function(t) {
         if (t === "1") root.setScreen("threads")
         else if (t === "2") root.setScreen("usage")
+        else if (t === "3") root.setScreen("settings")
         else if ((t === "f" || t === "F") && root.currentScreen === "usage") usageScreen.cycleProvider()
         else if ((t === "a" || t === "A") && root.currentScreen === "usage") usageScreen.toggleAllModels()
         else if (root.currentScreen === "threads") {
@@ -444,7 +480,7 @@ Ui.Panel {
               Row {
                 spacing: Commons.Style.spacing.xs
                 Repeater {
-                  model: ["Threads", "Usage"]
+                  model: ["Threads", "Usage", "Settings"]
                   delegate: Ui.Button {
                     required property string modelData
                     required property int index
@@ -506,6 +542,28 @@ Ui.Panel {
             }
             onLinkOpenRequested: function(url) {
               root.openLink(url)
+            }
+          }
+
+          SettingsScreen {
+            id: settingsScreen
+            visible: root.currentScreen === "settings"
+            connection: root.connection
+            settings: root.settings
+            foreground: root.foreground
+            dim: root.dim
+            accent: root.accent
+            onConnectRequested: function(token) {
+              root.connectPairing(token)
+            }
+            onReconnectRequested: function() {
+              root.reconnectPairing()
+            }
+            onDisconnectRequested: function() {
+              root.disconnectPairing()
+            }
+            onSettingChanged: function(key, val) {
+              root.setSetting(key, val)
             }
           }
         }

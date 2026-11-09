@@ -64,7 +64,7 @@ impl fmt::Display for ConnectionError {
 }
 impl std::error::Error for ConnectionError {}
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Credential {
     pub port: u16,
@@ -440,6 +440,42 @@ impl LimitsConnection {
         }
         self.resume().await
     }
+    pub async fn sync_saved(&self, port: u16) -> Result<(), ConnectionError> {
+        let stored = self.load_credential()?;
+        let current = self.inner.lock().unwrap().credential.clone();
+        match (stored, current) {
+            (None, Some(_)) => {
+                let mut s = self.inner.lock().unwrap();
+                Self::stop_locked(&mut s);
+                s.credential = None;
+                s.live = None;
+                s.snapshot.data = None;
+                s.snapshot.updated_at = None;
+                s.snapshot.status = LiveStatus::CacheOnly;
+                Ok(())
+            }
+            (Some(c), current_opt) => {
+                if current_opt.as_ref() != Some(&c) {
+                    if port > 0 && c.port == port {
+                        let _ = self.reconnect_saved_if_available(port).await;
+                    } else {
+                        let mut s = self.inner.lock().unwrap();
+                        Self::stop_locked(&mut s);
+                        s.credential = Some(c);
+                        s.live = None;
+                        s.snapshot.data = None;
+                        s.snapshot.updated_at = None;
+                        s.snapshot.status = if port > 0 { LiveStatus::Connecting } else { LiveStatus::Paused };
+                    }
+                } else if port > 0 && matches!(self.snapshot().status, LiveStatus::Paused) {
+                    let _ = self.reconnect_saved_if_available(port).await;
+                }
+                Ok(())
+            }
+            (None, None) => Ok(()),
+        }
+    }
+
     pub async fn reconnect_saved(&self, port: u16) -> Result<(), ConnectionError> {
         self.reconnect(port, false).await
     }
