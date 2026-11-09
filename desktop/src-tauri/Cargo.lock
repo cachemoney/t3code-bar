@@ -275,8 +275,15 @@ dependencies = [
  "bar-limits",
  "bar-threads",
  "bar-usage",
+ "base64 0.22.1",
+ "chrono",
+ "chrono-tz",
+ "iana-time-zone",
  "serde",
  "serde_json",
+ "sha2",
+ "tokio",
+ "uuid",
 ]
 
 [[package]]

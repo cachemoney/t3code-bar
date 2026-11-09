@@ -5,7 +5,7 @@
 ![Linux](https://img.shields.io/badge/Linux-Wayland%20%2F%20X11-blue)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-Your [T3 Code](https://github.com/pingdotgg/t3code) inbox and usage in the menu bar. Built with Tauri for macOS and Linux.
+Your [T3 Code](https://github.com/pingdotgg/t3code) inbox and usage in the menu bar. Built with Tauri for macOS and Linux, plus a native [Omarchy](omarchy/README.md) bar plugin for Arch Linux + Hyprland.
 
 <p align="center">
   <img src="docs/screenshots/macos-preview.png" width="350" alt="T3 Code Bar running on macOS, showing thread statuses and a last reply hover preview beneath the menu bar">
@@ -76,7 +76,7 @@ Reads T3 Code data read-only. No telemetry or direct provider API calls. Pairing
 
 Run `bash scripts/check.sh` from the repository root.
 
-[Development](docs/DEVELOPMENT.md) · [Usage and troubleshooting](docs/USAGE.md) · [Compatibility](docs/COMPATIBILITY.md) · [Release packaging](desktop/RELEASE.md)
+[Omarchy plugin](omarchy/README.md) · [Development](docs/DEVELOPMENT.md) · [Usage and troubleshooting](docs/USAGE.md) · [Compatibility](docs/COMPATIBILITY.md) · [Release packaging](desktop/RELEASE.md)
 
 ## License
 

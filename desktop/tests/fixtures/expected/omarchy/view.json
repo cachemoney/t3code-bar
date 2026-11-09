@@ -1,0 +1,6 @@
+{
+  "visible": true,
+  "screen": "usage",
+  "metric": "cost",
+  "period": "24h"
+}

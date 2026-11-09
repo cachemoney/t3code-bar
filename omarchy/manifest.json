@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "t3code.bar",
+  "name": "T3 Code Bar",
+  "version": "0.1.0",
+  "description": "T3 Code threads, usage and limits in the Omarchy bar",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Panel.qml" },
+  "barWidget": {
+    "displayName": "T3 Code",
+    "description": "Threads inbox, usage & limits, pairing",
+    "category": "Development",
+    "aliases": ["t3", "t3code"],
+    "allowMultiple": false,
+    "defaultSection": "centerEnd"
+  }
+}

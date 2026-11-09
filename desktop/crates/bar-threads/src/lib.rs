@@ -264,13 +264,18 @@ pub struct ThreadItem {
     pub shows_label_in_menu_bar: bool,
     pub status_started_at: Option<DateTime<Utc>>,
 }
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadSummary {
     pub status: ThreadStatus,
     pub attention_count: usize,
     pub running_count: usize,
     pub badge_count: usize,
+}
+impl Default for ThreadSummary {
+    fn default() -> Self {
+        Self::new(&[], false)
+    }
 }
 impl ThreadSummary {
     pub fn new(threads: &[ThreadItem], online: bool) -> Self {

@@ -8,10 +8,18 @@ cargo-clippy = []
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+serde_json = { version = "1", features = ["preserve_order"] }
 bar-threads = { path = "../bar-threads" }
 bar-limits = { path = "../bar-limits" }
 bar-usage = { path = "../bar-usage" }
+chrono = { version = "0.4", features = ["serde"] }
+chrono-tz = "0.10"
+iana-time-zone = "0.1"
+base64 = "0.22"
+uuid = { version = "1", features = ["v4"] }
+tokio = { version = "1", features = ["sync", "time", "rt"] }
+sha2 = "0.10"
 
 [dev-dependencies]
 tempfile = "3"
+rusqlite = "0.32"

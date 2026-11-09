@@ -1,7 +1,7 @@
 use bar_threads::ThreadStatus;
 use std::collections::HashMap;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct AttentionAlert {
     pub thread_id: String,
     pub body: String,

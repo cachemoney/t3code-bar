@@ -16,17 +16,23 @@ mod updates;
 
 use bar_core::{
     attention::AttentionTracker,
+    host::{
+        connection_for as core_connection_for, credential_store, fixture_or_env,
+        open_notification_thread, panel_height, parse_now, parse_tz, report_limits,
+        report_usage, settings_path, state_path, thread_item as core_thread_item, usage_period,
+        AppSnapshot, ConnectionState, FixtureCredentials, SnapshotMode, ThreadItem, UpdateState,
+        ViewState,
+    },
     limits,
-    settings::{SettingKey, Settings, SettingsStore},
+    settings::{SettingKey, SettingsStore},
     threads, usage,
 };
 use chrono::{DateTime, Utc};
 use chrono_tz::Tz;
-use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::{
     collections::HashSet,
-    path::{Path, PathBuf},
+    path::PathBuf,
     sync::{Arc, Mutex},
     thread,
     time::Duration,
@@ -41,156 +47,6 @@ static VISIBLE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::n
 static PANEL_HEIGHT: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(560);
 static PANEL: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
 
-#[derive(Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct ThreadItem {
-    id: String,
-    project_id: String,
-    project_title: String,
-    title: String,
-    status: String,
-    is_pinned: bool,
-    providers: Vec<String>,
-    branch: Option<String>,
-    model_name: Option<String>,
-    pr_number: Option<i64>,
-    updated_at: String,
-    latest_user_message_at: Option<String>,
-    latest_run_completed_at: Option<String>,
-    active_run_started_at: Option<String>,
-    usage_limit_reset_at: Option<String>,
-    project_icon: Option<String>,
-    project_favicon: Option<String>,
-}
-#[derive(Clone, Serialize, Deserialize, Default)]
-#[serde(rename_all = "camelCase")]
-struct Tokens {
-    uncached_input: i64,
-    cached_input: i64,
-    cache_creation: i64,
-    output: i64,
-    reasoning: i64,
-}
-#[derive(Clone, Serialize, Deserialize, Default)]
-#[serde(rename_all = "camelCase")]
-struct UsageReport {
-    cost_usd: f64,
-    processed_tokens: i64,
-    tokens: Tokens,
-    sessions: usize,
-    records: usize,
-    unpriced_records: usize,
-    duplicates_dropped: usize,
-    cache_savings_usd: f64,
-    malformed_records: i64,
-    rejected_files: usize,
-    cache_modified: Option<String>,
-    scan_cache_missing: bool,
-    local_sources_partial: bool,
-    cost_by_type: serde_json::Value,
-    cost_by_speed: serde_json::Value,
-    providers: Vec<serde_json::Value>,
-    models: Vec<serde_json::Value>,
-    timeline: Vec<serde_json::Value>,
-    resolution: String,
-    time_zone: String,
-    until_ms: f64,
-    notices: Vec<String>,
-}
-#[derive(Clone, Serialize, Deserialize, Default)]
-#[serde(rename_all = "camelCase")]
-struct LimitsReport {
-    groups: Vec<serde_json::Value>,
-    notices: Vec<String>,
-    checked_at: Option<String>,
-    links: Vec<serde_json::Value>,
-    read_failed: bool,
-    skipped_files: usize,
-}
-#[derive(Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct ConnectionState {
-    status: String,
-    message: String,
-    connected: bool,
-    paired: bool,
-    has_data: bool,
-    port: i64,
-    updated_at: Option<String>,
-}
-#[derive(Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct UpdateState {
-    status: String,
-    message: String,
-    version: Option<String>,
-    offer_id: Option<u64>,
-    can_install: bool,
-    busy: bool,
-}
-#[derive(Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct AppSnapshot {
-    startup_error: Option<String>,
-    now: String,
-    threads: Vec<ThreadItem>,
-    online: bool,
-    thread_error: Option<String>,
-    loading: bool,
-    connection: ConnectionState,
-    usage: Option<UsageReport>,
-    usage_error: Option<String>,
-    usage_loading: bool,
-    usage_period: String,
-    limits: Option<LimitsReport>,
-    settings: Settings,
-    update: UpdateState,
-    version: String,
-}
-impl Default for AppSnapshot {
-    fn default() -> Self {
-        Self {
-            startup_error: None,
-            now: Utc::now().to_rfc3339(),
-            threads: vec![],
-            online: false,
-            thread_error: None,
-            loading: true,
-            connection: ConnectionState {
-                status: "unavailable".into(),
-                message: "T3 Code is unavailable. Showing saved data when present.".into(),
-                connected: false,
-                paired: false,
-                has_data: false,
-                port: 0,
-                updated_at: None,
-            },
-            usage: None,
-            usage_error: None,
-            usage_loading: false,
-            usage_period: "24h".into(),
-            limits: None,
-            settings: Settings::default(),
-            update: UpdateState {
-                status: "unavailable".into(),
-                message: "Updates are unavailable in this build.".into(),
-                version: None,
-                offer_id: None,
-                can_install: false,
-                busy: false,
-            },
-            version: env!("CARGO_PKG_VERSION").into(),
-        }
-    }
-}
-
-#[derive(Clone, Default)]
-struct ViewState {
-    screen: String,
-    metric: String,
-    period: String,
-    generation: u64,
-}
 struct RuntimeState {
     config: threads::Configuration,
     settings: Mutex<SettingsStore>,
@@ -229,203 +85,17 @@ fn record_failure(operation: &str, result: Result<(), String>) {
         );
     }
 }
-fn fixture_or_env(name: &str) -> Option<String> {
-    std::env::var(name).ok().filter(|s| !s.trim().is_empty())
-}
-fn credential_store(
-    fixture: bool,
-    namespace: Option<&str>,
-) -> Result<Arc<dyn limits::CredentialStore>, String> {
-    match (fixture, namespace) {
-        (false, None) => Ok(Arc::new(limits::KeyringStore::production())),
-        (true, None) => Ok(Arc::new(FixtureCredentials::default())),
-        (true, Some(raw)) => {
-            let id = uuid::Uuid::parse_str(raw)
-                .map_err(|_| "Fixture keyring namespace must be a UUID")?;
-            if id.to_string() != raw || id.is_nil() {
-                return Err("Fixture keyring namespace must be a nonzero canonical UUID".into());
-            }
-            Ok(Arc::new(limits::KeyringStore::new(
-                format!("com.t3codebar.migration-probe.{id}"),
-                "synthetic-only",
-            )))
-        }
-        (false, Some(_)) => Err("Fixture keyring namespace requires fixture mode".into()),
-    }
-}
-fn state_path() -> PathBuf {
-    fixture_or_env("T3_BAR_FIXTURE_STATE")
-        .map(PathBuf::from)
-        .or_else(|| fixture_or_env("T3_CODE_BAR_STATE_DIR").map(PathBuf::from))
-        .unwrap_or_else(|| threads::Configuration::from_environment(None).base_dir)
-}
-fn parse_now() -> Option<DateTime<Utc>> {
-    fixture_or_env("T3_BAR_FROZEN_NOW")
-        .and_then(|s| DateTime::parse_from_rfc3339(&s).ok())
-        .map(|d| d.with_timezone(&Utc))
-}
-fn parse_tz() -> Tz {
-    fixture_or_env("T3_BAR_TIMEZONE")
-        .and_then(|s| s.parse().ok())
-        .unwrap_or_else(|| {
-            iana_time_zone::get_timezone()
-                .ok()
-                .and_then(|s| s.parse().ok())
-                .unwrap_or(chrono_tz::UTC)
-        })
-}
-fn usage_period(raw: &str) -> usage::Period {
-    match raw {
-        "7d" => usage::Period::Week,
-        "30d" => usage::Period::Month,
-        "90d" => usage::Period::Quarter,
-        _ => usage::Period::Day,
-    }
-}
-fn panel_height(raw: f64) -> f64 {
-    raw.clamp(80.0, 560.0)
-}
-fn settings_path(base: &Path) -> PathBuf {
-    fixture_or_env("T3_BAR_FIXTURE_SETTINGS")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| base.join("tauri-bar-settings.json"))
-}
-
-fn iso(d: Option<DateTime<Utc>>) -> Option<String> {
-    d.map(|v| v.to_rfc3339_opts(chrono::SecondsFormat::Millis, true))
-}
 fn thread_item(t: threads::ThreadItem, state: &RuntimeState) -> ThreadItem {
-    let project_favicon = if state.fixture {
-        None
-    } else {
-        state.favicons.resolve(
-            t.workspace_root.as_deref(),
-            t.project_favicon_path.as_deref(),
-        )
-    };
-    ThreadItem {
-        project_favicon,
-        id: t.id,
-        project_id: t.project_id,
-        project_title: t.project_title,
-        title: t.title,
-        status: format!("{:?}", t.status),
-        is_pinned: t.is_pinned,
-        providers: t.providers,
-        branch: t.branch,
-        model_name: t.model_name,
-        pr_number: t.pr_number,
-        updated_at: t
-            .updated_at
-            .to_rfc3339_opts(chrono::SecondsFormat::Millis, true),
-        latest_user_message_at: iso(t.latest_user_message_at),
-        latest_run_completed_at: iso(t.latest_run_completed_at),
-        active_run_started_at: iso(t.active_run_started_at),
-        usage_limit_reset_at: iso(t.usage_limit_reset_at),
-        project_icon: t.project_icon_json,
-    }
-}
-fn provider_label(kind: &str) -> String {
-    match kind {
-        "codex" => "Codex".into(),
-        "claudeAgent" | "claude" => "Claude".into(),
-        "cursor" => "Cursor".into(),
-        "grok" => "Grok".into(),
-        "opencode" => "OpenCode".into(),
-        "antigravity" => "Antigravity".into(),
-        other => other.to_owned(),
-    }
+    core_thread_item(t, &state.favicons, SnapshotMode::Tauri, state.fixture)
 }
 
-fn report_usage(r: usage::UsageReport, timezone: Tz) -> UsageReport {
-    let providers = r.providers.iter().map(|p| json!({"kind":p.kind,"label":provider_label(&p.kind),"costUsd":p.cost_usd,"processedTokens":p.tokens.processed,"sessions":p.sessions,"records":p.records})).collect();
-    let models = r.models.iter().map(|m| json!({"kind":m.kind,"name":m.name,"costUsd":m.cost_usd,"processedTokens":m.tokens.processed,"records":m.records,"unpricedRecords":m.unpriced_records})).collect();
-    let timeline = r.timeline.columns.iter().map(|c| { let costs: Vec<_> = c.by_provider.iter().map(|(k,v)| json!({"kind":k,"costUsd":v.cost_usd,"processedTokens":v.tokens})).collect(); json!({"day":c.day,"hourStartMs":c.hour_start_ms,"label": if let Some(ms) = c.hour_start_ms { DateTime::from_timestamp_millis(ms as i64).map(|d| d.with_timezone(&timezone).format("%-I %p").to_string()).unwrap_or_default() } else { DateTime::from_timestamp(c.day * 86400, 0).ok_or(()).map(|d| d.format("%b %-d").to_string()).unwrap_or_default() }, "costUsd": costs.iter().filter_map(|v|v.get("costUsd").and_then(|x|x.as_f64())).sum::<f64>(), "processedTokens": costs.iter().filter_map(|v|v.get("processedTokens").and_then(|x|x.as_i64())).sum::<i64>(), "providers":costs}) }).collect();
-    let tokens = Tokens {
-        uncached_input: r.tokens.uncached_input,
-        cached_input: r.tokens.cached_input,
-        cache_creation: r.tokens.cache_creation,
-        output: r.tokens.output,
-        reasoning: r.tokens.reasoning,
-    };
-    UsageReport {
-        cost_usd: r.cost_usd,
-        processed_tokens: r.tokens.processed,
-        tokens,
-        sessions: r.sessions,
-        records: r.records,
-        unpriced_records: r.unpriced_records,
-        duplicates_dropped: r.duplicates_dropped,
-        cache_savings_usd: r.cache_savings_usd,
-        malformed_records: r.malformed_records,
-        rejected_files: r.rejected_files,
-        cache_modified: iso(r.cache_modified),
-        scan_cache_missing: r.scan_cache_missing,
-        local_sources_partial: r
-            .local_sources
-            .iter()
-            .any(|source| source.state == "partial" || source.state == "unreadable"),
-        cost_by_type: serde_json::to_value(r.cost_by_type).unwrap_or_default(),
-        cost_by_speed: serde_json::to_value(r.cost_by_speed).unwrap_or_default(),
-        providers,
-        models,
-        timeline,
-        resolution: r.timeline.resolution,
-        time_zone: r.timeline.timezone,
-        until_ms: r.timeline.until_ms,
-        notices: r.notices,
-    }
-}
-fn report_limits(s: limits::LimitsSnapshot, now: DateTime<Utc>, read_failed: bool) -> LimitsReport {
-    let groups = s.groups(now).into_iter().map(|g| { let rows = g.rows.into_iter().map(|r| json!({"id":r.id,"label":r.label,"remainingPercent":r.remaining_percent,"usedPercent":r.used_percent,"resetAt":r.resets.first().map(|x|x.at.to_rfc3339_opts(chrono::SecondsFormat::Millis,true)),"pace":r.pace.map(|p| format!("{:?}",p).to_lowercase()),"members":r.members.into_iter().map(|m| json!({"label":m.account.display_name.unwrap_or(m.account.id),"remainingPercent":m.window.left_percent(),"resetAt":m.window.resets_at.map(|x|x.to_rfc3339_opts(chrono::SecondsFormat::Millis,true)),"plan":m.account.plan,"evenPaceLeft":m.window.even_pace_left(now),"refillPercent":m.refill_percent,"resetCredits":m.account.reset_credits.as_ref().map(|c|c.available_count)})).collect::<Vec<_>>() })).collect::<Vec<_>>(); json!({"driver":g.driver,"label":provider_label(&g.driver),"rows":rows}) }).collect();
-    let links = s
-        .links
-        .iter()
-        .filter(|l| l.url.starts_with("https://") || l.url.starts_with("http://"))
-        .map(|l| json!({"label":l.label,"url":l.url,"message":l.message,"accounts":l.accounts}))
-        .collect();
-    LimitsReport {
-        groups,
-        notices: s.notices,
-        checked_at: s
-            .accounts
-            .iter()
-            .map(|a| a.checked_at)
-            .max()
-            .map(|d| d.to_rfc3339_opts(chrono::SecondsFormat::Millis, true)),
-        links,
-        read_failed,
-        skipped_files: s.skipped_files,
-    }
-}
 fn connection_for(state: &RuntimeState, online: bool, has_data: bool) -> ConnectionState {
-    let live = state.connection.snapshot();
-    let (status, message) = match &live.status {
-        limits::LiveStatus::Live => ("connected", "Connected to T3 Code".to_owned()),
-        limits::LiveStatus::Connecting => ("connecting", "Connecting to T3 Code…".to_owned()),
-        limits::LiveStatus::Retrying => (
-            "retrying",
-            "Reconnecting. Showing the last available data.".to_owned(),
-        ),
-        limits::LiveStatus::Failed(message) => ("failed", message.clone()),
-        _ if !online => (
-            "offline",
-            "Open T3 Code to connect. Showing saved data when present.".to_owned(),
-        ),
-        _ => (
-            "cacheOnly",
-            "Showing saved data. Connect to receive live limits.".to_owned(),
-        ),
-    };
-    ConnectionState {
-        status: status.into(),
-        message,
-        connected: live.status == limits::LiveStatus::Live,
-        paired: live.has_credential,
+    core_connection_for(
+        state.connection.snapshot(),
+        online,
         has_data,
-        port: state.config.server_port().map(i64::from).unwrap_or(0),
-        updated_at: iso(live.updated_at),
-    }
+        state.config.server_port().ok(),
+    )
 }
 fn emit_snapshot(app: &tauri::AppHandle, state: &RuntimeState) {
     if let Ok(s) = state.snapshot.lock().map(|x| x.clone()) {
@@ -694,21 +364,6 @@ pub fn panel_closed(app: &tauri::AppHandle) {
         }
     }
 }
-#[derive(Default)]
-struct FixtureCredentials(Mutex<Option<limits::Credential>>);
-impl limits::CredentialStore for FixtureCredentials {
-    fn load(&self) -> Result<Option<limits::Credential>, limits::ConnectionError> {
-        Ok(self.0.lock().unwrap().clone())
-    }
-    fn save(&self, credential: &limits::Credential) -> Result<(), limits::ConnectionError> {
-        *self.0.lock().unwrap() = Some(credential.clone());
-        Ok(())
-    }
-    fn delete(&self) -> Result<(), limits::ConnectionError> {
-        *self.0.lock().unwrap() = None;
-        Ok(())
-    }
-}
 
 #[tauri::command]
 fn get_snapshot(state: State<'_, SharedState>) -> Result<AppSnapshot, String> {
@@ -920,18 +575,6 @@ fn connection_operation_current(state: &RuntimeState, generation: u64) -> bool {
         .connection_generation
         .load(std::sync::atomic::Ordering::Acquire)
         == generation
-}
-fn open_notification_thread(
-    config: &threads::Configuration,
-    ids: &Mutex<HashSet<String>>,
-    id: &str,
-    open: impl FnOnce(String) -> Result<(), String>,
-) -> Result<(), String> {
-    if !ids.lock().map_err(|_| "threads unavailable")?.contains(id) {
-        return Err("Notification thread is no longer available".into());
-    }
-    let url = config.thread_url(id, false).map_err(|e| e.to_string())?;
-    open(url)
 }
 #[tauri::command]
 async fn connect(

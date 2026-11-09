@@ -55,7 +55,7 @@ fn publish(app: &tauri::AppHandle, value: &State) {
         ),
     };
     let state = app.state::<SharedState>();
-    state.snapshot.lock().unwrap().update = UpdateState {
+    state.snapshot.lock().unwrap().update = Some(UpdateState {
         status: status.into(),
         message,
         version,
@@ -65,7 +65,7 @@ fn publish(app: &tauri::AppHandle, value: &State) {
         },
         can_install,
         busy,
-    };
+    });
     emit_snapshot(app, &state);
 }
 pub async fn check(app: &tauri::AppHandle, kind: CheckKind) -> Option<Duration> {
