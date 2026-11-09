@@ -51,3 +51,17 @@ Rust is pinned by `desktop/rust-toolchain.toml`. Native Tauri prerequisites are 
 - Preserve unrelated worktree changes. Keep internal plans, acceptance captures, local references, build artifacts and signing secrets out of Git.
 - Local checks do not establish packaged native acceptance. Verify tray, pairing/reconnect/disconnect, notifications and settings on the actual package; include Spaces/fullscreen on macOS and tray-host loss on Linux.
 - Release signing, notarization and updater installation are separate gates. Do not publish, push or install a release unless explicitly requested.
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs are tracked in GitHub Issues using the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Triage uses the default five canonical labels (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context within this submodule (`CONTEXT.md` and `docs/adr/` at the repo root), and referenced from the parent workspace's `CONTEXT-MAP.md`. See `docs/agents/domain.md`.
