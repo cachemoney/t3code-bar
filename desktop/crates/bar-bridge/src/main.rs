@@ -262,6 +262,132 @@ fn run_watch(state_dir: &Path) -> Result<(), String> {
     Ok(())
 }
 
+fn run_set_setting(key_str: &str, val_str: &str) -> Result<(), String> {
+    let key = match key_str {
+        "notificationsMuted" | "notifications-muted" | "notifications_muted" => {
+            bar_core::settings::SettingKey::NotificationsMuted
+        }
+        "showsPreviews" | "shows-previews" | "shows_previews" => {
+            bar_core::settings::SettingKey::ShowsPreviews
+        }
+        other => return Err(format!("Unsupported or unknown setting key: '{other}'")),
+    };
+
+    let canonical_key = match key {
+        bar_core::settings::SettingKey::NotificationsMuted => "notificationsMuted",
+        bar_core::settings::SettingKey::ShowsPreviews => "showsPreviews",
+        _ => unreachable!(),
+    };
+
+    let val = match val_str.to_ascii_lowercase().as_str() {
+        "true" | "1" | "yes" | "on" => true,
+        "false" | "0" | "no" | "off" => false,
+        other => return Err(format!("Invalid boolean value: '{other}'")),
+    };
+
+    let config = Configuration::from_environment(None);
+    let settings_file = bar_core::host::settings_path(&config.base_dir);
+    let mut store = bar_core::settings::SettingsStore::load(settings_file.clone())
+        .unwrap_or_else(|_| bar_core::settings::SettingsStore::defaults(settings_file));
+
+    store.set(key, val).map_err(|e| e.to_string())?;
+
+    let res = serde_json::json!({
+        "ok": true,
+        "key": canonical_key,
+        "value": val,
+    });
+    println!("{}", serde_json::to_string(&res).map_err(|e| e.to_string())?);
+    Ok(())
+}
+
+fn run_connect(token: &str) -> Result<(), String> {
+    let config = Configuration::from_environment(None);
+    let port = config.server_port().map_err(|e| e.to_string())?;
+    let fixture = env::var("T3_BAR_FIXTURE_STATE").is_ok();
+    let namespace = env::var("T3_BAR_FIXTURE_KEYRING_NAMESPACE").ok();
+    let store = bar_core::host::credential_store(fixture, namespace.as_deref())
+        .map_err(|e| e.to_string())?;
+    let connection = bar_core::limits::LimitsConnection::with_default_transport(store);
+
+    let rt = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .map_err(|e| e.to_string())?;
+
+    rt.block_on(async {
+        connection
+            .connect(port, token)
+            .await
+            .map_err(|e| e.to_string())
+    })?;
+
+    let res = serde_json::json!({
+        "ok": true,
+        "status": "connected",
+        "port": port,
+    });
+    println!("{}", serde_json::to_string(&res).map_err(|e| e.to_string())?);
+    Ok(())
+}
+
+fn run_reconnect() -> Result<(), String> {
+    let config = Configuration::from_environment(None);
+    let port = config.server_port().map_err(|e| e.to_string())?;
+    let fixture = env::var("T3_BAR_FIXTURE_STATE").is_ok();
+    let namespace = env::var("T3_BAR_FIXTURE_KEYRING_NAMESPACE").ok();
+    let store = bar_core::host::credential_store(fixture, namespace.as_deref())
+        .map_err(|e| e.to_string())?;
+    let connection = bar_core::limits::LimitsConnection::with_default_transport(store);
+
+    let rt = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .map_err(|e| e.to_string())?;
+
+    rt.block_on(async {
+        connection
+            .reconnect_saved(port)
+            .await
+            .map_err(|e| e.to_string())
+    })?;
+
+    let res = serde_json::json!({
+        "ok": true,
+        "status": "reconnected",
+        "port": port,
+    });
+    println!("{}", serde_json::to_string(&res).map_err(|e| e.to_string())?);
+    Ok(())
+}
+
+fn run_disconnect() -> Result<(), String> {
+    let fixture = env::var("T3_BAR_FIXTURE_STATE").is_ok();
+    let namespace = env::var("T3_BAR_FIXTURE_KEYRING_NAMESPACE").ok();
+    let store = bar_core::host::credential_store(fixture, namespace.as_deref())
+        .map_err(|e| e.to_string())?;
+    let connection = bar_core::limits::LimitsConnection::with_default_transport(store);
+
+    let rt = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .map_err(|e| e.to_string())?;
+
+    rt.block_on(async {
+        connection
+            .disconnect()
+            .await
+            .map_err(|e| e.to_string())
+    })?;
+
+    let res = serde_json::json!({
+        "ok": true,
+        "status": "disconnected",
+    });
+    println!("{}", serde_json::to_string(&res).map_err(|e| e.to_string())?);
+    Ok(())
+}
+
 fn parse_cli_state_dir(args: &[String]) -> Option<&str> {
     for i in 1..args.len() {
         if args[i] == "--state-dir" && i + 1 < args.len() {
@@ -294,6 +420,38 @@ fn main() {
         "watch" => {
             if let Err(e) = run_watch(&state_dir) {
                 eprintln!("Error running watch: {}", e);
+                std::process::exit(1);
+            }
+        }
+        "set-setting" => {
+            if args.len() < 4 {
+                eprintln!("Usage: t3code-bar-bridge set-setting <key> <value>");
+                std::process::exit(1);
+            }
+            if let Err(e) = run_set_setting(&args[2], &args[3]) {
+                eprintln!("Error setting setting: {}", e);
+                std::process::exit(1);
+            }
+        }
+        "connect" => {
+            if args.len() < 3 {
+                eprintln!("Usage: t3code-bar-bridge connect <token>");
+                std::process::exit(1);
+            }
+            if let Err(e) = run_connect(&args[2]) {
+                eprintln!("Error connecting: {}", e);
+                std::process::exit(1);
+            }
+        }
+        "reconnect" => {
+            if let Err(e) = run_reconnect() {
+                eprintln!("Error reconnecting: {}", e);
+                std::process::exit(1);
+            }
+        }
+        "disconnect" => {
+            if let Err(e) = run_disconnect() {
+                eprintln!("Error disconnecting: {}", e);
                 std::process::exit(1);
             }
         }
