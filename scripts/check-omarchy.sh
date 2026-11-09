@@ -31,6 +31,21 @@ EOF
   esac
 done
 
+# 0. Provision a headless Secret Service when no session bus is present
+#    (CI containers, headless hosts). Pairing tests exercise the real
+#    keyring under a disposable namespace, so they need D-Bus plus
+#    gnome-keyring. Desktop sessions with an existing bus are untouched.
+if [[ -z "${DBUS_SESSION_BUS_ADDRESS:-}" && -z "${T3_BAR_HEADLESS_KEYRING:-}" ]] \
+  && command -v dbus-run-session >/dev/null 2>&1 \
+  && command -v gnome-keyring-daemon >/dev/null 2>&1; then
+  export T3_BAR_HEADLESS_KEYRING=1
+  echo "No session bus found; re-running under a headless Secret Service (dbus-run-session + gnome-keyring)"
+  exec dbus-run-session -- bash -c '
+    echo | gnome-keyring-daemon --unlock --components=secrets >/dev/null 2>&1 || true
+    exec "$0" "$@"
+  ' "$0" "$@"
+fi
+
 echo "=== Running Omarchy Checks ==="
 
 bash -n "$REPO_ROOT/scripts/install-omarchy-dev.sh"

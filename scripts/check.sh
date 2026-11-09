@@ -9,5 +9,10 @@ for crate in bar-threads bar-usage bar-limits bar-updater bar-core; do
   cargo test --locked --manifest-path "crates/${crate}/Cargo.toml"
 done
 cargo test --locked --manifest-path src-tauri/Cargo.toml
-bash ../scripts/check-omarchy.sh
+
+# The Omarchy harness (bar-bridge, QML plugin, PKGBUILD) targets Linux only;
+# notify-rust hints/urgency used by bar-bridge do not compile on macOS.
+if [ "$(uname -s)" = "Linux" ]; then
+  bash ../scripts/check-omarchy.sh
+fi
 
