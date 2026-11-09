@@ -138,7 +138,117 @@ Ui.Panel {
     }
   }
 
+  // ---- Thread cursor and action state --------------------------------------
+  property int threadCursor: 0
+  property bool threadCursorActive: false
+
+  function moveThreadCursor(dy) {
+    if (!root.threads || root.threads.length === 0) return
+    cancelPreview()
+    root.threadCursor = Math.max(0, Math.min(root.threads.length - 1, root.threadCursor + dy))
+    root.threadCursorActive = true
+  }
+
+  function activeThread() {
+    if (!root.threads || root.threads.length === 0) return null
+    var idx = Math.max(0, Math.min(root.threads.length - 1, root.threadCursor))
+    return root.threads[idx]
+  }
+
+  function executeThreadAction(id, action) {
+    if (!id || !action) return
+    var argv = ["t3code-bar-bridge", "thread", id, action]
+    if (Commons.Util && Commons.Util.execArgv) {
+      Commons.Util.execArgv(argv)
+    } else {
+      Quickshell.execDetached(argv)
+    }
+  }
+
+  function startNewThread() {
+    var argv = ["t3code-bar-bridge", "new-thread"]
+    if (Commons.Util && Commons.Util.execArgv) {
+      Commons.Util.execArgv(argv)
+    } else {
+      Quickshell.execDetached(argv)
+    }
+  }
+
+  // ---- 500ms Anchored Hover Preview with generation tracking ---------------
+  property string hoveredId: ""
+  property int previewGen: 0
+  property bool previewVisible: false
+  property string previewText: ""
+  property string previewUpdatedAt: ""
+  property double hoverRowY: 0
+
+  Timer {
+    id: previewTimer
+    interval: 500
+    repeat: false
+    onTriggered: {
+      if (!root.settings.showsPreviews || root.hoveredId === "") return
+      var reqGen = root.previewGen
+      var reqId = root.hoveredId
+      previewProc.targetGen = reqGen
+      previewProc.targetId = reqId
+      previewProc.command = ["t3code-bar-bridge", "preview", reqId]
+      previewProc.running = true
+    }
+  }
+
+  Process {
+    id: previewProc
+    running: false
+    property int targetGen: 0
+    property string targetId: ""
+    stdout: SplitParser {
+      onRead: function(line) {
+        if (previewProc.targetGen !== root.previewGen || root.hoveredId !== previewProc.targetId) return
+        if (!root.opened || root.currentScreen !== "threads" || !root.settings.showsPreviews) return
+        var raw = String(line || "").trim()
+        if (raw === "" || raw === "null") {
+          root.previewVisible = false
+          return
+        }
+        try {
+          var parsed = JSON.parse(raw)
+          if (parsed && parsed.text) {
+            root.previewText = parsed.text
+            root.previewUpdatedAt = parsed.updatedAt || ""
+            root.previewVisible = true
+          } else {
+            root.previewVisible = false
+          }
+        } catch (e) {
+          root.previewVisible = false
+        }
+      }
+    }
+  }
+
+  function requestPreview(id, rowY) {
+    if (!root.settings.showsPreviews) return
+    root.previewGen++
+    root.hoveredId = id
+    root.hoverRowY = rowY
+    root.previewVisible = false
+    previewTimer.restart()
+  }
+
+  function cancelPreview() {
+    root.previewGen++
+    root.hoveredId = ""
+    root.previewVisible = false
+    previewTimer.stop()
+    if (previewProc.running) previewProc.running = false
+  }
+
+  onCurrentScreenChanged: cancelPreview()
+  onSettingsChanged: if (!settings || !settings.showsPreviews) cancelPreview()
+
   onOpenedChanged: {
+    if (!opened) cancelPreview()
     updateView({ visible: opened })
   }
 
@@ -272,6 +382,15 @@ Ui.Panel {
         if (root.currentScreen === "usage") {
           if (dx !== 0) usageScreen.moveInspection(dx)
           else if (dy !== 0) panelScroll.contentY = Math.max(0, Math.min(panelScroll.contentHeight - panelScroll.height, panelScroll.contentY + dy * 44))
+        } else if (root.currentScreen === "threads") {
+          if (dy !== 0) root.moveThreadCursor(dy)
+        }
+      }
+
+      onActivateRequested: {
+        if (root.currentScreen === "threads") {
+          var t = root.activeThread()
+          if (t) root.executeThreadAction(t.id, "open")
         }
       }
 
@@ -280,6 +399,19 @@ Ui.Panel {
         else if (t === "2") root.setScreen("usage")
         else if ((t === "f" || t === "F") && root.currentScreen === "usage") usageScreen.cycleProvider()
         else if ((t === "a" || t === "A") && root.currentScreen === "usage") usageScreen.toggleAllModels()
+        else if (root.currentScreen === "threads") {
+          if (t === "j") root.moveThreadCursor(1)
+          else if (t === "k") root.moveThreadCursor(-1)
+          else if (t === "b" || t === "B") {
+            var tb = root.activeThread()
+            if (tb) root.executeThreadAction(tb.id, "browser")
+          } else if (t === "c" || t === "C") {
+            var tc = root.activeThread()
+            if (tc) root.executeThreadAction(tc.id, "copy")
+          } else if (t === "n" || t === "N") {
+            root.startNewThread()
+          }
+        }
       }
 
       Flickable {
@@ -328,13 +460,34 @@ Ui.Panel {
             }
           }
 
-          PlainText {
+          ThreadsInbox {
+            id: threadsInbox
             visible: root.currentScreen === "threads"
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: root.summary.status + " · " + root.threads.length + " threads"
-            color: root.dim
-            font.family: root.fontFamily
-            font.pixelSize: Commons.Style.font.caption
+            threads: root.threads
+            foreground: root.foreground
+            dim: root.dim
+            accent: root.accent
+            urgent: root.urgent
+            fontFamily: root.fontFamily
+            cursor: root.threadCursor
+            cursorActive: root.threadCursorActive
+            previewsEnabled: root.settings.showsPreviews !== false
+            previewVisible: root.previewVisible
+            previewText: root.previewText
+            previewUpdatedAt: root.previewUpdatedAt
+            hoverRowY: root.hoverRowY
+            onPointAt: function(index) {
+              root.threadCursor = index
+              root.threadCursorActive = true
+            }
+            onRowHovered: function(id, rowY) {
+              root.requestPreview(id, rowY)
+            }
+            onRowExited: root.cancelPreview()
+            onActionRequested: function(id, action) {
+              root.executeThreadAction(id, action)
+            }
+            onNewThreadRequested: root.startNewThread()
           }
 
           UsageScreen {
