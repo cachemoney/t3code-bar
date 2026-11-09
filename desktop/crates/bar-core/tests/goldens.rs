@@ -20,6 +20,13 @@ fn frozen_now() -> chrono::DateTime<Utc> {
 fn setup_fixtures() -> (TempDir, Configuration) {
     let dir = TempDir::new().unwrap();
 
+    // Isolate local provider roots (opencode/antigravity session stores) from
+    // the developer's real home: the shared host runtime discovers them for
+    // usage scans, and without this the goldens absorb machine-local usage
+    // data and stop being reproducible.
+    std::env::set_var("OPENCODE_DATA_DIR", dir.path().join("isolated-local-roots"));
+    std::env::set_var("ANTIGRAVITY_DATA_DIR", dir.path().join("isolated-local-roots"));
+
     // 1. Thread database from threads.sql (containing hostile markup strings)
     let db = Connection::open(dir.path().join("statev2.sqlite")).unwrap();
     db.execute_batch(&fs::read_to_string(fixtures_root().join("threads.sql")).unwrap())

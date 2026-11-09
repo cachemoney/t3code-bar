@@ -826,9 +826,19 @@ impl HostRuntime {
             initial_snapshot.summary = Some(ThreadSummary::default());
         }
 
+        // Local provider roots (opencode/cursor/antigravity session data) must
+        // be configured explicitly, or the reader only ever sees T3 Code's
+        // saved scan cache — the desktop app sets them in its own host setup,
+        // so the shared runtime has to do it here for the bridge to match.
+        let home = std::env::var("HOME")
+            .map(std::path::PathBuf::from)
+            .unwrap_or_else(|_| std::path::PathBuf::from("/"));
+        let mut usage_reader = usage::UsageReader::new(config.base_dir.clone());
+        usage_reader.set_local_roots(usage::LocalRoots::discover(&config.base_dir, home));
+
         Arc::new(Self {
             favicons: Favicons::new(favicons_cache_dir),
-            usage: Mutex::new(usage::UsageReader::new(config.base_dir.clone())),
+            usage: Mutex::new(usage_reader),
             limits: Mutex::new(limits::LimitsReader::new()),
             frozen_now,
             timezone,

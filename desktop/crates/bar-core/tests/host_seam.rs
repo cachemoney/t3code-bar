@@ -10,6 +10,10 @@ fn fixtures_root() -> PathBuf {
 
 fn setup_test_env() -> (TempDir, bar_core::threads::Configuration) {
     let dir = TempDir::new().unwrap();
+    // Keep the shared host's local provider root discovery away from the
+    // developer's real session stores (see goldens.rs).
+    std::env::set_var("OPENCODE_DATA_DIR", dir.path().join("isolated-local-roots"));
+    std::env::set_var("ANTIGRAVITY_DATA_DIR", dir.path().join("isolated-local-roots"));
     let db = Connection::open(dir.path().join("statev2.sqlite")).unwrap();
     db.execute_batch(&fs::read_to_string(fixtures_root().join("threads.sql")).unwrap())
         .unwrap();
